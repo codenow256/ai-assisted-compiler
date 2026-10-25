@@ -212,13 +212,13 @@ export function explain(doc: RepairDoc | AnalyzeDoc, source: string): Explanatio
     const hasCode = doc.tokens.length > 0;
     return {
       tone: "success",
-      headline: hasCode ? "Your program is valid MiniC: it parses without syntax errors." : (trimmed ? "Only comments or whitespace: an empty program, which is valid MiniC." : "The editor is empty: an empty program is valid MiniC, but it does nothing."),
+      headline: hasCode ? "Your program is valid MiniC: it parses without syntax errors." : !source.length ? "The editor is empty: there is no program to analyze." : !trimmed ? "Only whitespace: there is no program to analyze." : "Only comments: once the lexer removes them, no program is left.",
       paragraphs: [
         hasCode ? `The lexer produced ${doc.tokens.length} tokens and the parser accepted all of them, building an abstract syntax tree (AST) with ${parse.ast_nodes ?? "?"} nodes.` : "There is nothing to analyse yet.",
         "This means the code follows MiniC's grammar. It does not mean the program is semantically correct or that it computes what you intended: IntelliFix checks syntax and name use, not types or behaviour.",
       ],
       facts: parse.ast ? summarizeProgram(parse.ast) : undefined,
-      nextSteps: hasCode ? ["Open the AST explorer to see the structure, node by node.", "Change something (delete a `;` or a `)`) and press Analyze to see how errors are explained."] : ["Type a MiniC program or load a sample, then press Analyze."],
+      nextSteps: hasCode ? ["Open step 4 or the AST Explorer to see the structure, node by node.", "Change something (delete a `;` or a `)`) and press Analyze to see how errors are explained."] : ["Type a MiniC program or load a sample, then press Analyze."],
       unknowns: parse.name_warnings?.length ? [`Name checks found ${parse.name_warnings.length} warning(s) (for example ${parse.name_warnings[0].message}). They are not syntax errors.`] : undefined,
     };
   }
@@ -250,9 +250,16 @@ export function explain(doc: RepairDoc | AnalyzeDoc, source: string): Explanatio
     ex.nextSteps.push("Rewrite the construct with MiniC features (the message says how), then press Analyze.");
     if (unsupported.length > 1) ex.unknowns = [`${unsupported.length - 1} more unsupported construct(s) further on.`];
   } else if (invalid.length && d && d.message.startsWith("lexical error")) {
-    ex.headline = `Line ${d.start.line} contains text that is not part of MiniC.`;
-    ex.paragraphs.push(...lexicalParagraphs(invalid));
-    ex.paragraphs.push("The parser then stops at the first such token, because it cannot fit into any MiniC statement.");
+    const unterminated = invalid.find((e) => /unterminated block comment/.test(e.message));
+    if (unterminated) {
+      ex.headline = `The comment that starts on line ${unterminated.start.line} never ends.`;
+      ex.paragraphs.push(`\`/*\` at line ${unterminated.start.line}, column ${unterminated.start.column} opens a comment, but no \`*/\` follows. The lexer therefore treats everything after it as comment text, so the parser never sees that code.`);
+      ex.paragraphs.push("IntelliFix will not offer a fix that deletes the comment: that would also throw away the hidden code. Only you know where the comment should end.");
+    } else {
+      ex.headline = `Line ${d.start.line} contains text that is not part of MiniC.`;
+      ex.paragraphs.push(...lexicalParagraphs(invalid));
+      ex.paragraphs.push("This is a lexical error (a problem with individual characters), found before parsing. The parser then stops at that token, because it cannot fit into any MiniC statement.");
+    }
   } else if (d) {
     const found = describeToken(tok, d);
     ex.headline = d.unexpected === "EOF" ? "The file ends before the program is complete." : `Line ${d.start.line}: the parser did not expect ${found} here.`;
@@ -304,20 +311,20 @@ export function explain(doc: RepairDoc | AnalyzeDoc, source: string): Explanatio
     if (status === "RECOMMENDED") {
       ex.tone = "warning";
       ex.paragraphs.push(`IntelliFix recommends one fix: **${planWords(plans[0])}**. It leads every structurally different alternative by a clear margin, and the repaired program was re-parsed successfully. Review it before accepting: the parser accepting it does not prove it is what you meant.`);
-      ex.nextSteps.push("Review the recommended fix below and press Accept, or try your own fix first (hints).");
+      ex.nextSteps.push("Review the recommended fix in step 3 (Fixes), or try your own fix first with the hints.");
     } else if (status === "MULTIPLE_PLAUSIBLE") {
       ex.tone = "warning";
       ex.paragraphs.push(`Several different fixes are about equally well supported (margin ${rep.decision.margin?.toFixed(2) ?? "n/a"}, below the threshold ${rep.decision.tau}). IntelliFix will not pick one for you.`);
       ex.question = { text: "Which change did you mean?", options: clarifyOptions(doc as RepairDoc) };
-      ex.nextSteps.push("Answer the question above, or edit the code yourself and press Analyze.");
+      ex.nextSteps.push("Answer IntelliFix's question in step 3 (Fixes), or edit the code yourself and press Analyze.");
     } else if (status === "LOW_CONFIDENCE") {
       ex.tone = "warning";
       const hole = plans[0]?.edits.find((e) => e.placeholder);
-      ex.paragraphs.push(hole ? `Something is missing at line ${hole.at.line}, column ${hole.at.column} (${expected ?? "a value"}), and its intended content cannot be recovered from the code. The best mechanical fix would only insert a placeholder \`${hole.text}\`.` : rep.decision.summary);
+      if (!/unterminated block comment/.test(invalid[0]?.message ?? "")) ex.paragraphs.push(hole ? `Something is missing at line ${hole.at.line}, column ${hole.at.column} (${expected ?? "a value"}), and its intended content cannot be recovered from the code. The best mechanical fix would only insert a placeholder \`${hole.text}\`.` : rep.decision.summary);
       if (rep.decision.reasons.length) ex.unknowns = [...(ex.unknowns ?? []), ...rep.decision.reasons];
       const opts = clarifyOptions(doc as RepairDoc);
       if (opts.length) ex.question = { text: hole ? "What should go here?" : "Which change did you mean?", options: opts };
-      ex.nextSteps.push("Tell IntelliFix what you meant (above), or edit the code and press Analyze.");
+      ex.nextSteps.push("Tell IntelliFix what you meant in step 3 (Fixes), or edit the code and press Analyze.");
     } else if (status === "NO_SAFE_REPAIR" || status === "BUDGET_EXHAUSTED") {
       ex.paragraphs.push(status === "BUDGET_EXHAUSTED" ? "The repair search reached its limit (30,000 parser runs or 4 seconds) before finding a complete fix." : "No small edit (at most two tokens near the error) lets the parser continue. The mistake may need a larger rewrite, or the code may not be MiniC at all.");
       ex.nextSteps.push("Use the hints: check the statement around the highlighted line and rewrite it, then press Analyze.");

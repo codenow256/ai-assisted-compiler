@@ -1,5 +1,8 @@
 # IntelliFix — end-to-end trace of one real run
 
+> **Interface note (v2, 25 Oct 2026):** page names in this document (Code workbench, Repair laboratory, Guided demo, …) refer to the earlier ten-page interface. The app now has three destinations — Workspace, AST Explorer, Research & Method; [`IntelliFix_UX_v2.md`](IntelliFix_UX_v2.md) §4 says where each earlier page now lives.
+
+
 This follows one input from the editor to the screen. All values are real output, captured on 25 Oct 2026 from the running backend (`POST /api/repair`) and from `parallaxc repair`. Timings vary between machines and runs.
 
 **Input** (`examples/02_missing_semicolon.mc`, 172 bytes, 11 lines; the `;` after `0` on line 3 is missing):

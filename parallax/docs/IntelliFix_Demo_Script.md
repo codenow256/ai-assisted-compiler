@@ -1,5 +1,8 @@
 # IntelliFix — live demo script (8 minutes)
 
+> **Interface note (v2, 25 Oct 2026):** page names in this document (Code workbench, Repair laboratory, Guided demo, …) refer to the earlier ten-page interface. The app now has three destinations — Workspace, AST Explorer, Research & Method; [`IntelliFix_UX_v2.md`](IntelliFix_UX_v2.md) §4 says where each earlier page now lives.
+
+
 Every step uses a built-in sample, so the results are reproducible. Expected results are those observed on 25 Oct 2026 at τ = 1.5. If the screen differs, say so and describe what you see; never narrate the expected result over a different screen.
 
 **Before you start:** the badge shows **Compiler 1.0.0**; the browser is at 100% zoom on the **Code workbench**; Clear has been pressed. Checklist: [IntelliFix_Live_Evaluation_Guide.md §1](IntelliFix_Live_Evaluation_Guide.md).

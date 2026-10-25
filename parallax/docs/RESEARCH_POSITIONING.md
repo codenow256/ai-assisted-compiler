@@ -1,5 +1,8 @@
 # Research positioning
 
+> **Interface note (v2, 25 Oct 2026):** page names in this document (Code workbench, Repair laboratory, Guided demo, …) refer to the earlier ten-page interface. The app now has three destinations — Workspace, AST Explorer, Research & Method; [`IntelliFix_UX_v2.md`](IntelliFix_UX_v2.md) §4 says where each earlier page now lives.
+
+
 ## 1. The problem
 
 Syntax error handling has three sub-problems: **detection** (the parser cannot continue), **localisation** (where the mistake is) and **correction** (what the programmer meant). LR parsers with the correct-prefix property detect an error at the first token that cannot extend any valid prefix. Localisation and correction are underdetermined: many edits make a program parse, and the cheapest one is not necessarily the intended one.

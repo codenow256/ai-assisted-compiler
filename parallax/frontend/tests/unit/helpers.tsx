@@ -3,7 +3,6 @@ import type { ReactNode } from "react";
 import { MemoryRouter } from "react-router-dom";
 import { AppRoutes } from "../../src/app/App";
 import { ProjectProvider } from "../../src/app/ProjectContext";
-import { DemoProvider } from "../../src/features/demo/DemoContext";
 import examples from "./fixtures/examples.json";
 import health from "./fixtures/health.json";
 import semicolon from "./fixtures/repair_02_missing_semicolon.json";
@@ -40,10 +39,8 @@ export function renderApp(route: string, initialSource?: string, children?: Reac
   return render(
     <MemoryRouter initialEntries={[route]}>
       <ProjectProvider initialSource={initialSource}>
-        <DemoProvider>
-          <AppRoutes />
-          {children}
-        </DemoProvider>
+        <AppRoutes />
+        {children}
       </ProjectProvider>
     </MemoryRouter>,
   );

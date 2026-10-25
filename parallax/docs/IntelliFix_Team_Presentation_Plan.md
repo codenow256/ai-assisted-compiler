@@ -1,5 +1,8 @@
 # IntelliFix — team presentation plan
 
+> **Interface note (v2, 25 Oct 2026):** page names in this document (Code workbench, Repair laboratory, Guided demo, …) refer to the earlier ten-page interface. The app now has three destinations — Workspace, AST Explorer, Research & Method; [`IntelliFix_UX_v2.md`](IntelliFix_UX_v2.md) §4 says where each earlier page now lives.
+
+
 | Member | Registration no. |
 |---|---|
 | Goutam Jayasingh | 24BCE2417 |

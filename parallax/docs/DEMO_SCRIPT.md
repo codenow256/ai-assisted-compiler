@@ -1,5 +1,8 @@
 # Live demo script (about 12 minutes)
 
+> **Interface note (v2, 25 Oct 2026):** page names in this document (Code workbench, Repair laboratory, Guided demo, …) refer to the earlier ten-page interface. The app now has three destinations — Workspace, AST Explorer, Research & Method; [`IntelliFix_UX_v2.md`](IntelliFix_UX_v2.md) §4 says where each earlier page now lives.
+
+
 **Setup** (before the audience arrives): `cd parallax && ./scripts/run_backend.sh`, then open <http://127.0.0.1:8000> in a 1440-px-wide window. Every output below is computed live. The built-in **Guided demo** (sidebar) follows the same sequence with Next/Back controls and can be exited at any time.
 
 | Time | Action | What the audience sees (real output) | Point to make |

@@ -1,5 +1,8 @@
 # IntelliFix — live evaluation guide (when the examiner types their own code)
 
+> **Interface note (v2, 25 Oct 2026):** page names in this document (Code workbench, Repair laboratory, Guided demo, …) refer to the earlier ten-page interface. The app now has three destinations — Workspace, AST Explorer, Research & Method; [`IntelliFix_UX_v2.md`](IntelliFix_UX_v2.md) §4 says where each earlier page now lives.
+
+
 Every result quoted here was produced by the real compiler, at the UI's threshold τ = 1.5, in the professor-style suite (`docs/IntelliFix_Random_Input_Test_Report.md`, case IDs in brackets). If your screen shows something different, believe your screen and read §5.
 
 ## 1. Ten minutes before

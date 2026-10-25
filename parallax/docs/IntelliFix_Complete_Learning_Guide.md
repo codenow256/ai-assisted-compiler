@@ -1,5 +1,8 @@
 # IntelliFix — complete learning guide
 
+> **Interface note (v2, 25 Oct 2026):** page names in this document (Code workbench, Repair laboratory, Guided demo, …) refer to the earlier ten-page interface. The app now has three destinations — Workspace, AST Explorer, Research & Method; [`IntelliFix_UX_v2.md`](IntelliFix_UX_v2.md) §4 says where each earlier page now lives.
+
+
 **IntelliFix: An Intelligent Compiler for Syntax Error Analysis, Detection, and Correction**
 Team: Goutam Jayasingh (24BCE2417) · S Charumeena (24BCI0238) · Raguraman Govindasamy (24BDS0409)
 

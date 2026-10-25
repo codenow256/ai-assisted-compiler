@@ -1,5 +1,8 @@
 # IntelliFix — from zero to advanced (five levels, with exercises)
 
+> **Interface note (v2, 25 Oct 2026):** page names in this document (Code workbench, Repair laboratory, Guided demo, …) refer to the earlier ten-page interface. The app now has three destinations — Workspace, AST Explorer, Research & Method; [`IntelliFix_UX_v2.md`](IntelliFix_UX_v2.md) §4 says where each earlier page now lives.
+
+
 Every answer below was produced by the real compiler (`parallaxc`, at the UI's threshold τ = 1.5) on 25 Oct 2026. Check them yourself: paste the input into the **Code workbench** and press the button named in the exercise. Or run `./compiler/build/parallaxc repair --tau 1.5 < file.mc`. If your result differs, the code has changed since; trust the tool, not this page.
 
 How to use it: try each exercise before opening its answer. A level is done when you can explain the answers aloud without notes.

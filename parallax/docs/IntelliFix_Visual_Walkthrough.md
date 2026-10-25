@@ -1,8 +1,66 @@
 # IntelliFix — visual walkthrough
 
+Every image is a screenshot of the running application on the real `parallaxc` compiler at τ = 1.5, taken on 25 Oct 2026 by `deliverables/build/take_screenshots_v2.cjs` (§5). Images are in `docs/images/walkthrough/` (1440 px wide at scale 1.5, full page). The interface is described in [`IntelliFix_UX_v2.md`](IntelliFix_UX_v2.md).
+
+## 1. Workspace: one repair journey
+
+| Step | Screenshot | What to point at |
+|---|---|---|
+| Start | [v2-01](images/walkthrough/v2-01-workspace-start.png) | three destinations in the sidebar; the step indicator; one **Analyze** button |
+| 2 Diagnosis | [v2-02](images/walkthrough/v2-02-diagnosis.png) | category *Missing delimiter*; “the parser can only notice it here, one line later”; Lexer → Parser → Meaning |
+| 3 Fixes (recommended) | [v2-03](images/walkthrough/v2-03-recommended.png) | *Recommended*, score gap 2.00 ≥ τ; alternatives with line change, cost, score and how they differ |
+| 3 Fixes (ambiguity) | [v2-04](images/walkthrough/v2-04-ambiguity-question.png) | “Is the `+` extra, or is something missing after it?”; real plans, a fill-in, or your own line |
+| 4 Tree | [v2-05](images/walkthrough/v2-05-tree-step.png) | partial tree → complete tree: the Error node replaced by `DeclStmt int` |
+| 5 Apply & verify | [v2-06](images/walkthrough/v2-06-ready-to-apply.png), [v2-07](images/walkthrough/v2-07-verified.png) | diff and *Apply to my code*; then “Verified”, reports that disappeared / remain / are new; *Undo repair* |
+
+![Ambiguity question](images/walkthrough/v2-04-ambiguity-question.png)
+
+![Verified](images/walkthrough/v2-07-verified.png)
+
+## 2. Diagnosis details
+
+| Case | Screenshot | What to point at |
+|---|---|---|
+| Two errors | [v2-08](images/walkthrough/v2-08-cascade.png) | first error (reliable) vs later reports, each with its evidence, “likely, not proven” |
+| Hints and practice | [v2-09](images/walkthrough/v2-09-hints-practice.png) | three staged hints; the student's own fix checked: “Your fix works” |
+| Unterminated comment | [v2-10](images/walkthrough/v2-10-unterminated-comment.png) | why the code after `/*` is invisible; no fix that deletes hidden code |
+| Compiler missing | [v2-16](images/walkthrough/v2-16-compiler-missing.png) | real `COMPILER_UNAVAILABLE` error with the build command; badge *Compiler missing*; no fake results |
+
+![Cascade](images/walkthrough/v2-08-cascade.png)
+
+## 3. AST Explorer
+
+| View | Screenshot | What to point at |
+|---|---|---|
+| Start | [v2-11](images/walkthrough/v2-11-ast-explorer-start.png) | source · outline · “How to read the tree” with starting points |
+| Selected expression node | [v2-12](images/walkthrough/v2-12-ast-node-expression.png) | role in the parent, tokens it absorbs, expression diagram, precedence note, grammar rule `add_expr → add_expr '+' mul_expr` |
+| Partial tree | [v2-13](images/walkthrough/v2-13-ast-partial-tree.png) | labelled partial tree with an Error node; *After the fix* shows the repaired program's tree |
+| Before & after | [v2-14](images/walkthrough/v2-14-ast-before-after.png) | option 1 (`+`) vs option 2 (`−`): exactly one changed node, marked in both trees |
+
+![AST node](images/walkthrough/v2-12-ast-node-expression.png)
+
+## 4. Research & Method
+
+[v2-15](images/walkthrough/v2-15-research.png): the question, the four method steps, the key result (71.5% vs 55.2%), the reliability/coverage trade-off (28.5% → 6.1% at 50.7% coverage), the ablation table, the labelled clarification simulation and the limitations.
+
+## 5. Re-take the screenshots
+
+1. Start the backend on :8000.
+2. Optionally start a second one with `PARALLAX_COMPILER=/nonexistent` on :8001 for v2-16.
+3. Run:
+
+```bash
+node deliverables/build/take_screenshots_v2.cjs
+```
+
+## Appendix: the earlier interface
+
+The images `01-…` to `27-…` in the same folder show the earlier ten-page interface (Overview, Code workbench, Lexical analysis, …). They are kept because the earlier deliverables reference them. The page mapping is in [`IntelliFix_UX_v2.md`](IntelliFix_UX_v2.md) §4. The original walkthrough text follows.
+
+
 Every image is a screenshot of the running application, taken on 25 Oct 2026. The backend was running the real `parallaxc` compiler at τ = 1.5. The script that takes them is in §6 and can be re-run. Images are in `docs/images/walkthrough/` at 2160 × 1350.
 
-## 1. Overview
+### 1. Overview
 
 ![Overview](images/walkthrough/01-overview.png)
 
@@ -10,7 +68,7 @@ Every image is a screenshot of the running application, taken on 25 Oct 2026. Th
 - **The processing pipeline** names the seven stages (Lex → Parse → Localise → Generate & validate → Rank & group → Hypothesis lanes → Decide). After a run, each stage shows whether it ran and how long it took.
 - The bottom left shows **Compiler 1.0.0**: the backend found the compiler binary. If it says **Compiler missing**, see §5.
 
-## 2. The workbench, one button at a time
+### 2. The workbench, one button at a time
 
 Sample *Missing semicolon* (`int total = 0` without `;` on line 3).
 
@@ -25,7 +83,7 @@ Sample *Missing semicolon* (`int total = 0` without `;` on line 3).
 
 Each row has a **current text** badge. If you type after running, it changes to **earlier text**, so no one mistakes an old result for the current code.
 
-## 3. One page per compiler stage
+### 3. One page per compiler stage
 
 | Page | Screenshot | What it shows (real data from the same run) |
 |---|---|---|
@@ -36,7 +94,7 @@ Each row has a **current text** badge. If you type after running, it changes to 
 
 ![Grammar and parsing](images/walkthrough/07-grammar-and-parsing.png)
 
-## 4. Repair research pages
+### 4. Repair research pages
 
 | Page | Screenshot | What to point at |
 |---|---|---|
@@ -47,7 +105,7 @@ Each row has a **current text** badge. If you type after running, it changes to 
 
 ![Repair laboratory](images/walkthrough/09-repair-laboratory.png)
 
-## 5. One screenshot per decision
+### 5. One screenshot per decision
 
 | Status | Sample | Screenshot | What it shows |
 |---|---|---|---|
@@ -64,7 +122,7 @@ Each row has a **current text** badge. If you type after running, it changes to 
 
 Screenshot 18 is the state the team saw on Windows before MSVC or MinGW was set up. It was produced with the same UI and a second backend whose `PARALLAX_COMPILER` points to a file that does not exist.
 
-## 6. Explanations, questions, hints and the explained AST (final version)
+### 6. Explanations, questions, hints and the explained AST (final version)
 
 | Feature | Screenshot | What to point at |
 |---|---|---|
@@ -81,7 +139,7 @@ Screenshot 18 is the state the team saw on Windows before MSVC or MinGW was set 
 
 ![Explained AST node](images/walkthrough/25-ast-explained-node.png)
 
-## 7. Re-take the screenshots
+### 7. Re-take the screenshots
 
 1. Start the backend on :8000.
 2. Optionally start a second one with `PARALLAX_COMPILER=/nonexistent` on :8001.

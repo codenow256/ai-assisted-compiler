@@ -1,5 +1,8 @@
 # IntelliFix — interactive and explanation features
 
+> **Interface note (v2, 25 Oct 2026):** page names in this document (Code workbench, Repair laboratory, Guided demo, …) refer to the earlier ten-page interface. The app now has three destinations — Workspace, AST Explorer, Research & Method; [`IntelliFix_UX_v2.md`](IntelliFix_UX_v2.md) §4 says where each earlier page now lives.
+
+
 These features are implemented in the web interface on top of the existing compiler and repair engine; **the compiler and the repair engine were not changed for them**, so the stored evaluation still describes the system exactly. Every sentence and option they show is derived from real compiler output (tokens, diagnostics with exact LAC expected sets, AST, candidates, plans, stability entries, decision).
 
 | Feature | Where | Grounded in | Tests |

@@ -1,11 +1,11 @@
 {
-  "_source": "PARALLAX_E2E=1 ./scripts/test_all.sh, final build (all layers PASS); counts read from its output",
-  "total": 411,
+  "_source": "PARALLAX_E2E=1 ./scripts/test_all.sh, UI v2 build (all layers PASS); counts read from its output",
+  "total": 496,
   "rows": [
     ["Compiler unit tests (C++)", "lexer, parser, AST, repair engine", "68 / 68"],
     ["Backend API tests (pytest)", "endpoints, limits, timeouts, failures, safety", "33 / 33"],
     ["Evaluation tests (pytest)", "metrics, catalog, 88 professor cases, fuzzing", "161 / 161"],
-    ["Frontend unit tests (Vitest)", "UI flows; explanations for all 88 professor inputs", "132 / 132"],
-    ["End-to-end (real browser)", "real backend + compiler, incl. the new features", "17 / 17"]
+    ["Frontend unit tests (Vitest)", "journey, every input category, AST model, UI flows", "219 / 219"],
+    ["End-to-end (real browser)", "real backend + compiler: full repair journeys", "15 / 15"]
   ]
 }

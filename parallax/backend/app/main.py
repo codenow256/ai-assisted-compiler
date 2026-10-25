@@ -326,8 +326,10 @@ async def evaluation_results():
                               "Run: python -m evaluation.experiments.run_experiments")
     summary = json.loads(path.read_text(encoding="utf-8"))
     report = settings.results_dir / "report.md"
+    clar = settings.results_dir / "clarification_bound.json"
     return {
         "summary": summary,
+        "clarification": json.loads(clar.read_text(encoding="utf-8")) if clar.is_file() else None,
         "report_markdown": report.read_text(encoding="utf-8") if report.is_file() else None,
         "provenance": {"file": "evaluation/results/summary.json",
                        "generated_utc": summary.get("environment", {}).get("timestamp_utc"),

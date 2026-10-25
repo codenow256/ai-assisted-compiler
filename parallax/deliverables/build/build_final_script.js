@@ -25,7 +25,7 @@ async function main() {
     { h1: "Before you start", newPage: false },
     { bullets: [
       "Start the backend; the sidebar badge must say **Compiler 1.0.0**. If it says “Compiler missing”, the native compiler is not built on this laptop: do not present screenshots as live output.",
-      "Open the Code workbench, press Clear, zoom the browser to 125–150% for the projector.",
+      "Open the Workspace (first item in the sidebar), press Clear, zoom the browser to 125–150% for the projector.",
       "Have this script printed or on a second screen; the deck in presenter view.",
     ] },
   ];
@@ -43,13 +43,13 @@ async function main() {
   }
   blocks.push({ h1: "Live demo checklist (slide 14)", newPage: false });
   blocks.push({ table: { caption: "Demo steps with the expected screen (observed on the final build, τ = 1.5)", widths: [0.38, 0.62], head: ["Do", "Expect"], rows: [
-    ["Sample Missing semicolon → Analyze", "explanation: the parser stopped at line 4 (int); line 3 is probably missing its ;; recommended fix insert ; at 3:16, margin 2.00"],
-    ["Type int total = price + ; inside main → Analyze", "“IntelliFix needs your help”: delete +, replace + with ;, or fill in (suggests price)"],
-    ["Fill in price → Check with the parser → Apply and re-analyze", "“Valid MiniC”, then “Your program is valid MiniC”; Undo repair restores the original"],
-    ["AST explorer → click a node; search", "plain-English meaning, role, children and source text; search marks matching nodes"],
-    ["Sample Ambiguous operator → Analyze → AST explorer → Before & after → Compare ASTs", "Plan 1 (+) vs plan 2 (−): 1 structural change, the Binary operator"],
+    ["Sample Missing semicolon → Analyze", "Step 2 Diagnosis: Missing delimiter; the parser stopped at line 4 (int); line 3 is probably missing its ;. Compare fixes → Recommended: insert ; at 3:16, score gap 2.00 → Use this fix → Apply & verify → Apply: “Verified”"],
+    ["Load sample “Missing expression after +” → Analyze → step 3 Fixes", "“Is the + extra, or is something missing after it?”: delete +, replace + with ;, fill in (suggests price), or write the line yourself"],
+    ["Fill in price → Check with the parser → Use this answer → (step 4) → Apply & verify → Apply", "“Valid MiniC”; step 4 shows the Error node replaced by DeclStmt; step 5 “Verified”, 1 report disappeared; Undo repair restores the original"],
+    ["AST Explorer → click a node, or click in the code", "meaning, role in the parent, tokens it absorbs, grammar rule, expression diagram; search marks matching nodes"],
+    ["Sample Ambiguous operator → Analyze → AST Explorer → Before & after", "Option 1 (+) vs option 2 (−): 1 structural change, the Binary operator"],
     ["Code with an error → Show a hint ×3 → I'll try it → fix → Check my fix", "“Your fix works: the program now parses.”"],
-    ["Evaluation & impact", "71.5% · 6.1% · 50.7%; caveat rows"],
+    ["Research & Method", "71.5% vs 55.2%; 28.5% → 6.1% wrong-but-confident at 50.7% coverage; limitations"],
   ] } });
   blocks.push({ h1: "Rules for answering", newPage: false });
   blocks.push({ bullets: [

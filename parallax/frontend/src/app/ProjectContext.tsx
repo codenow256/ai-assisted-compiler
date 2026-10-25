@@ -7,7 +7,7 @@
 // for, so views can flag results that no longer match the editor.
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { ApiError, api } from "../services/api";
-import type { AnalyzeDoc, Capabilities, Envelope, Example, Health, LexDoc, RepairDoc, RepairOptions } from "../types/api";
+import type { AnalyzeDoc, Capabilities, Diagnostic, Edit, Envelope, Example, Health, LexDoc, RepairDoc, RepairOptions } from "../types/api";
 
 export type RunKind = "lex" | "parse" | "repair";
 
@@ -30,10 +30,23 @@ export interface Highlight {
   tone?: "error" | "select" | "edit";
 }
 
-interface HistoryEntry {
+export interface HistoryEntry {
   source: string;
   origin: SourceOrigin;
   reason: string;
+  /** real parser diagnostics of `source` (if it had been parsed), for before/after verification */
+  diagnostics: Diagnostic[] | null;
+}
+
+/** A fix the user has chosen but not applied yet (shared by the Workspace and the AST explorer). */
+export interface Proposal {
+  source: string; // the full repaired program
+  forSource: string; // the code it repairs
+  label: string; // plain words, e.g. "insert ; at 3:16"
+  kind: "recommended" | "plan" | "answer";
+  edits: Edit[]; // engine edits (empty for a user-typed answer)
+  /** result of a real parse of `source`: true = accepted */
+  parses: boolean;
 }
 
 export const DEFAULT_OPTIONS: RepairOptions = {
@@ -64,8 +77,10 @@ interface ProjectState {
   options: RepairOptions;
   setOptions: (o: RepairOptions) => void;
   applyRepair: (newSource: string, reason: string, opts?: { reanalyze?: boolean }) => void;
-  undo: () => void;
+  undo: (opts?: { reanalyze?: boolean }) => void;
   history: HistoryEntry[];
+  proposal: Proposal | null;
+  setProposal: (p: Proposal | null) => void;
   highlight: Highlight | null;
   setHighlight: (h: Highlight | null) => void;
   examples: Example[];
@@ -119,6 +134,7 @@ export function ProjectProvider({ children, initialSource }: { children: ReactNo
   const [errors, setErrors] = useState<Partial<Record<RunKind, ApiError>>>({});
   const [options, setOptions] = useState<RepairOptions>(DEFAULT_OPTIONS);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
+  const [proposal, setProposal] = useState<Proposal | null>(null);
   const [highlight, setHighlight] = useState<Highlight | null>(null);
   const [examples, setExamples] = useState<Example[]>([]);
   const [examplesError, setExamplesError] = useState<ApiError | null>(null);
@@ -131,6 +147,8 @@ export function ProjectProvider({ children, initialSource }: { children: ReactNo
   const ctrls = useRef<Partial<Record<RunKind, AbortController>>>({});
   const sourceRef = useRef(source);
   sourceRef.current = source;
+  const parseRef = useRef(parse);
+  parseRef.current = parse;
   const optionsRef = useRef(options);
   optionsRef.current = options;
 
@@ -180,6 +198,7 @@ export function ProjectProvider({ children, initialSource }: { children: ReactNo
     setOrigin(o);
     setBaseline(s);
     setHistory([]);
+    setProposal(null);
     setLex(null);
     setParse(null);
     setRepair(null);
@@ -231,7 +250,10 @@ export function ProjectProvider({ children, initialSource }: { children: ReactNo
 
   const applyRepair = useCallback(
     (newSource: string, reason: string, opts?: { reanalyze?: boolean }) => {
-      setHistory((h) => [...h, { source: sourceRef.current, origin, reason }]);
+      const before = sourceRef.current;
+      const diagnostics = parseRef.current && parseRef.current.source === before ? parseRef.current.envelope.data.parse.diagnostics : null;
+      setHistory((h) => [...h, { source: before, origin, reason, diagnostics }]);
+      setProposal(null);
       setSourceState(newSource);
       sourceRef.current = newSource; // so an immediate re-analysis runs on the new text
       setOrigin((o) => ({ ...o, kind: "repair", label: o.label.replace(/( \(repaired\))?$/, " (repaired)") }));
@@ -241,15 +263,23 @@ export function ProjectProvider({ children, initialSource }: { children: ReactNo
     [origin, runLex, runParse, runRepair],
   );
 
-  const undo = useCallback(() => {
-    setHistory((h) => {
-      if (!h.length) return h;
+  const historyRef = useRef(history);
+  historyRef.current = history;
+  const undo = useCallback(
+    (opts?: { reanalyze?: boolean }) => {
+      const h = historyRef.current;
+      if (!h.length) return;
       const last = h[h.length - 1];
+      setHistory(h.slice(0, -1));
       setSourceState(last.source);
+      sourceRef.current = last.source;
       setOrigin(last.origin);
-      return h.slice(0, -1);
-    });
-  }, []);
+      setProposal(null);
+      setHighlight(null);
+      if (opts?.reanalyze) void Promise.all([runLex(), runParse(true), runRepair()]);
+    },
+    [runLex, runParse, runRepair],
+  );
 
   const isStale = useCallback((r: { source: string } | null) => !!r && r.source !== source, [source]);
 
@@ -275,6 +305,8 @@ export function ProjectProvider({ children, initialSource }: { children: ReactNo
       applyRepair,
       undo,
       history,
+      proposal,
+      setProposal,
       highlight,
       setHighlight,
       examples,
@@ -286,7 +318,7 @@ export function ProjectProvider({ children, initialSource }: { children: ReactNo
       isStale,
       lastRunAt,
     }),
-    [source, origin, baseline, setSource, loadSource, resetSource, lex, parse, repair, running, errors, runLex, runParse, runRepair, runAll, options, applyRepair, undo, history, highlight, examples, examplesError, health, healthError, capabilities, refreshHealth, isStale, lastRunAt],
+    [source, origin, baseline, setSource, loadSource, resetSource, lex, parse, repair, running, errors, runLex, runParse, runRepair, runAll, options, applyRepair, undo, history, proposal, highlight, examples, examplesError, health, healthError, capabilities, refreshHealth, isStale, lastRunAt],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

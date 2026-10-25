@@ -44,7 +44,7 @@ Paired bootstrap, IntelliFix − least-cost top-1: **+16.3 points**, 95% CI [13.
 parallax/
   compiler/      Flex lexer, Bison grammar, C++ AST + repair engine, parallaxc CLI, C++ tests
   backend/       FastAPI app (app/), API tests (tests/)
-  frontend/      React + TypeScript + Vite workbench; vitest unit tests, Playwright E2E
+  frontend/      React + TypeScript + Vite interface (Workspace, AST Explorer, Research & Method); vitest unit tests, Playwright E2E
   evaluation/    programs/ (30 valid programs), generators/, baselines/ (incl. CPCT+ adapter),
                  metrics/, experiments/, catalog/ (executable error catalog), dataset/, results/
   examples/      12 bundled demo programs + examples.json (descriptions, documented outcomes)
@@ -119,7 +119,7 @@ Instead of MSYS2 you can use **Visual Studio Build Tools** with the **“Desktop
 ### Check that it works
 
 1. The sidebar badge (bottom left) says **Compiler 1.0.0**, not “Compiler missing”.
-2. Code workbench → load the sample **Missing semicolon** → **Analyze**: the explanation says the parser stopped on line 4 and that line 3 is probably missing its `;`, and a repair is recommended.
+2. **Workspace** → load the sample **Missing semicolon** → **Analyze**: step 2 (Diagnosis) says the parser stopped on line 4 and that line 3 is probably missing its `;`; step 3 (Fixes) recommends inserting it.
 3. `http://127.0.0.1:8000/api/health` shows `"available": true`.
 
 ### Troubleshooting
@@ -134,7 +134,7 @@ Instead of MSYS2 you can use **Visual Studio Build Tools** with the **“Desktop
 | port 8000 is busy | Linux: `PORT=8001 ./scripts/run_backend.sh`; Windows: `$env:PORT=8001` before `run_backend.ps1`; open that port |
 | `npm ci` fails | Node.js is older than 18, or a proxy blocks npm (`npm config set proxy …`) |
 
-Development mode with hot reload: `./scripts/run_dev.sh` (API on :8000, Vite on <http://localhost:5173>). The **Guided demo** button in the sidebar walks through the main features with live compiler runs.
+Development mode with hot reload: `./scripts/run_dev.sh` (API on :8000, Vite on <http://localhost:5173>). The interface has three destinations: **Workspace** (write → analyze → diagnosis → fixes → tree → apply & verify), **AST Explorer** and **Research & Method**; see [`docs/IntelliFix_UX_v2.md`](docs/IntelliFix_UX_v2.md).
 
 ### Use the compiler directly
 
@@ -152,7 +152,7 @@ Development mode with hot reload: `./scripts/run_dev.sh` (API on :8000, Vite on 
 PARALLAX_E2E=1 ./scripts/test_all.sh        # also Playwright E2E (backend must run on :8000)
 ```
 
-Layers (final run, see [`docs/TESTING.md`](docs/TESTING.md)): 68 C++ tests, 33 API tests, 161 evaluation tests (including 61 error-catalog and 88 professor-style cases, seeded fuzzing and HTTP sequences), 132 frontend unit tests (including explanations for all 88 professor-style inputs, from real compiler responses) and 17 real-browser end-to-end checks, all passing.
+Layers (final run, see [`docs/TESTING.md`](docs/TESTING.md)): 68 C++ tests, 33 API tests, 161 evaluation tests (including 61 error-catalog and 88 professor-style cases, seeded fuzzing and HTTP sequences), 219 frontend unit tests (the Workspace journey for every input category, the AST model, explanations for all 88 professor-style inputs, all from real compiler responses) and 15 real-browser end-to-end journeys, all passing.
 
 ## Reproduce the evaluation
 
@@ -191,6 +191,7 @@ CPCT+ runs only if `nimbleparse` is installed (`cargo install nimbleparse`); oth
 
 | Document | Use it for |
 |---|---|
+| [Interface v2: the repair journey](docs/IntelliFix_UX_v2.md) | three destinations, the five Workspace steps, features A–F status, every input category, old → new page mapping, tested professor demo |
 | [Interactive and explanation features](docs/IntelliFix_Interactive_Features.md) | explanations for every input, ambiguity questions, hints, explained AST, before/after; clarification bound and proposed user study |
 | [Capability matrix](docs/IntelliFix_Capability_Matrix.md) | what is implemented, partial, blocked or untested, with evidence |
 | [Random-input test report](docs/IntelliFix_Random_Input_Test_Report.md) (generated) | 88 professor-style cases, 800 fuzz inputs, 7 HTTP sequences |

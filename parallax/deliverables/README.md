@@ -31,3 +31,13 @@ node deliverables/build/build_documents.js       # → the three .docx files
 ```
 
 The builders stop with an error if the text they contain no longer matches the data (for example, if a re-run changed a headline number). `test_counts.json` and `measured_ranges.json` record values that come from runs rather than from stored files; their `_source` fields say which.
+
+## Interface v2 (25 Oct 2026)
+
+`IntelliFix_Final_Presentation.pptx` and `IntelliFix_Final_Presentation_Script.docx` were rebuilt for the simplified interface (Workspace, AST Explorer, Research & Method):
+
+- screenshots `docs/images/walkthrough/v2-el-*.png`
+- demo steps and the demo checklist
+- test counts from `build/test_counts_final.json` (496 tests)
+
+The earlier deliverables (first presentation, report, paper) are unchanged. Where they name pages of the earlier ten-page interface, see `docs/IntelliFix_UX_v2.md` §4 for the mapping.

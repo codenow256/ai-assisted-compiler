@@ -292,6 +292,10 @@ def test_evaluation_results_are_stored_real_output(client):
     assert s["n_cases"] == len((PARALLAX_ROOT / "evaluation" / "dataset" / "cases.jsonl").read_text().splitlines())
     assert body["provenance"]["kind"].startswith("stored")
     assert s["tau_selection"]["selected_on"] == "dev"
+    stored = PARALLAX_ROOT / "evaluation" / "results" / "clarification_bound.json"
+    if stored.is_file():  # the Research page reads the simulation from here, labelled as a simulation
+        assert body["clarification"] == json.loads(stored.read_text())
+        assert body["clarification"]["test"]["oracle_user"]["n"] == body["clarification"]["test"]["abstained_cases"]
 
 
 def test_evaluation_case_lookup(client):

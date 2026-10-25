@@ -172,7 +172,7 @@ async function build() {
     text(sl, "An Intelligent Compiler for Syntax Error Analysis, Detection, and Correction", { x: 0.6, y: 2.05, w: 4.9, h: 0.75, fontFace: "Cambria", fontSize: 18, color: MINT });
     text(sl, TEAM.map((t, i) => ({ text: `${t.name}  ·  ${t.reg}`, options: { breakLine: i < TEAM.length - 1 } })), { x: 0.6, y: 3.05, w: 4.9, h: 0.95, fontSize: 14, color: C.background1, paraSpaceAfter: 4 });
     text(sl, "BCSE307P course project  ·  Guide: [guide name, to be added]", { x: 0.6, y: 4.55, w: 4.9, h: 0.3, fontSize: 11, color: "CBD5E1" });
-    picture(sl, await shot("05-workbench-full-analysis", [375, 150, 2140, 1350], 1500), 5.9, 1.05, 3.6, "Workbench screenshot (actual output)");
+    picture(sl, await shot("v2-el-ambiguity-question", null, 1500), 5.9, 1.05, 3.6, "Workspace screenshot (actual output)");
     notes(sl, s);
   }
 
@@ -248,15 +248,15 @@ async function build() {
   // 6 Ambiguity resolution
   {
     const sl = content(S_[6]);
-    const img = await shot("21-ambiguity-validated", [1290, 470, 2150, 1340], 1200);
+    const img = await shot("v2-el-ambiguity-validated", null, 1200);
     const d = picture(sl, img, 0.5, 1.15, 3.6, "Clarification card (actual output)", 3.75);
     caption(sl, "Actual output: int total = price + ;", 0.5, 1.2 + d.h + 0.02, 3.4);
     numbered(sl, [
       "The engine finds several fixes with similar evidence (margin 0.50 < τ 1.5), so it does not guess.",
-      "It asks: delete +, replace + with ;, or type the missing expression — options are the real top plans.",
+      "It explains what is ambiguous and asks: is the + extra, or is something missing? Options are the real top plans, a fill-in, or your own line.",
       "It suggests price (declared earlier), not total (still being declared).",
       "Check with the parser: the real parser validates the answer before it can be applied.",
-      "Apply re-analyzes the program; Undo restores the original; you can also leave it unresolved.",
+      "Then: inspect the tree (step 4), apply and verify by a real re-parse (step 5); Undo restores the original; you can also leave it unresolved.",
     ], 4.4, 1.2, 5.1, 13.5, 8);
   }
 
@@ -276,35 +276,35 @@ async function build() {
     text(sl, "margin", { x: 7.2, y: 1.35, w: 2.1, h: 0.3, fontSize: 13, color: C.accent6 });
     text(sl, REP.decision.margin.toFixed(2), { x: 7.2, y: 1.65, w: 2.1, h: 0.75, fontFace: "Cambria", fontSize: 40, bold: true, color: C.accent2 });
     text(sl, `≥ τ = ${S.tau_selection.tau} (chosen on dev)\n→ Recommended`, { x: 7.2, y: 2.45, w: 2.1, h: 0.7, fontSize: 13 });
-    text(sl, "The workbench lists every structurally different repair with its edits, cost and parser validity, and a “Use this” button. The score ranks; it is not a probability.", { x: 7.2, y: 3.2, w: 2.15, h: 1.5, fontSize: 11, color: C.text2 });
+    text(sl, "Step 3 (Fixes) shows every structurally different repair with its line change, cost, score and parser validity, and “Choose this fix”. The score ranks; it is not a probability.", { x: 7.2, y: 3.2, w: 2.15, h: 1.5, fontSize: 11, color: C.text2 });
   }
 
   // 8 AST explorer
   {
     const sl = content(S_[8]);
-    const img = await shot("25-ast-explained-node", [375, 150, 2140, 1350], 1500);
-    const d = picture(sl, img, 0.5, 1.15, 5.6, "AST explorer with an explained node (actual output)", 3.75);
-    caption(sl, "Actual output: the Binary * node of n * fact(n - 1)", 0.5, 1.2 + d.h + 0.02, 5.6);
+    const img = await shot("v2-el-ast-grid", null, 1500);
+    const d = picture(sl, img, 0.5, 1.15, 5.6, "AST Explorer with an explained node (actual output)", 3.75);
+    caption(sl, "Actual output: the Binary + node of total + square(i) * 2", 0.5, 1.2 + d.h + 0.02, 5.6);
     text(sl, "For every selected node", { x: 6.45, y: 1.15, w: 3.05, h: 0.35, fontSize: 15, bold: true });
-    numbered(sl, ["What it represents", "What it means in plain English", "Its role in the parent node", "What each child is", "The exact source code (highlighted)", "What changed after a repair"], 6.45, 1.55, 3.05, 13, 5);
-    text(sl, "Plus: search, expand/collapse all, JSON and text views. Explanations exist for all 26 node kinds.", { x: 6.45, y: 4.0, w: 3.05, h: 0.8, fontSize: 11, color: C.text2 });
+    numbered(sl, ["Its meaning and category", "Its role in the parent and each child", "The source it covers (click code ↔ node)", "The tokens it absorbs (;  (  )  op)", "The grammar rule that built it", "An expression diagram with precedence"], 6.45, 1.55, 3.05, 13, 5);
+    text(sl, "Plus: search, expand/collapse, before & after, JSON. Grammar rules come from minic.y for all 26 node kinds.", { x: 6.45, y: 4.0, w: 3.05, h: 0.8, fontSize: 11, color: C.text2 });
   }
 
   // 9 Before and after
   {
     const sl = content(S_[9]);
-    const a = await shot("26-ast-partial-tree", [1290, 280, 2150, 1160], 1000);
-    const b = await shot("27-ast-before-after", [1290, 280, 2140, 1350], 1000);
+    const a = await shot("v2-el-ast-partial", null, 1000);
+    const b = await shot("v2-el-ast-before-after", null, 1000);
     const da = picture(sl, a, 0.5, 1.15, 4.3, "Partial tree for invalid code (actual output)", 3.5);
     const db = picture(sl, b, 5.2, 1.15, 4.3, "Before and after comparison (actual output)", 3.5);
     caption(sl, "Invalid code: a labelled partial tree with Error nodes, never a fake AST", 0.5, 1.2 + da.h + 0.02, 4.4);
-    caption(sl, "Plan 1 (+) vs plan 2 (−): exactly one changed node, from the compiler's diff", 5.2, 1.2 + db.h + 0.02, 4.4);
+    caption(sl, "Option 1 (+) vs option 2 (−): exactly one changed node, from the compiler's diff", 5.2, 1.2 + db.h + 0.02, 4.4);
   }
 
   // 10 Explanations and guided repair
   {
     const sl = content(S_[10]);
-    const img = await shot("23-hints-practice", [1290, 240, 2150, 1000], 1200);
+    const img = await shot("v2-el-hints-practice", null, 1200);
     const d = picture(sl, img, 0.5, 1.15, 3.4, "Hints and a checked student fix (actual output)", 3.75);
     caption(sl, "Actual output: the student's own fix, checked", 0.5, 1.2 + d.h + 0.02, 3.5);
     const steps = [["1", "Where", "the line and token where the parser stopped"], ["2", "What is expected", "the expected tokens, in words"], ["3", "Options", "the fixes the engine verified"], ["✓", "Check my fix", "the real compiler checks the student's edit"]];
@@ -379,8 +379,8 @@ async function build() {
   // 14 Live demo
   {
     const sl = content(S_[14]);
-    picture(sl, await shot("20-ambiguity-question", [375, 150, 2140, 1350], 1500), 0.5, 1.15, 5.4, "Workbench during the demo (actual output)", 3.6);
-    numbered(sl, ["Missing semicolon → Analyze: explanation and recommended fix", "int total = price + ; → answer the question", "AST explorer: click a node, search", "Ambiguous operator → Before & after", "Hints and Check my fix", "Your own input"], 6.25, 1.2, 3.25, 13, 7);
+    picture(sl, await shot("v2-el-tree-step", null, 1500), 0.5, 1.15, 5.4, "Workspace step 4 during the demo (actual output)", 3.6);
+    numbered(sl, ["Missing semicolon: Analyze → Diagnosis → Fixes → Apply & verify", "int total = price + ; → answer the question in step 3", "Step 4: partial tree → complete tree", "AST Explorer: click a node or the code", "Hints and Check my fix", "Your own input"], 6.25, 1.2, 3.25, 13, 7);
     text(sl, "Check first: the badge says “Compiler 1.0.0”. Never show screenshots as live output.", { x: 6.25, y: 4.3, w: 3.25, h: 0.6, fontSize: 11, color: C.accent4 });
   }
 

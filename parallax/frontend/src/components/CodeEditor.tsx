@@ -120,13 +120,17 @@ interface Props {
   maxHeight?: number;
   ariaLabel?: string;
   extraKeys?: Extension;
+  /** called with the UTF-8 byte offset of the cursor when the user clicks or moves it */
+  onCursor?: (byteOffset: number) => void;
 }
 
-export function CodeEditor({ value, onChange, readOnly, highlights, minHeight = 260, maxHeight = 640, ariaLabel = "MiniC source editor", extraKeys }: Props) {
+export function CodeEditor({ value, onChange, readOnly, highlights, minHeight = 260, maxHeight = 640, ariaLabel = "MiniC source editor", extraKeys, onCursor }: Props) {
   const host = useRef<HTMLDivElement>(null);
   const view = useRef<EditorView | null>(null);
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
+  const onCursorRef = useRef(onCursor);
+  onCursorRef.current = onCursor;
 
   useEffect(() => {
     if (!host.current) return;
@@ -154,6 +158,10 @@ export function CodeEditor({ value, onChange, readOnly, highlights, minHeight = 
           keymap.of([...defaultKeymap, ...historyKeymap, indentWithTab]),
           EditorView.updateListener.of((u) => {
             if (u.docChanged) onChangeRef.current?.(u.state.doc.toString());
+            if (u.selectionSet && !u.docChanged && onCursorRef.current && u.transactions.some((t) => t.isUserEvent("select"))) {
+              const head = u.state.selection.main.head;
+              onCursorRef.current(new TextEncoder().encode(u.state.doc.sliceString(0, head)).length);
+            }
           }),
         ],
       }),

@@ -11,23 +11,18 @@ import { formatPos } from "../../lib/positions";
 import { STATUS } from "../../lib/status";
 import { ApiError, api } from "../../services/api";
 import type { Candidate, CompareResult, Evidence, RepairDoc } from "../../types/api";
-import { useDemoFocus } from "../demo/DemoContext";
 
 type Tab = "candidates" | "classes" | "rejected" | "compare";
 
 export function RepairPage() {
   const p = useProject();
   const doc = p.repair?.envelope.data;
-  const focus = useDemoFocus("repair");
   const [tab, setTab] = useState<Tab>("candidates");
   const [selId, setSelId] = useState<number | null>(null);
   const [compare, setCompare] = useState<number[]>([]);
   const [dismissed, setDismissed] = useState<Set<number>>(new Set());
   const [showOptions, setShowOptions] = useState(false);
 
-  useEffect(() => {
-    if (focus) setTab(focus as Tab);
-  }, [focus]);
   useEffect(() => {
     setSelId(doc?.repair.candidates[0]?.id ?? null);
     setCompare(doc?.repair.candidates.slice(0, 2).map((c) => c.id) ?? []);
@@ -48,7 +43,7 @@ export function RepairPage() {
           <button className="btn" onClick={() => setShowOptions((s) => !s)} aria-expanded={showOptions}>
             <Settings2 size={14} aria-hidden /> Options
           </button>
-          <button className="btn" onClick={p.undo} disabled={!p.history.length}>
+          <button className="btn" onClick={() => p.undo({ reanalyze: true })} disabled={!p.history.length}>
             <Undo2 size={14} aria-hidden /> Undo
           </button>
           <button className="btn primary" onClick={p.runRepair} disabled={p.running.repair}>
@@ -270,7 +265,7 @@ function CandidateDetail({ c, doc, original, dismissed, onDismiss }: { c: Candid
           className="btn sm"
           onClick={() => {
             p.applyRepair(c.source, `edit from candidate: ${c.summary}`);
-            nav("/workbench");
+            nav("/");
           }}
           disabled={p.isStale(p.repair)}
         >
