@@ -28,9 +28,58 @@ cd parallax && ./scripts/setup.sh
 
 Not tested by the authors (see TESTING.md); the code uses only portable C++17 and POSIX.
 
-## 3. Windows
+## 3. Windows (native)
 
-Use **WSL2 with Ubuntu** and follow the Linux steps. A native MSVC build has not been attempted: the Flex output uses `unistd.h` unless `%option nounistd` is added.
+### Why the UI says “Compiler not built”
+
+The web UI and FastAPI backend are Python and JavaScript, so they run on Windows without a C++ compiler. The **native compiler** `parallaxc.exe` (Flex lexer + Bison parser + C++ repair engine) does not exist until CMake builds it. Every lexer, parser and repair button calls that executable. Until it exists, the API correctly answers HTTP 503 `COMPILER_UNAVAILABLE`, and the UI shows “Compiler not built” instead of fake output.
+
+Your earlier attempt failed because CMake was installed but **no C++ compiler was visible**. `cl.exe` (MSVC) is only on `PATH` inside a *Developer* prompt, and only if the **“Desktop development with C++”** workload is installed. Visual Studio Build Tools without that workload has no `cl.exe` at all, which matches the missing `VC\Tools\MSVC\…` directory you saw.
+
+Check what is installed: `powershell -ExecutionPolicy Bypass -File scripts\windows\check_environment.ps1`.
+
+### Option A — MSYS2 / MinGW-w64 (recommended: free, small, no Visual Studio)
+
+1. Install MSYS2 from <https://www.msys2.org> (default folder `C:\msys64`).
+2. Open **“MSYS2 UCRT64”** and run:
+   `pacman -S --needed mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-ninja bison flex`
+3. Add `C:\msys64\ucrt64\bin` and `C:\msys64\usr\bin` to your user `PATH`, then open a new PowerShell.
+4. From the `parallax` folder: `powershell -ExecutionPolicy Bypass -File scripts\windows\build.ps1`.
+   This configures with Ninja and builds `compiler\build\parallaxc.exe`. The MinGW runtime is linked statically (see `compiler/CMakeLists.txt`), so the backend can launch it from any shell.
+
+### Option B — Visual Studio Build Tools (MSVC)
+
+1. In the **Visual Studio Installer**, modify *Build Tools* and tick **“Desktop development with C++”** (it includes MSVC, the Windows SDK and “C++ CMake tools”).
+2. Install Bison/Flex for Windows: `winget install WinFlexBison.win_flexbison` (provides `win_bison` and `win_flex`; CMake's FindBISON/FindFLEX look for these names).
+3. Open **“x64 Native Tools Command Prompt for VS”**. This is what puts `cl.exe` on `PATH`; check with `where cl`.
+4. From `parallax`: `powershell -ExecutionPolicy Bypass -File scripts\windows\build.ps1`
+   (or manually: `cmake -S compiler -B compiler\build` then `cmake --build compiler\build --config Release`). The binary lands in `compiler\build\Release\parallaxc.exe`, which the backend finds automatically.
+
+### Option C — WSL2
+
+Install Ubuntu under WSL2 and follow the Linux instructions inside it.
+
+### After building
+
+```powershell
+python -m pip install -r backend\requirements.txt
+cd frontend; npm ci; npm run build; cd ..
+powershell -File scripts\windows\run_backend.ps1      # http://127.0.0.1:8000
+```
+
+The sidebar badge should change from “Compiler missing” to “Compiler 1.0.0”. Check with `curl http://127.0.0.1:8000/api/health`: `"compiler":{"available":true,...}`.
+
+### What has been verified for Windows (and what has not)
+
+| Check | Result |
+|---|---|
+| Cross-compiling with MinGW-w64 (`compiler/cmake/mingw-w64-x86_64.cmake`) | **passed**: `parallaxc.exe` and `parallax_tests.exe` build with no warnings; they import only `KERNEL32.dll` and `msvcrt.dll` |
+| Running the Windows binaries under **Wine 9.0** | **passed**: 66/66 C++ tests; 61/61 error-catalog cases with output identical to the Linux build; CRLF input keeps exact byte offsets |
+| Building with MSVC (`cl.exe`) | **not executed**: no MSVC in the test environment. The code avoids POSIX-only headers (`%option nounistd`, `<filesystem>` instead of `dirent.h`), and CMake adds `/utf-8 /EHsc` for MSVC |
+| Running on a real Windows machine | **not executed** by us. Please run `scripts\windows\test_all.ps1` after building |
+| PowerShell scripts | written; **not executed** (no PowerShell in the test environment) |
+
+Windows-specific code changes: the compiler switches stdin/stdout to binary mode (`_setmode`), so CRLF bytes are not translated and byte offsets stay exact. The backend finds `parallaxc.exe` in `build\` or `build\Release\` (`app/config.py::locate_compiler`) and runs it with `subprocess.run` in a worker thread, which works on every Windows event loop.
 
 ## 4. Optional: CPCT+ baseline
 

@@ -30,7 +30,7 @@ export function AstPage() {
       <div className="page-head">
         <div>
           <h1>AST explorer</h1>
-          <p>The abstract syntax tree keeps program structure and drops syntax that carries no meaning (parentheses, semicolons, braces). Parallax groups repairs by this structure, so two repairs that differ only in such tokens count as one hypothesis.</p>
+          <p>The abstract syntax tree keeps program structure and drops syntax that carries no meaning (parentheses, semicolons, braces). IntelliFix groups repairs by this structure, so two repairs that differ only in such tokens count as one hypothesis.</p>
         </div>
         <button className="btn primary" onClick={() => p.runParse(true)} disabled={p.running.parse}>
           <ListTree size={14} aria-hidden /> {p.running.parse ? "Parsing…" : "Build AST"}

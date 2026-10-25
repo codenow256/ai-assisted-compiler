@@ -65,7 +65,7 @@ const highlight = HighlightStyle.define([
 
 const theme = EditorView.theme({
   "&": { backgroundColor: "var(--surface)", color: "var(--text)" },
-  ".cm-content": { fontFamily: "var(--font-mono)", caretColor: "var(--accent)", padding: "8px 0" },
+  ".cm-content": { fontFamily: "var(--font-mono)", caretColor: "var(--accent)", padding: "8px 0", fontVariantLigatures: "none" },
   ".cm-gutters": { backgroundColor: "var(--surface-2)", color: "var(--text-faint)", border: "none", borderRight: "1px solid var(--border)" },
   ".cm-activeLine": { backgroundColor: "color-mix(in srgb, var(--accent) 5%, transparent)" },
   ".cm-activeLineGutter": { backgroundColor: "transparent", color: "var(--text)" },

@@ -1,6 +1,5 @@
-#include <dirent.h>
-
 #include <algorithm>
+#include <filesystem>
 #include <fstream>
 #include <iterator>
 #include <string>
@@ -32,13 +31,9 @@ std::string canon_expr(const std::string& expr) {
 
 std::vector<std::string> list_dir(const std::string& dir) {
   std::vector<std::string> out;
-  DIR* d = opendir(dir.c_str());
-  if (!d) return out;
-  while (dirent* e = readdir(d)) {
-    std::string n = e->d_name;
-    if (n.size() > 3 && n.substr(n.size() - 3) == ".mc") out.push_back(dir + "/" + n);
-  }
-  closedir(d);
+  std::error_code ec;
+  for (const auto& e : std::filesystem::directory_iterator(dir, ec))
+    if (e.path().extension() == ".mc") out.push_back(e.path().string());
   std::sort(out.begin(), out.end());
   return out;
 }

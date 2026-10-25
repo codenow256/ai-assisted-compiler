@@ -1,6 +1,6 @@
 # Error catalog
 
-This catalog lists realistic error situations, the behaviour Parallax should show, and where that behaviour is tested. It has two kinds of entries:
+This catalog lists realistic error situations, the behaviour IntelliFix should show, and where that behaviour is tested. It has two kinds of entries:
 
 1. **Language-level cases** (lexical, syntax, repair). They are *executable*: `evaluation/catalog/catalog.py` runs every case through `parallaxc`, pytest asserts the expectation (`evaluation/tests/test_catalog.py::test_catalog_case[<ID>]`), and the **observed** behaviour is generated into [ERROR_CATALOG_RESULTS.md](ERROR_CATALOG_RESULTS.md). At the last run, **61 of 61** cases behaved as expected.
 2. **System-level cases** (missing tools, timeouts, concurrency …), tested by the backend, frontend and E2E suites listed below.

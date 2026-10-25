@@ -1,0 +1,1931 @@
+{
+ "seed": 20261025,
+ "hand_cases": [
+  {
+   "id": "P01",
+   "title": "valid: max of three",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 42,
+    "parse_ok": true,
+    "first_error": null,
+    "first_message": null,
+    "resource_limit": false,
+    "status": "NO_REPAIR_NEEDED",
+    "margin": null,
+    "plan": null,
+    "plan_summary": null,
+    "candidates": 0,
+    "accepted": 0,
+    "wall_ms": 4.5278690004124655
+   },
+   "problems": []
+  },
+  {
+   "id": "P02",
+   "title": "valid: sum of an array with for-loop",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 48,
+    "parse_ok": true,
+    "first_error": null,
+    "first_message": null,
+    "resource_limit": false,
+    "status": "NO_REPAIR_NEEDED",
+    "margin": null,
+    "plan": null,
+    "plan_summary": null,
+    "candidates": 0,
+    "accepted": 0,
+    "wall_ms": 4.129872000248724
+   },
+   "problems": []
+  },
+  {
+   "id": "P03",
+   "title": "valid: void function and calls",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 38,
+    "parse_ok": true,
+    "first_error": null,
+    "first_message": null,
+    "resource_limit": false,
+    "status": "NO_REPAIR_NEEDED",
+    "margin": null,
+    "plan": null,
+    "plan_summary": null,
+    "candidates": 0,
+    "accepted": 0,
+    "wall_ms": 5.481412000335695
+   },
+   "problems": []
+  },
+  {
+   "id": "P04",
+   "title": "valid: float, char and bool",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 39,
+    "parse_ok": true,
+    "first_error": null,
+    "first_message": null,
+    "resource_limit": false,
+    "status": "NO_REPAIR_NEEDED",
+    "margin": null,
+    "plan": null,
+    "plan_summary": null,
+    "candidates": 0,
+    "accepted": 0,
+    "wall_ms": 4.417519000071479
+   },
+   "problems": []
+  },
+  {
+   "id": "P05",
+   "title": "standalone assignment (no function)",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 4,
+    "parse_ok": false,
+    "first_error": "1:1",
+    "first_message": "unexpected identifier 'x'",
+    "resource_limit": false,
+    "status": "MULTIPLE_PLAUSIBLE",
+    "margin": 0,
+    "plan": "int x = 5;\n",
+    "plan_summary": "insert 'int' at 1:1",
+    "candidates": 11,
+    "accepted": 4,
+    "wall_ms": 4.6856899998601875
+   },
+   "problems": []
+  },
+  {
+   "id": "P06",
+   "title": "standalone expression",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 6,
+    "parse_ok": false,
+    "first_error": "1:1",
+    "first_message": "unexpected literal '1'",
+    "resource_limit": false,
+    "status": "NO_SAFE_REPAIR",
+    "margin": null,
+    "plan": null,
+    "plan_summary": null,
+    "candidates": 92,
+    "accepted": 0,
+    "wall_ms": 4.682270999637694
+   },
+   "problems": []
+  },
+  {
+   "id": "P07",
+   "title": "standalone declaration (valid)",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 5,
+    "parse_ok": true,
+    "first_error": null,
+    "first_message": null,
+    "resource_limit": false,
+    "status": "NO_REPAIR_NEEDED",
+    "margin": null,
+    "plan": null,
+    "plan_summary": null,
+    "candidates": 0,
+    "accepted": 0,
+    "wall_ms": 3.8649560001431382
+   },
+   "problems": []
+  },
+  {
+   "id": "P08",
+   "title": "statement without semicolon at top level",
+   "observed": {
+    "lex_errors": [
+     "string literals are not part of MiniC"
+    ],
+    "tokens": 4,
+    "parse_ok": false,
+    "first_error": "1:1",
+    "first_message": "unexpected identifier 'printf'",
+    "resource_limit": false,
+    "status": "NO_SAFE_REPAIR",
+    "margin": null,
+    "plan": null,
+    "plan_summary": null,
+    "candidates": 128,
+    "accepted": 0,
+    "wall_ms": 4.791549999936251
+   },
+   "problems": []
+  },
+  {
+   "id": "P09",
+   "title": "multiple declarators",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 32,
+    "parse_ok": true,
+    "first_error": null,
+    "first_message": null,
+    "resource_limit": false,
+    "status": "NO_REPAIR_NEEDED",
+    "margin": null,
+    "plan": null,
+    "plan_summary": null,
+    "candidates": 0,
+    "accepted": 0,
+    "wall_ms": 4.660340000100405
+   },
+   "problems": []
+  },
+  {
+   "id": "P10",
+   "title": "chained assignment (not MiniC)",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 21,
+    "parse_ok": false,
+    "first_error": "4:9",
+    "first_message": "unexpected operator '='",
+    "resource_limit": false,
+    "status": "MULTIPLE_PLAUSIBLE",
+    "margin": 0,
+    "plan": "int main() {\n  int a;\n  int b;\n  a = b + 3;\n  return a;\n}\n",
+    "plan_summary": "replace '=' with '+' at 4:9",
+    "candidates": 131,
+    "accepted": 15,
+    "wall_ms": 8.195311999770638
+   },
+   "problems": []
+  },
+  {
+   "id": "P11",
+   "title": "assign to an expression",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 20,
+    "parse_ok": false,
+    "first_error": "3:9",
+    "first_message": "unexpected operator '='",
+    "resource_limit": false,
+    "status": "MULTIPLE_PLAUSIBLE",
+    "margin": 0,
+    "plan": "int main() {\n  int a = 1;\n  a + 1 + 2;\n  return a;\n}\n",
+    "plan_summary": "replace '=' with '+' at 3:9",
+    "candidates": 126,
+    "accepted": 14,
+    "wall_ms": 12.25356799977817
+   },
+   "problems": []
+  },
+  {
+   "id": "P12",
+   "title": "arithmetic and logic",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 45,
+    "parse_ok": true,
+    "first_error": null,
+    "first_message": null,
+    "resource_limit": false,
+    "status": "NO_REPAIR_NEEDED",
+    "margin": null,
+    "plan": null,
+    "plan_summary": null,
+    "candidates": 0,
+    "accepted": 0,
+    "wall_ms": 5.3493200002776575
+   },
+   "problems": []
+  },
+  {
+   "id": "P13",
+   "title": "precedence: * binds tighter than +",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 18,
+    "parse_ok": true,
+    "first_error": null,
+    "first_message": null,
+    "resource_limit": false,
+    "status": "NO_REPAIR_NEEDED",
+    "margin": null,
+    "plan": null,
+    "plan_summary": null,
+    "candidates": 0,
+    "accepted": 0,
+    "wall_ms": 5.395156999838946
+   },
+   "problems": []
+  },
+  {
+   "id": "P14",
+   "title": "deeply parenthesised expression",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 40,
+    "parse_ok": true,
+    "first_error": null,
+    "first_message": null,
+    "resource_limit": false,
+    "status": "NO_REPAIR_NEEDED",
+    "margin": null,
+    "plan": null,
+    "plan_summary": null,
+    "candidates": 0,
+    "accepted": 0,
+    "wall_ms": 4.594132000420359
+   },
+   "problems": []
+  },
+  {
+   "id": "P15",
+   "title": "if / else if / else chain",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 40,
+    "parse_ok": true,
+    "first_error": null,
+    "first_message": null,
+    "resource_limit": false,
+    "status": "NO_REPAIR_NEEDED",
+    "margin": null,
+    "plan": null,
+    "plan_summary": null,
+    "candidates": 0,
+    "accepted": 0,
+    "wall_ms": 5.417747999672429
+   },
+   "problems": []
+  },
+  {
+   "id": "P16",
+   "title": "dangling else",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 35,
+    "parse_ok": true,
+    "first_error": null,
+    "first_message": null,
+    "resource_limit": false,
+    "status": "NO_REPAIR_NEEDED",
+    "margin": null,
+    "plan": null,
+    "plan_summary": null,
+    "candidates": 0,
+    "accepted": 0,
+    "wall_ms": 4.949632999796449
+   },
+   "problems": []
+  },
+  {
+   "id": "P17",
+   "title": "while, for, break, continue",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 43,
+    "parse_ok": true,
+    "first_error": null,
+    "first_message": null,
+    "resource_limit": false,
+    "status": "NO_REPAIR_NEEDED",
+    "margin": null,
+    "plan": null,
+    "plan_summary": null,
+    "candidates": 0,
+    "accepted": 0,
+    "wall_ms": 4.744715000015276
+   },
+   "problems": []
+  },
+  {
+   "id": "P18",
+   "title": "do-while loop (unsupported)",
+   "observed": {
+    "lex_errors": [
+     "'do' is a C keyword that MiniC does not support"
+    ],
+    "tokens": 30,
+    "parse_ok": false,
+    "first_error": "3:3",
+    "first_message": "unsupported construct: 'do' is a C keyword that MiniC does not support",
+    "resource_limit": false,
+    "status": "UNSUPPORTED_CONSTRUCT",
+    "margin": null,
+    "plan": "int main() {\n  int i = 0;\n  { i = i + 1; } while (i < 3);\n  return i;\n}\n",
+    "plan_summary": "delete 'do' at 3:3",
+    "candidates": 102,
+    "accepted": 3,
+    "wall_ms": 11.295427999812091
+   },
+   "problems": []
+  },
+  {
+   "id": "P19",
+   "title": "recursive function",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 27,
+    "parse_ok": true,
+    "first_error": null,
+    "first_message": null,
+    "resource_limit": false,
+    "status": "NO_REPAIR_NEEDED",
+    "margin": null,
+    "plan": null,
+    "plan_summary": null,
+    "candidates": 0,
+    "accepted": 0,
+    "wall_ms": 5.153482999958214
+   },
+   "problems": []
+  },
+  {
+   "id": "P20",
+   "title": "function prototype (unsupported)",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 18,
+    "parse_ok": false,
+    "first_error": "1:13",
+    "first_message": "unexpected punctuation ';'; expected '{'",
+    "resource_limit": false,
+    "status": "MULTIPLE_PLAUSIBLE",
+    "margin": 0.7,
+    "plan": "int f(int a) {; }\nint f(int a) { return a; }\n",
+    "plan_summary": "insert '{' at 1:13 + insert '}' at 1:14",
+    "candidates": 23,
+    "accepted": 1,
+    "wall_ms": 6.455156999891187
+   },
+   "problems": []
+  },
+  {
+   "id": "P21",
+   "title": "call with wrong number of arguments",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 28,
+    "parse_ok": true,
+    "first_error": null,
+    "first_message": null,
+    "resource_limit": false,
+    "status": "NO_REPAIR_NEEDED",
+    "margin": null,
+    "plan": null,
+    "plan_summary": null,
+    "candidates": 0,
+    "accepted": 0,
+    "wall_ms": 3.6049269997420197
+   },
+   "problems": []
+  },
+  {
+   "id": "P22",
+   "title": "missing semicolon after declaration",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 19,
+    "parse_ok": false,
+    "first_error": "3:3",
+    "first_message": "unexpected identifier 'count'",
+    "resource_limit": false,
+    "status": "RECOMMENDED",
+    "margin": 1.5,
+    "plan": "int main() {\n  int count = 10;\n  count = count - 1;\n  return count;\n}\n",
+    "plan_summary": "insert ';' at 2:17",
+    "candidates": 60,
+    "accepted": 2,
+    "wall_ms": 7.934522000141442
+   },
+   "problems": []
+  },
+  {
+   "id": "P23",
+   "title": "missing semicolon after return",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 8,
+    "parse_ok": false,
+    "first_error": "4:1",
+    "first_message": "unexpected punctuation '}'",
+    "resource_limit": false,
+    "status": "RECOMMENDED",
+    "margin": 2.2,
+    "plan": "int main() {\n  return 0;\n\n}\n",
+    "plan_summary": "insert ';' at 2:11",
+    "candidates": 95,
+    "accepted": 2,
+    "wall_ms": 5.588272999830224
+   },
+   "problems": []
+  },
+  {
+   "id": "P24",
+   "title": "missing semicolon after a call",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 21,
+    "parse_ok": false,
+    "first_error": "4:3",
+    "first_message": "unexpected keyword 'return'",
+    "resource_limit": false,
+    "status": "RECOMMENDED",
+    "margin": 2,
+    "plan": "void f(int x) { }\nint main() {\n  f(1);\n  return 0;\n}\n",
+    "plan_summary": "insert ';' at 3:7",
+    "candidates": 114,
+    "accepted": 15,
+    "wall_ms": 10.738032000062958
+   },
+   "problems": []
+  },
+  {
+   "id": "P25",
+   "title": "extra semicolon inside a block is legal",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 15,
+    "parse_ok": true,
+    "first_error": null,
+    "first_message": null,
+    "resource_limit": false,
+    "status": "NO_REPAIR_NEEDED",
+    "margin": null,
+    "plan": null,
+    "plan_summary": null,
+    "candidates": 0,
+    "accepted": 0,
+    "wall_ms": 4.26079299995763
+   },
+   "problems": []
+  },
+  {
+   "id": "P26",
+   "title": "semicolon after a function body",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 10,
+    "parse_ok": false,
+    "first_error": "3:2",
+    "first_message": "unexpected punctuation ';'",
+    "resource_limit": false,
+    "status": "RECOMMENDED",
+    "margin": null,
+    "plan": "int main() {\n  return 0;\n}\n",
+    "plan_summary": "delete ';' at 3:2",
+    "candidates": 104,
+    "accepted": 1,
+    "wall_ms": 7.328477999635652
+   },
+   "problems": []
+  },
+  {
+   "id": "P27",
+   "title": "semicolon inside if condition",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 25,
+    "parse_ok": false,
+    "first_error": "3:12",
+    "first_message": "unexpected punctuation ';'",
+    "resource_limit": false,
+    "status": "RECOMMENDED",
+    "margin": null,
+    "plan": "int main() {\n  int x = 1;\n  if (x > 0) x = 2;\n  return x;\n}\n",
+    "plan_summary": "delete ';' at 3:12",
+    "candidates": 99,
+    "accepted": 1,
+    "wall_ms": 7.9653369998595736
+   },
+   "problems": []
+  },
+  {
+   "id": "P28",
+   "title": "missing closing parenthesis in if",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 25,
+    "parse_ok": false,
+    "first_error": "3:13",
+    "first_message": "unexpected punctuation '{'",
+    "resource_limit": false,
+    "status": "RECOMMENDED",
+    "margin": 4,
+    "plan": "int main() {\n  int n = 3;\n  if (n > 0) {\n    n = 0;\n  }\n  return n;\n}\n",
+    "plan_summary": "insert ')' at 3:12",
+    "candidates": 99,
+    "accepted": 2,
+    "wall_ms": 17.648863999966125
+   },
+   "problems": []
+  },
+  {
+   "id": "P29",
+   "title": "missing opening parenthesis in while",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 27,
+    "parse_ok": false,
+    "first_error": "3:9",
+    "first_message": "unexpected identifier 'n'; expected '('",
+    "resource_limit": false,
+    "status": "RECOMMENDED",
+    "margin": 5.2,
+    "plan": "int main() {\n  int n = 3;\n  while (n > 0) {\n    n = n - 1;\n  }\n  return n;\n}\n",
+    "plan_summary": "insert '(' at 3:8",
+    "candidates": 96,
+    "accepted": 8,
+    "wall_ms": 18.635495999660634
+   },
+   "problems": []
+  },
+  {
+   "id": "P30",
+   "title": "extra closing parenthesis",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 21,
+    "parse_ok": false,
+    "first_error": "2:18",
+    "first_message": "unexpected punctuation ')'",
+    "resource_limit": false,
+    "status": "RECOMMENDED",
+    "margin": null,
+    "plan": "int main() {\n  int x = (1 + 2) * 3;\n  return x;\n}\n",
+    "plan_summary": "delete ')' at 2:18",
+    "candidates": 106,
+    "accepted": 2,
+    "wall_ms": 5.936980000115
+   },
+   "problems": []
+  },
+  {
+   "id": "P31",
+   "title": "missing parenthesis in call",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 22,
+    "parse_ok": false,
+    "first_error": "3:13",
+    "first_message": "unexpected punctuation ';'",
+    "resource_limit": false,
+    "status": "RECOMMENDED",
+    "margin": 1.65,
+    "plan": "int g(int a) { return a; }\nint main() {\n  return g(4);\n}\n",
+    "plan_summary": "insert ')' at 3:13",
+    "candidates": 104,
+    "accepted": 16,
+    "wall_ms": 10.788253000100667
+   },
+   "problems": []
+  },
+  {
+   "id": "P32",
+   "title": "missing closing brace at end of file",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 13,
+    "parse_ok": false,
+    "first_error": "4:1",
+    "first_message": "unexpected end of input",
+    "resource_limit": false,
+    "status": "RECOMMENDED",
+    "margin": null,
+    "plan": "int main() {\n  int x = 1;\n  return x; }\n",
+    "plan_summary": "insert '}' at 3:12",
+    "candidates": 119,
+    "accepted": 1,
+    "wall_ms": 6.327521999992314
+   },
+   "problems": []
+  },
+  {
+   "id": "P33",
+   "title": "missing closing brace of an inner block",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 27,
+    "parse_ok": false,
+    "first_error": "7:1",
+    "first_message": "unexpected end of input",
+    "resource_limit": false,
+    "status": "RECOMMENDED",
+    "margin": 1.75,
+    "plan": "int main() {\n  int x = 0;\n  while (x < 3) {\n    x = x + 1; }\n  return x;\n}\n",
+    "plan_summary": "insert '}' at 4:15",
+    "candidates": 123,
+    "accepted": 2,
+    "wall_ms": 6.861743000172282
+   },
+   "problems": []
+  },
+  {
+   "id": "P34",
+   "title": "extra closing brace",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 10,
+    "parse_ok": false,
+    "first_error": "4:1",
+    "first_message": "unexpected punctuation '}'",
+    "resource_limit": false,
+    "status": "MULTIPLE_PLAUSIBLE",
+    "margin": 1.2,
+    "plan": "int main() {\n  return 0;\n}\n",
+    "plan_summary": "delete '}' at 4:1",
+    "candidates": 104,
+    "accepted": 3,
+    "wall_ms": 5.698019000192289
+   },
+   "problems": []
+  },
+  {
+   "id": "P35",
+   "title": "missing opening brace of a loop body",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 38,
+    "parse_ok": false,
+    "first_error": "8:3",
+    "first_message": "unexpected keyword 'return'",
+    "resource_limit": false,
+    "status": "MULTIPLE_PLAUSIBLE",
+    "margin": 1.45,
+    "plan": "int main() {\n  int i = 0;\n  int s = 0;\n  while (i < 4) {\n    s = s + i;\n    i = i + 1;\n  }\n  return s;\n}\n",
+    "plan_summary": "insert '{' at 4:16",
+    "candidates": 107,
+    "accepted": 5,
+    "wall_ms": 8.66050600006929
+   },
+   "problems": []
+  },
+  {
+   "id": "P36",
+   "title": "missing variable name",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 13,
+    "parse_ok": false,
+    "first_error": "2:7",
+    "first_message": "unexpected operator '='; expected '<identifier>'",
+    "resource_limit": false,
+    "status": "LOW_CONFIDENCE",
+    "margin": 1.45,
+    "plan": "int main() {\n  int __hole = 4;\n  return 0;\n}\n",
+    "plan_summary": "insert '__hole' at 2:6",
+    "candidates": 61,
+    "accepted": 2,
+    "wall_ms": 4.6791760000814975
+   },
+   "problems": []
+  },
+  {
+   "id": "P37",
+   "title": "missing right operand",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 15,
+    "parse_ok": false,
+    "first_error": "2:15",
+    "first_message": "unexpected punctuation ';'",
+    "resource_limit": false,
+    "status": "MULTIPLE_PLAUSIBLE",
+    "margin": 0.5,
+    "plan": "int main() {\n  int x = 4;\n  return x;\n}\n",
+    "plan_summary": "delete '*' at 2:13",
+    "candidates": 76,
+    "accepted": 8,
+    "wall_ms": 7.96798100009255
+   },
+   "problems": []
+  },
+  {
+   "id": "P38",
+   "title": "missing left operand",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 15,
+    "parse_ok": false,
+    "first_error": "2:11",
+    "first_message": "unexpected operator '*'",
+    "resource_limit": false,
+    "status": "MULTIPLE_PLAUSIBLE",
+    "margin": 0.5,
+    "plan": "int main() {\n  int x = 4;\n  return x;\n}\n",
+    "plan_summary": "delete '*' at 2:11",
+    "candidates": 73,
+    "accepted": 9,
+    "wall_ms": 6.527981000090222
+   },
+   "problems": []
+  },
+  {
+   "id": "P39",
+   "title": "missing operator between operands",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 25,
+    "parse_ok": false,
+    "first_error": "4:13",
+    "first_message": "unexpected identifier 'b'",
+    "resource_limit": false,
+    "status": "MULTIPLE_PLAUSIBLE",
+    "margin": 0,
+    "plan": "int main() {\n  int a = 2;\n  int b = 3;\n  int c = a + b;\n  return c;\n}\n",
+    "plan_summary": "insert '+' at 4:12",
+    "candidates": 66,
+    "accepted": 20,
+    "wall_ms": 9.296985000219138
+   },
+   "problems": []
+  },
+  {
+   "id": "P40",
+   "title": "misspelled return",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 9,
+    "parse_ok": false,
+    "first_error": "2:10",
+    "first_message": "unexpected literal '0'",
+    "resource_limit": false,
+    "status": "MULTIPLE_PLAUSIBLE",
+    "margin": 0,
+    "plan": "int main() {\n  retrun + 0;\n}\n",
+    "plan_summary": "insert '+' at 2:9",
+    "candidates": 93,
+    "accepted": 23,
+    "wall_ms": 7.510515000376472
+   },
+   "problems": []
+  },
+  {
+   "id": "P41",
+   "title": "misspelled while",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 28,
+    "parse_ok": false,
+    "first_error": "3:17",
+    "first_message": "unexpected punctuation '{'",
+    "resource_limit": false,
+    "status": "RECOMMENDED",
+    "margin": 4,
+    "plan": "int main() {\n  int i = 0;\n  whlie (i < 3); {\n    i = i + 1;\n  }\n  return i;\n}\n",
+    "plan_summary": "insert ';' at 3:16",
+    "candidates": 113,
+    "accepted": 2,
+    "wall_ms": 8.80910900013987
+   },
+   "problems": []
+  },
+  {
+   "id": "P42",
+   "title": "misspelled type",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 14,
+    "parse_ok": false,
+    "first_error": "2:7",
+    "first_message": "unexpected identifier 'x'",
+    "resource_limit": false,
+    "status": "MULTIPLE_PLAUSIBLE",
+    "margin": 0,
+    "plan": "int main() {\n  int x = 1;\n  return x;\n}\n",
+    "plan_summary": "replace 'itn' with 'int' at 2:3",
+    "candidates": 93,
+    "accepted": 9,
+    "wall_ms": 7.082194000304298
+   },
+   "problems": []
+  },
+  {
+   "id": "P43",
+   "title": "invalid character @",
+   "observed": {
+    "lex_errors": [
+     "invalid character '@'"
+    ],
+    "tokens": 16,
+    "parse_ok": false,
+    "first_error": "2:13",
+    "first_message": "lexical error: invalid character '@'",
+    "resource_limit": false,
+    "status": "MULTIPLE_PLAUSIBLE",
+    "margin": 0,
+    "plan": "int main() {\n  int x = 5 + 2;\n  return x;\n}\n",
+    "plan_summary": "replace '@' with '+' at 2:13",
+    "candidates": 60,
+    "accepted": 14,
+    "wall_ms": 13.197279999985767
+   },
+   "problems": []
+  },
+  {
+   "id": "P44",
+   "title": "dollar in identifier",
+   "observed": {
+    "lex_errors": [
+     "invalid character '$'"
+    ],
+    "tokens": 15,
+    "parse_ok": false,
+    "first_error": "2:7",
+    "first_message": "lexical error: invalid character '$'",
+    "resource_limit": false,
+    "status": "RECOMMENDED",
+    "margin": null,
+    "plan": "int main() {\n  int x = 1;\n  return 0;\n}\n",
+    "plan_summary": "delete '$' at 2:7",
+    "candidates": 61,
+    "accepted": 1,
+    "wall_ms": 5.311059999712597
+   },
+   "problems": []
+  },
+  {
+   "id": "P45",
+   "title": "colon instead of semicolon",
+   "observed": {
+    "lex_errors": [
+     "operator ':' is not part of MiniC"
+    ],
+    "tokens": 14,
+    "parse_ok": false,
+    "first_error": "2:12",
+    "first_message": "unsupported construct: operator ':' is not part of MiniC",
+    "resource_limit": false,
+    "status": "UNSUPPORTED_CONSTRUCT",
+    "margin": null,
+    "plan": "int main() {\n  int x = 1;\n  return x;\n}\n",
+    "plan_summary": "replace ':' with ';' at 2:12",
+    "candidates": 60,
+    "accepted": 1,
+    "wall_ms": 5.4716140002710745
+   },
+   "problems": []
+  },
+  {
+   "id": "P46",
+   "title": "backtick",
+   "observed": {
+    "lex_errors": [
+     "invalid character '`'"
+    ],
+    "tokens": 15,
+    "parse_ok": false,
+    "first_error": "2:12",
+    "first_message": "lexical error: invalid character '`'",
+    "resource_limit": false,
+    "status": "MULTIPLE_PLAUSIBLE",
+    "margin": 0.5,
+    "plan": "int main() {\n  int x = 1;\n  return x;\n}\n",
+    "plan_summary": "delete '`' at 2:12",
+    "candidates": 60,
+    "accepted": 2,
+    "wall_ms": 5.822479000016756
+   },
+   "problems": []
+  },
+  {
+   "id": "P47",
+   "title": "two errors: missing ; and missing )",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 31,
+    "parse_ok": false,
+    "first_error": "3:3",
+    "first_message": "unexpected keyword 'if'",
+    "resource_limit": false,
+    "status": "RECOMMENDED",
+    "margin": 3.5,
+    "plan": "int f(int a, int b) {\n  int s = a + b;\n  if (s > 10) {\n    s = 10;\n  }\n  return s;\n}\n",
+    "plan_summary": "insert ';' at 2:16 + insert ')' at 3:13",
+    "candidates": 106,
+    "accepted": 18,
+    "wall_ms": 22.445186999902944
+   },
+   "problems": []
+  },
+  {
+   "id": "P48",
+   "title": "three errors in one function",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 32,
+    "parse_ok": false,
+    "first_error": "3:3",
+    "first_message": "unexpected type-keyword 'int'",
+    "resource_limit": false,
+    "status": "RECOMMENDED",
+    "margin": 2,
+    "plan": "int main() {\n  int a = 1;\n  int b = (a + 2);\n  if (b > a) {\n    a = b;\n  }\n  return a;\n}\n",
+    "plan_summary": "insert ';' at 2:12 + insert ')' at 3:17 + insert ')' at 4:12",
+    "candidates": 60,
+    "accepted": 3,
+    "wall_ms": 16.96000699985234
+   },
+   "problems": []
+  },
+  {
+   "id": "P49",
+   "title": "errors in two functions",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 18,
+    "parse_ok": false,
+    "first_error": "3:1",
+    "first_message": "unexpected punctuation '}'",
+    "resource_limit": false,
+    "status": "MULTIPLE_PLAUSIBLE",
+    "margin": 0.9,
+    "plan": "int f() {\n  return 1;\n}\nint g() {\n  return (2);\n}\n",
+    "plan_summary": "insert ';' at 2:11 + insert ')' at 5:12",
+    "candidates": 95,
+    "accepted": 2,
+    "wall_ms": 8.76384399998642
+   },
+   "problems": []
+  },
+  {
+   "id": "P50",
+   "title": "file ends inside a function",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 10,
+    "parse_ok": false,
+    "first_error": "3:1",
+    "first_message": "unexpected end of input",
+    "resource_limit": false,
+    "status": "RECOMMENDED",
+    "margin": null,
+    "plan": "int main() {\n  int x = 1; }\n",
+    "plan_summary": "insert '}' at 2:13",
+    "candidates": 79,
+    "accepted": 1,
+    "wall_ms": 5.509077000169782
+   },
+   "problems": []
+  },
+  {
+   "id": "P51",
+   "title": "file ends inside a condition",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 9,
+    "parse_ok": false,
+    "first_error": "3:1",
+    "first_message": "unexpected end of input",
+    "resource_limit": false,
+    "status": "NO_SAFE_REPAIR",
+    "margin": null,
+    "plan": null,
+    "plan_summary": null,
+    "candidates": 344,
+    "accepted": 0,
+    "wall_ms": 7.909810999990441
+   },
+   "problems": []
+  },
+  {
+   "id": "P52",
+   "title": "file ends after a type",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 1,
+    "parse_ok": false,
+    "first_error": "1:4",
+    "first_message": "unexpected end of input; expected '<identifier>'",
+    "resource_limit": false,
+    "status": "RECOMMENDED",
+    "margin": null,
+    "plan": "",
+    "plan_summary": "delete 'int' at 1:1",
+    "candidates": 11,
+    "accepted": 1,
+    "wall_ms": 4.438244000084524
+   },
+   "problems": []
+  },
+  {
+   "id": "P53",
+   "title": "empty input",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 0,
+    "parse_ok": true,
+    "first_error": null,
+    "first_message": null,
+    "resource_limit": false,
+    "status": "NO_REPAIR_NEEDED",
+    "margin": null,
+    "plan": null,
+    "plan_summary": null,
+    "candidates": 0,
+    "accepted": 0,
+    "wall_ms": 4.173081000317325
+   },
+   "problems": []
+  },
+  {
+   "id": "P54",
+   "title": "whitespace and newlines only",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 0,
+    "parse_ok": true,
+    "first_error": null,
+    "first_message": null,
+    "resource_limit": false,
+    "status": "NO_REPAIR_NEEDED",
+    "margin": null,
+    "plan": null,
+    "plan_summary": null,
+    "candidates": 0,
+    "accepted": 0,
+    "wall_ms": 4.411271000208217
+   },
+   "problems": []
+  },
+  {
+   "id": "P55",
+   "title": "comments only",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 0,
+    "parse_ok": true,
+    "first_error": null,
+    "first_message": null,
+    "resource_limit": false,
+    "status": "NO_REPAIR_NEEDED",
+    "margin": null,
+    "plan": null,
+    "plan_summary": null,
+    "candidates": 0,
+    "accepted": 0,
+    "wall_ms": 4.1003679998539155
+   },
+   "problems": []
+  },
+  {
+   "id": "P56",
+   "title": "20 nested if-blocks",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 174,
+    "parse_ok": true,
+    "first_error": null,
+    "first_message": null,
+    "resource_limit": false,
+    "status": "NO_REPAIR_NEEDED",
+    "margin": null,
+    "plan": null,
+    "plan_summary": null,
+    "candidates": 0,
+    "accepted": 0,
+    "wall_ms": 6.288722000135749
+   },
+   "problems": []
+  },
+  {
+   "id": "P57",
+   "title": "400 nested parentheses",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 809,
+    "parse_ok": true,
+    "first_error": null,
+    "first_message": null,
+    "resource_limit": false,
+    "status": "NO_REPAIR_NEEDED",
+    "margin": null,
+    "plan": null,
+    "plan_summary": null,
+    "candidates": 0,
+    "accepted": 0,
+    "wall_ms": 7.973378999849956
+   },
+   "problems": []
+  },
+  {
+   "id": "P58",
+   "title": "6000 nested parentheses (beyond the limit)",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 12009,
+    "parse_ok": false,
+    "first_error": "1:5010",
+    "first_message": "parser resource limit: memory exhausted (nesting too deep)",
+    "resource_limit": true,
+    "status": "UNSUPPORTED_CONSTRUCT",
+    "margin": null,
+    "plan": null,
+    "plan_summary": null,
+    "candidates": 0,
+    "accepted": 0,
+    "wall_ms": 90.50384399961331
+   },
+   "problems": []
+  },
+  {
+   "id": "P59",
+   "title": "ambiguous: comparison or assignment?",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 28,
+    "parse_ok": false,
+    "first_error": "4:9",
+    "first_message": "unexpected identifier 'y'",
+    "resource_limit": false,
+    "status": "MULTIPLE_PLAUSIBLE",
+    "margin": 0,
+    "plan": "int main() {\n  int x = 1;\n  int y = 2;\n  if (x + y) x = 0;\n  return x;\n}\n",
+    "plan_summary": "insert '+' at 4:8",
+    "candidates": 99,
+    "accepted": 17,
+    "wall_ms": 14.954421000311413
+   },
+   "problems": []
+  },
+  {
+   "id": "P60",
+   "title": "ambiguous: lexical @ between operands",
+   "observed": {
+    "lex_errors": [
+     "invalid character '@'"
+    ],
+    "tokens": 16,
+    "parse_ok": false,
+    "first_error": "2:13",
+    "first_message": "lexical error: invalid character '@'",
+    "resource_limit": false,
+    "status": "MULTIPLE_PLAUSIBLE",
+    "margin": 0,
+    "plan": "int main() {\n  int x = 6 + 3;\n  return x;\n}\n",
+    "plan_summary": "replace '@' with '+' at 2:13",
+    "candidates": 60,
+    "accepted": 14,
+    "wall_ms": 9.533206000014616
+   },
+   "problems": []
+  },
+  {
+   "id": "P61",
+   "title": "valid program with unusual formatting",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 9,
+    "parse_ok": true,
+    "first_error": null,
+    "first_message": null,
+    "resource_limit": false,
+    "status": "NO_REPAIR_NEEDED",
+    "margin": null,
+    "plan": null,
+    "plan_summary": null,
+    "candidates": 0,
+    "accepted": 0,
+    "wall_ms": 4.65377599994099
+   },
+   "problems": []
+  },
+  {
+   "id": "P62",
+   "title": "deleted `while` keyword",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 27,
+    "parse_ok": false,
+    "first_error": "3:11",
+    "first_message": "unexpected punctuation '{'",
+    "resource_limit": false,
+    "status": "RECOMMENDED",
+    "margin": 4,
+    "plan": "int main() {\n  int n = 5;\n  (n > 0); {\n    n = n - 1;\n  }\n  return n;\n}\n",
+    "plan_summary": "insert ';' at 3:10",
+    "candidates": 109,
+    "accepted": 2,
+    "wall_ms": 8.275049000076251
+   },
+   "problems": []
+  },
+  {
+   "id": "P63",
+   "title": "`=` written for `==` in a condition",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 24,
+    "parse_ok": false,
+    "first_error": "3:9",
+    "first_message": "unexpected operator '='",
+    "resource_limit": false,
+    "status": "MULTIPLE_PLAUSIBLE",
+    "margin": 0,
+    "plan": "int main() {\n  int x = 3;\n  if (x + 3) x = 0;\n  return x;\n}\n",
+    "plan_summary": "replace '=' with '+' at 3:9",
+    "candidates": 98,
+    "accepted": 14,
+    "wall_ms": 11.186408999947162
+   },
+   "problems": []
+  },
+  {
+   "id": "P64",
+   "title": "#include and printf with a string",
+   "observed": {
+    "lex_errors": [
+     "preprocessor directives are not part of MiniC",
+     "string literals are not part of MiniC"
+    ],
+    "tokens": 15,
+    "parse_ok": false,
+    "first_error": "1:1",
+    "first_message": "unsupported construct: preprocessor directives are not part of MiniC",
+    "resource_limit": false,
+    "status": "UNSUPPORTED_CONSTRUCT",
+    "margin": null,
+    "plan": "\nint main() {\n  printf();\n  return 0;\n}\n",
+    "plan_summary": "delete '#include <stdio.h>' at 1:1 + delete '\"hello\"' at 3:10",
+    "candidates": 11,
+    "accepted": 1,
+    "wall_ms": 6.660083000042505
+   },
+   "problems": []
+  },
+  {
+   "id": "P65",
+   "title": "increment operator",
+   "observed": {
+    "lex_errors": [
+     "increment/decrement operator '++' is not part of MiniC; write x = x + 1"
+    ],
+    "tokens": 17,
+    "parse_ok": false,
+    "first_error": "3:4",
+    "first_message": "unsupported construct: increment/decrement operator '++' is not part of MiniC; write x = x + 1",
+    "resource_limit": false,
+    "status": "UNSUPPORTED_CONSTRUCT",
+    "margin": null,
+    "plan": "int main() {\n  int i = 0;\n  i;\n  return i;\n}\n",
+    "plan_summary": "delete '++' at 3:4",
+    "candidates": 128,
+    "accepted": 2,
+    "wall_ms": 5.943325999851368
+   },
+   "problems": []
+  },
+  {
+   "id": "P66",
+   "title": "compound assignment",
+   "observed": {
+    "lex_errors": [
+     "compound assignment '+=' is not part of MiniC"
+    ],
+    "tokens": 18,
+    "parse_ok": false,
+    "first_error": "3:5",
+    "first_message": "unsupported construct: compound assignment '+=' is not part of MiniC",
+    "resource_limit": false,
+    "status": "UNSUPPORTED_CONSTRUCT",
+    "margin": null,
+    "plan": "int main() {\n  int i = 0;\n  i + 2;\n  return i;\n}\n",
+    "plan_summary": "replace '+=' with '+' at 3:5",
+    "candidates": 128,
+    "accepted": 15,
+    "wall_ms": 10.531915000228764
+   },
+   "problems": []
+  },
+  {
+   "id": "P67",
+   "title": "struct",
+   "observed": {
+    "lex_errors": [
+     "'struct' is a C keyword that MiniC does not support"
+    ],
+    "tokens": 8,
+    "parse_ok": false,
+    "first_error": "1:1",
+    "first_message": "unsupported construct: 'struct' is a C keyword that MiniC does not support",
+    "resource_limit": false,
+    "status": "UNSUPPORTED_CONSTRUCT",
+    "margin": null,
+    "plan": null,
+    "plan_summary": null,
+    "candidates": 118,
+    "accepted": 0,
+    "wall_ms": 6.075942999814288
+   },
+   "problems": []
+  },
+  {
+   "id": "P68",
+   "title": "pointer declaration",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 13,
+    "parse_ok": false,
+    "first_error": "2:7",
+    "first_message": "unexpected operator '*'; expected '<identifier>'",
+    "resource_limit": false,
+    "status": "RECOMMENDED",
+    "margin": 3.7,
+    "plan": "int main() {\n  int p;\n  return 0;\n}\n",
+    "plan_summary": "delete '*' at 2:7",
+    "candidates": 61,
+    "accepted": 7,
+    "wall_ms": 7.743360999938886
+   },
+   "problems": []
+  },
+  {
+   "id": "P69",
+   "title": "C++ class and namespace",
+   "observed": {
+    "lex_errors": [
+     "operator ':' is not part of MiniC"
+    ],
+    "tokens": 10,
+    "parse_ok": false,
+    "first_error": "1:1",
+    "first_message": "unexpected identifier 'class'",
+    "resource_limit": false,
+    "status": "NO_SAFE_REPAIR",
+    "margin": null,
+    "plan": null,
+    "plan_summary": null,
+    "candidates": 144,
+    "accepted": 0,
+    "wall_ms": 6.622580000112066
+   },
+   "problems": []
+  },
+  {
+   "id": "P70",
+   "title": "ternary operator",
+   "observed": {
+    "lex_errors": [
+     "operator '?' is not part of MiniC",
+     "operator ':' is not part of MiniC"
+    ],
+    "tokens": 25,
+    "parse_ok": false,
+    "first_error": "3:17",
+    "first_message": "unsupported construct: operator '?' is not part of MiniC",
+    "resource_limit": false,
+    "status": "UNSUPPORTED_CONSTRUCT",
+    "margin": null,
+    "plan": null,
+    "plan_summary": null,
+    "candidates": 607,
+    "accepted": 0,
+    "wall_ms": 17.651961999945343
+   },
+   "problems": []
+  },
+  {
+   "id": "P71",
+   "title": "switch statement",
+   "observed": {
+    "lex_errors": [
+     "'switch' is a C keyword that MiniC does not support"
+    ],
+    "tokens": 20,
+    "parse_ok": false,
+    "first_error": "3:3",
+    "first_message": "unsupported construct: 'switch' is a C keyword that MiniC does not support",
+    "resource_limit": false,
+    "status": "UNSUPPORTED_CONSTRUCT",
+    "margin": null,
+    "plan": "int main() {\n  int x = 1;\n  if (x) { }\n  return x;\n}\n",
+    "plan_summary": "replace 'switch' with 'if' at 3:3",
+    "candidates": 102,
+    "accepted": 10,
+    "wall_ms": 7.867069999974774
+   },
+   "problems": []
+  },
+  {
+   "id": "P72",
+   "title": "comments everywhere",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 9,
+    "parse_ok": true,
+    "first_error": null,
+    "first_message": null,
+    "resource_limit": false,
+    "status": "NO_REPAIR_NEEDED",
+    "margin": null,
+    "plan": null,
+    "plan_summary": null,
+    "candidates": 0,
+    "accepted": 0,
+    "wall_ms": 4.489385000397306
+   },
+   "problems": []
+  },
+  {
+   "id": "P73",
+   "title": "unterminated block comment",
+   "observed": {
+    "lex_errors": [
+     "unterminated block comment (missing '*/')"
+    ],
+    "tokens": 6,
+    "parse_ok": false,
+    "first_error": "1:14",
+    "first_message": "lexical error: unterminated block comment (missing '*/')",
+    "resource_limit": false,
+    "status": "LOW_CONFIDENCE",
+    "margin": null,
+    "plan": "int main() { }",
+    "plan_summary": "replace '/*' with '}' at 1:14",
+    "candidates": 69,
+    "accepted": 1,
+    "wall_ms": 4.890322999926866
+   },
+   "problems": []
+  },
+  {
+   "id": "P74",
+   "title": "number formats",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 24,
+    "parse_ok": true,
+    "first_error": null,
+    "first_message": null,
+    "resource_limit": false,
+    "status": "NO_REPAIR_NEEDED",
+    "margin": null,
+    "plan": null,
+    "plan_summary": null,
+    "candidates": 0,
+    "accepted": 0,
+    "wall_ms": 4.727278999780538
+   },
+   "problems": []
+  },
+  {
+   "id": "P75",
+   "title": "malformed number",
+   "observed": {
+    "lex_errors": [
+     "malformed numeric literal: digits immediately followed by letters"
+    ],
+    "tokens": 14,
+    "parse_ok": false,
+    "first_error": "2:11",
+    "first_message": "lexical error: malformed numeric literal: digits immediately followed by letters",
+    "resource_limit": false,
+    "status": "LOW_CONFIDENCE",
+    "margin": 0,
+    "plan": "int main() {\n  int x = true;\n  return x;\n}\n",
+    "plan_summary": "replace '12abc' with 'true' at 2:11",
+    "candidates": 73,
+    "accepted": 6,
+    "wall_ms": 6.632821000039257
+   },
+   "problems": []
+  },
+  {
+   "id": "P76",
+   "title": "integer overflow literal",
+   "observed": {
+    "lex_errors": [
+     "integer literal out of range (maximum 2147483647)"
+    ],
+    "tokens": 14,
+    "parse_ok": false,
+    "first_error": "2:11",
+    "first_message": "lexical error: integer literal out of range (maximum 2147483647)",
+    "resource_limit": false,
+    "status": "LOW_CONFIDENCE",
+    "margin": 0,
+    "plan": "int main() {\n  int x = true;\n  return x;\n}\n",
+    "plan_summary": "replace '99999999999' with 'true' at 2:11",
+    "candidates": 73,
+    "accepted": 6,
+    "wall_ms": 5.776031999630504
+   },
+   "problems": []
+  },
+  {
+   "id": "P77",
+   "title": "char escapes",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 24,
+    "parse_ok": true,
+    "first_error": null,
+    "first_message": null,
+    "resource_limit": false,
+    "status": "NO_REPAIR_NEEDED",
+    "margin": null,
+    "plan": null,
+    "plan_summary": null,
+    "candidates": 0,
+    "accepted": 0,
+    "wall_ms": 4.150905000187777
+   },
+   "problems": []
+  },
+  {
+   "id": "P78",
+   "title": "Unicode inside a comment",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 9,
+    "parse_ok": true,
+    "first_error": null,
+    "first_message": null,
+    "resource_limit": false,
+    "status": "NO_REPAIR_NEEDED",
+    "margin": null,
+    "plan": null,
+    "plan_summary": null,
+    "candidates": 0,
+    "accepted": 0,
+    "wall_ms": 4.5544459999291576
+   },
+   "problems": []
+  },
+  {
+   "id": "P79",
+   "title": "Unicode outside a comment",
+   "observed": {
+    "lex_errors": [
+     "non-ASCII character outside a comment"
+    ],
+    "tokens": 15,
+    "parse_ok": false,
+    "first_error": "1:21",
+    "first_message": "lexical error: non-ASCII character outside a comment",
+    "resource_limit": false,
+    "status": "RECOMMENDED",
+    "margin": null,
+    "plan": "int main() { int caf = 1; return 0; }\n",
+    "plan_summary": "delete '\u00e9' at 1:21",
+    "candidates": 57,
+    "accepted": 1,
+    "wall_ms": 6.795425000291289
+   },
+   "problems": []
+  },
+  {
+   "id": "P80",
+   "title": "long valid program (300 statements)",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 1814,
+    "parse_ok": true,
+    "first_error": null,
+    "first_message": null,
+    "resource_limit": false,
+    "status": "NO_REPAIR_NEEDED",
+    "margin": null,
+    "plan": null,
+    "plan_summary": null,
+    "candidates": 0,
+    "accepted": 0,
+    "wall_ms": 23.67383199998585
+   },
+   "problems": []
+  },
+  {
+   "id": "P81",
+   "title": "random punctuation soup",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 16,
+    "parse_ok": false,
+    "first_error": "1:1",
+    "first_message": "unexpected punctuation '}'",
+    "resource_limit": false,
+    "status": "NO_SAFE_REPAIR",
+    "margin": null,
+    "plan": null,
+    "plan_summary": null,
+    "candidates": 92,
+    "accepted": 0,
+    "wall_ms": 6.4391999999315885
+   },
+   "problems": []
+  },
+  {
+   "id": "P82",
+   "title": "binary-looking bytes",
+   "observed": {
+    "lex_errors": [
+     "invalid control character",
+     "invalid control character",
+     "invalid control character",
+     "invalid control character"
+    ],
+    "tokens": 6,
+    "parse_ok": false,
+    "first_error": "1:1",
+    "first_message": "lexical error: invalid control character",
+    "resource_limit": false,
+    "status": "NO_SAFE_REPAIR",
+    "margin": null,
+    "plan": null,
+    "plan_summary": null,
+    "candidates": 92,
+    "accepted": 0,
+    "wall_ms": 6.270549999953801
+   },
+   "problems": []
+  },
+  {
+   "id": "P83",
+   "title": "smart quotes pasted from a word processor",
+   "observed": {
+    "lex_errors": [
+     "non-ASCII character outside a comment",
+     "non-ASCII character outside a comment"
+    ],
+    "tokens": 16,
+    "parse_ok": false,
+    "first_error": "1:23",
+    "first_message": "lexical error: non-ASCII character outside a comment",
+    "resource_limit": false,
+    "status": "MULTIPLE_PLAUSIBLE",
+    "margin": 0.5,
+    "plan": "int main() { char c =a; return 0; }\n",
+    "plan_summary": "delete '\u2018' at 1:23 + delete '\u2019' at 1:25",
+    "candidates": 422,
+    "accepted": 3,
+    "wall_ms": 10.311351999916951
+   },
+   "problems": []
+  },
+  {
+   "id": "P84",
+   "title": "NUL byte inside the program",
+   "observed": {
+    "lex_errors": [
+     "invalid control character"
+    ],
+    "tokens": 10,
+    "parse_ok": false,
+    "first_error": "1:23",
+    "first_message": "lexical error: invalid control character",
+    "resource_limit": false,
+    "status": "MULTIPLE_PLAUSIBLE",
+    "margin": 0.5,
+    "plan": "int main() { return 0; }\n",
+    "plan_summary": "delete '\u0000' at 1:23",
+    "candidates": 137,
+    "accepted": 2,
+    "wall_ms": 6.493955999758327
+   },
+   "problems": []
+  },
+  {
+   "id": "P85",
+   "title": "UTF-8 byte-order mark at the start",
+   "observed": {
+    "lex_errors": [
+     "non-ASCII character outside a comment"
+    ],
+    "tokens": 10,
+    "parse_ok": false,
+    "first_error": "1:1",
+    "first_message": "lexical error: non-ASCII character outside a comment",
+    "resource_limit": false,
+    "status": "RECOMMENDED",
+    "margin": null,
+    "plan": "int main() { return 0; }\n",
+    "plan_summary": "delete '\ufeff' at 1:1",
+    "candidates": 11,
+    "accepted": 1,
+    "wall_ms": 5.6131629999072175
+   },
+   "problems": []
+  },
+  {
+   "id": "P86",
+   "title": "valid program nested 3000 blocks deep",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 6004,
+    "parse_ok": false,
+    "first_error": "1:2508",
+    "first_message": "parser resource limit: memory exhausted (nesting too deep)",
+    "resource_limit": true,
+    "status": "UNSUPPORTED_CONSTRUCT",
+    "margin": null,
+    "plan": null,
+    "plan_summary": null,
+    "candidates": 0,
+    "accepted": 0,
+    "wall_ms": 36.56950599997799
+   },
+   "problems": []
+  },
+  {
+   "id": "P87",
+   "title": "3000 nested parentheses",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 6009,
+    "parse_ok": true,
+    "first_error": null,
+    "first_message": null,
+    "resource_limit": false,
+    "status": "NO_REPAIR_NEEDED",
+    "margin": null,
+    "plan": null,
+    "plan_summary": null,
+    "candidates": 0,
+    "accepted": 0,
+    "wall_ms": 38.21088599988798
+   },
+   "problems": []
+  },
+  {
+   "id": "P88",
+   "title": "300 consecutive broken declarations",
+   "observed": {
+    "lex_errors": [],
+    "tokens": 906,
+    "parse_ok": false,
+    "first_error": "3:3",
+    "first_message": "unexpected type-keyword 'int'",
+    "resource_limit": false,
+    "status": "LOW_CONFIDENCE",
+    "margin": null,
+    "plan": "int main() {\n  int x ; \n  int x ; \n  int x ; \n  int x ; \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n  int x = \n}",
+    "plan_summary": "replace '=' with ';' at 2:9 + replace '=' with ';' at 3:9 + replace '=' with ';' at 4:9 + replace '=' with ';' at 5:9",
+    "candidates": 73,
+    "accepted": 1,
+    "wall_ms": 60.02676100024473
+   },
+   "problems": []
+  }
+ ],
+ "fuzz": {
+  "valid": {
+   "n": 200,
+   "violations": [],
+   "n_violations": 0,
+   "statuses": {
+    "NO_REPAIR_NEEDED": 200
+   },
+   "max_ms": 41.5391860001364,
+   "median_ms": 14.02138899993588
+  },
+  "mutant": {
+   "n": 300,
+   "violations": [],
+   "n_violations": 0,
+   "statuses": {
+    "LOW_CONFIDENCE": 36,
+    "MULTIPLE_PLAUSIBLE": 128,
+    "NO_REPAIR_NEEDED": 25,
+    "NO_SAFE_REPAIR": 3,
+    "RECOMMENDED": 108
+   },
+   "max_ms": 774.4629079998049,
+   "median_ms": 28.071680000266497
+  },
+  "soup": {
+   "n": 150,
+   "violations": [],
+   "n_violations": 0,
+   "statuses": {
+    "LOW_CONFIDENCE": 3,
+    "MULTIPLE_PLAUSIBLE": 1,
+    "NO_SAFE_REPAIR": 145,
+    "RECOMMENDED": 1
+   },
+   "max_ms": 24.65666800026156,
+   "median_ms": 10.04087499995876
+  },
+  "bytes": {
+   "n": 150,
+   "violations": [],
+   "n_violations": 0,
+   "statuses": {
+    "LOW_CONFIDENCE": 9,
+    "NO_REPAIR_NEEDED": 1,
+    "NO_SAFE_REPAIR": 122,
+    "RECOMMENDED": 4,
+    "UNSUPPORTED_CONSTRUCT": 14
+   },
+   "max_ms": 842.974728000172,
+   "median_ms": 10.034560999883979
+  },
+  "determinism": {
+   "checked": 40,
+   "mismatches": []
+  },
+  "seed": 20261025,
+  "examples": {
+   "valid": "int arr[10];\nint g(int a, int b) { return a + b; }\nint f0(float p0, float p1, bool p2) {\n  if (62) {\n    return (p2) == (594);\n  }\n  bool v263 = 233 <= p1 > 980;\n  float v297 = arr[v263] % (v263);\n}\nint f1(int p0, int p1, int p2) {\n  if (p1) {\n  }\n}\n",
+   "mutant": "int arr[10];\nint g(int a, int bx ) { return a + b; }\nint f0(bool p0, float p1) {\n  while ((806) * 198 * 483) {\n    {\n      float v209 = 5;\n    }\n    return (arr && 765);\n    continue;\n  }\n  for (int i = 0; i < 3; i = i + 1) {\n  }\n  arr = arr[! 'x'];\n}\n",
+   "soup": "float { while return == return true else x int"
+  }
+ },
+ "http_sequences": [
+  {
+   "id": "H01",
+   "title": "valid input immediately after invalid input (cat. 28)",
+   "pass": true,
+   "detail": "invalid \u2192 RECOMMENDED; then valid \u2192 NO_REPAIR_NEEDED"
+  },
+  {
+   "id": "H02",
+   "title": "repeated requests after failed requests (cat. 27)",
+   "pass": true,
+   "detail": "failures returned [413, 422, 422]; next valid request \u2192 HTTP 200, ok=True"
+  },
+  {
+   "id": "H03",
+   "title": "the same invalid input five times gives the same answer",
+   "pass": true,
+   "detail": "plans: {\"insert ';' at 1:23\"}"
+  },
+  {
+   "id": "H04",
+   "title": "16 concurrent mixed requests give the sequential answers",
+   "pass": true,
+   "detail": "16 parallel requests; statuses ['MULTIPLE_PLAUSIBLE', 'NO_REPAIR_NEEDED', 'RECOMMENDED', 'UNSUPPORTED_CONSTRUCT']"
+  },
+  {
+   "id": "H05",
+   "title": "empty and whitespace-only input",
+   "pass": true,
+   "detail": "empty \u2192 NO_REPAIR_NEEDED; whitespace \u2192 NO_REPAIR_NEEDED"
+  },
+  {
+   "id": "H06",
+   "title": "large valid input (52015 bytes, under the 64 KB limit)",
+   "pass": true,
+   "detail": "HTTP 200 in 1344 ms"
+  },
+  {
+   "id": "H07",
+   "title": "HTML in the source is returned as data, not markup",
+   "pass": true,
+   "detail": "comments are trivia; token lexemes never contain the markup (the UI also renders all compiler text as text)"
+  }
+ ],
+ "totals": {
+  "hand_passed": 88,
+  "hand_total": 88,
+  "fuzz_inputs": 800,
+  "fuzz_violations": 0,
+  "http_passed": 7,
+  "http_total": 7
+ },
+ "timestamp_utc": "2026-10-25T12:17:02Z"
+}

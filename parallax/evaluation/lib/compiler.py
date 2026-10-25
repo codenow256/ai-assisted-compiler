@@ -13,11 +13,24 @@ import time
 from pathlib import Path
 
 PARALLAX_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_BINARY = PARALLAX_ROOT / "compiler" / "build" / "parallaxc"
+BUILD_DIR = PARALLAX_ROOT / "compiler" / "build"
 
 
 def binary_path() -> Path:
-    return Path(os.environ.get("PARALLAXC", DEFAULT_BINARY))
+    """Same search rule as backend/app/config.py::locate_compiler."""
+    override = os.environ.get("PARALLAXC") or os.environ.get("PARALLAX_COMPILER")
+    if override:
+        return Path(override)
+    names = ["parallaxc.exe", "parallaxc"] if os.name == "nt" else ["parallaxc", "parallaxc.exe"]
+    for sub in ("", "Release", "RelWithDebInfo", "MinSizeRel", "Debug"):
+        for name in names:
+            c = BUILD_DIR / sub / name if sub else BUILD_DIR / name
+            if c.is_file():
+                return c
+    return BUILD_DIR / names[0]
+
+
+DEFAULT_BINARY = binary_path()
 
 
 def run(mode: str, source: str, args: list[str] | None = None, timeout: float = 30.0) -> dict:

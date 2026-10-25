@@ -1,4 +1,4 @@
-// Parallax repair engine: bounded multi-candidate syntax repair with
+// IntelliFix repair engine: bounded multi-candidate syntax repair with
 // parser validation, evidence ranking, AST grouping, hypothesis lanes and
 // confidence-aware abstention. See docs/REPAIR_ALGORITHM.md.
 #pragma once
@@ -42,7 +42,7 @@ struct RepairConfig {
   int max_reported_candidates = 40;
   int max_reported_rejections = 40;
 
-  double tau = 1.0;  // abstention margin threshold (tuned on the dev split)
+  double tau = 1.0;  // abstention margin threshold; CLI default. The backend passes the dev-selected tau (1.5) from the stored evaluation
 
   // Weights of the evidence model (documented in REPAIR_ALGORITHM.md).
   double w_cost = -1.0;

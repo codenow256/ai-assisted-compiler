@@ -7,9 +7,11 @@ import pytest
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
+from evaluation.lib.compiler import binary_path as compiler_binary  # noqa: E402
+
 from evaluation.catalog.catalog import CASES, check, run_case  # noqa: E402
 
-pytestmark = pytest.mark.skipif(not (ROOT / "compiler" / "build" / "parallaxc").exists(), reason="parallaxc not built")
+pytestmark = pytest.mark.skipif(not (compiler_binary()).exists(), reason="parallaxc not built")
 
 
 @pytest.mark.parametrize("case", CASES, ids=[c[0] for c in CASES])

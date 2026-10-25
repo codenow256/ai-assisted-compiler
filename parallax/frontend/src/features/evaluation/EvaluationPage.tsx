@@ -67,7 +67,7 @@ export function EvaluationPage() {
             <Tabs<"charts" | "tables"> label="View" value={view} onChange={setView} tabs={[{ id: "charts", label: <><ChartColumnBig size={13} aria-hidden /> Charts</> }, { id: "tables", label: <><Table2 size={13} aria-hidden /> Tables</> }]} />
           </div>
           <div className="grid grid-4">
-            <Stat k="Top-1 repair = reference AST" v={pct(r.P.top1_ast.rate)} d={`Parallax · least-cost baseline ${pct(r.C.top1_ast.rate)}${g ? ` · CPCT+ ${pct(g.top1_ast.rate)}` : ""}`} />
+            <Stat k="Top-1 repair = reference AST" v={pct(r.P.top1_ast.rate)} d={`IntelliFix · least-cost baseline ${pct(r.C.top1_ast.rate)}${g ? ` · CPCT+ ${pct(g.top1_ast.rate)}` : ""}`} />
             <Stat k="Wrong but confident" v={pct(r.P.false_confident_rate.rate)} d={`of all cases with abstention · forced top-1: ${pct(r.F.false_confident_rate.rate)}`} />
             <Stat k="Coverage (recommended)" v={pct(r.P.coverage.rate)} d={`selective accuracy ${pct(r.P.selective_accuracy.rate)}`} />
             <Stat k="Exact error localisation" v={pct(r.P.localisation_exact.rate)} d={`first repair edit · raw parser detection ${pct(r.A.localisation_exact.rate)}`} />
@@ -129,7 +129,7 @@ export function EvaluationPage() {
                   <tr><td>A raw parser</td><td>{ci(r.A.localisation_exact)}</td><td>{ci(r.A.localisation_within_1)}</td><td>{ci(r.A.localisation_same_line)}</td></tr>
                   {g && <tr><td>G CPCT+ (rep. 1)</td><td>{ci(g.localisation_exact)}</td><td>{ci(g.localisation_within_1)}</td><td>{ci(g.localisation_same_line)}</td></tr>}
                   <tr><td>C least-cost</td><td>{ci(r.C.localisation_exact)}</td><td>{ci(r.C.localisation_within_1)}</td><td>{ci(r.C.localisation_same_line)}</td></tr>
-                  <tr><td>P Parallax</td><td>{ci(r.P.localisation_exact)}</td><td>{ci(r.P.localisation_within_1)}</td><td>{ci(r.P.localisation_same_line)}</td></tr>
+                  <tr><td>P IntelliFix</td><td>{ci(r.P.localisation_exact)}</td><td>{ci(r.P.localisation_within_1)}</td><td>{ci(r.P.localisation_same_line)}</td></tr>
                 </tbody>
               </table>
             </Panel>
@@ -207,7 +207,7 @@ function ImpactSummary({ s, split }: { s: any; split: Split }) {
   const dE = r.P.top1_ast.rate - r.E.top1_ast.rate;
   items.push({ tone: Math.abs(dE) < 0.01 ? "warning" : dE > 0 ? "success" : "warning", text: `Follow-on stability evidence (ablation E): ${dE >= 0 ? "+" : ""}${pts(r.P.top1_ast.rate, r.E.top1_ast.rate)} top-1, AURC ${num(r.P.aurc, 3)} vs ${num(r.E.aurc, 3)}${Math.abs(dE) < 0.01 ? " — no measurable accuracy gain on this benchmark." : "."}` });
   items.push({ tone: Math.abs(r.P.coverage.rate - r.D.coverage.rate) < 0.01 ? "warning" : "neutral", text: `AST grouping (ablation D): top-1 ${pct(r.D.top1_ast.rate)} vs ${pct(r.P.top1_ast.rate)} (grouping mainly changes which alternative the margin is measured against), giving coverage ${pct(r.P.coverage.rate)} vs ${pct(r.D.coverage.rate)} and wrong-confident ${pct(r.P.false_confident_rate.rate)} vs ${pct(r.D.false_confident_rate.rate)}.` });
-  items.push({ tone: "neutral", text: `Cost: Parallax uses ${num(r.P.parser_invocations.mean, 0)} parser calls per case on average (least-cost ${num(r.C.parser_invocations.mean, 0)}), ${num(r.P.latency_ms.mean, 1)} ms end-to-end.` });
+  items.push({ tone: "neutral", text: `Cost: IntelliFix uses ${num(r.P.parser_invocations.mean, 0)} parser calls per case on average (least-cost ${num(r.C.parser_invocations.mean, 0)}), ${num(r.P.latency_ms.mean, 1)} ms end-to-end.` });
   return (
     <Panel title="What the experiment shows" icon={FlaskConical}>
       <ul className="hint-list" style={{ color: "var(--text)" }}>
@@ -263,7 +263,7 @@ function FailureExamples({ s }: { s: any }) {
       {s.failure_examples.length === 0 ? <EmptyState title="No confident errors on test" /> : (
         <div className="table-wrap">
           <table className="table">
-            <thead><tr><th>Case</th><th>Category</th><th>Injected mutation</th><th>Parallax's repair</th><th className="num">Margin</th><th /></tr></thead>
+            <thead><tr><th>Case</th><th>Category</th><th>Injected mutation</th><th>IntelliFix's repair</th><th className="num">Margin</th><th /></tr></thead>
             <tbody>
               {s.failure_examples.map((f: any) => (
                 <tr key={f.id}>

@@ -1,6 +1,6 @@
 # Third-party notices
 
-Parallax uses, but does not vendor, the following components. Licences are those
+IntelliFix uses, but does not vendor, the following components. Licences are those
 published by each project; check the upstream project for the authoritative text.
 
 | Component | Used for | Licence (as published upstream) |

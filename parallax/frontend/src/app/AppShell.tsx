@@ -77,8 +77,8 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="brand">
           <img className="brand-mark" src="/favicon.svg" alt="" />
           <div>
-            <div className="brand-name">Parallax</div>
-            <div className="brand-sub">Evidence-ranked syntax repair for MiniC</div>
+            <div className="brand-name">IntelliFix</div>
+            <div className="brand-sub">An Intelligent Compiler for Syntax Error Analysis, Detection, and Correction</div>
           </div>
         </div>
         <nav>

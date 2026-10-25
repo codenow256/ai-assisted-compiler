@@ -10,6 +10,8 @@ import pytest
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
+from evaluation.lib.compiler import binary_path as compiler_binary  # noqa: E402
+
 from evaluation.metrics.metrics import (  # noqa: E402
     choose_tau, paired_bootstrap_diff, proportion, risk_coverage, status_at_tau, wilson)
 from evaluation.generators.generate_dataset import family_split, glue  # noqa: E402
@@ -80,7 +82,7 @@ def test_dataset_splits_by_family():
 
 
 def test_dataset_generation_is_reproducible(tmp_path):
-    binary = ROOT / "compiler" / "build" / "parallaxc"
+    binary = compiler_binary()
     path = ROOT / "evaluation" / "dataset" / "cases.jsonl"
     if not binary.exists() or not path.exists():
         pytest.skip("compiler or dataset missing")

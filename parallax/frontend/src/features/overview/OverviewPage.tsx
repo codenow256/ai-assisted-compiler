@@ -25,9 +25,10 @@ export function OverviewPage() {
     <>
       <div className="page-head">
         <div>
-          <h1>Parallax</h1>
+          <h1>IntelliFix</h1>
+          <p style={{ fontSize: 16, fontWeight: 600, color: "var(--text)", marginTop: 4 }}>An Intelligent Compiler for Syntax Error Analysis, Detection, and Correction</p>
           <p style={{ fontSize: 15 }}>
-            Evidence-ranked, multi-hypothesis syntax error detection, localisation and correction — with confidence-aware abstention. Parallax does not just print “syntax error”: it generates alternative repairs, validates each with the real parser, explains why one outranks another, and says so when the evidence is not strong enough.
+            Evidence-ranked, multi-hypothesis syntax error detection, localisation and correction — with confidence-aware abstention. IntelliFix does not just print “syntax error”: it generates alternative repairs, validates each with the real parser, explains why one outranks another, and says so when the evidence is not strong enough.
           </p>
         </div>
         <div className="row">
@@ -69,7 +70,7 @@ export function OverviewPage() {
           <p className="small">Edit cost is one feature among many: invented content, layout, name resolution, residual errors and how much repairing later errors costs under each hypothesis. Every contribution is shown.</p>
         </Panel>
         <Panel title="Abstain when unsure" icon={ShieldCheck}>
-          <p className="small">Parser validity is not intent. When structurally different repairs are similarly supported, or a repair must invent a name, Parallax lists alternatives instead of guessing. The trade-off is measured.</p>
+          <p className="small">Parser validity is not intent. When structurally different repairs are similarly supported, or a repair must invent a name, IntelliFix lists alternatives instead of guessing. The trade-off is measured.</p>
         </Panel>
       </div>
 

@@ -8,6 +8,7 @@ import { SourceDiff } from "../../components/SourceDiff";
 import { Banner, Badge, EmptyState, ErrorBanner, Panel, Spinner, StatusBadge } from "../../components/ui";
 import { ms } from "../../lib/format";
 import { STATUS } from "../../lib/status";
+import { RunSummary } from "./RunSummary";
 
 const MAX_BYTES = 64 * 1024;
 
@@ -46,7 +47,7 @@ export function WorkbenchPage() {
       <div className="page-head">
         <div>
           <h1>Code workbench</h1>
-          <p>Write or load MiniC, then run the real Flex/Bison compiler and the Parallax repair engine. Every result below comes from the compiler; nothing is simulated.</p>
+          <p>Write or load MiniC, then run the real Flex/Bison compiler and the IntelliFix repair engine. Every result below comes from the compiler; nothing is simulated.</p>
         </div>
       </div>
 
@@ -120,6 +121,7 @@ export function WorkbenchPage() {
                 {example.description} <span className="faint">Why it matters: {example.why}</span>
               </Banner>
             )}
+            <RunSummary />
             {(p.errors.repair || p.errors.parse || p.errors.lex) && <ErrorBanner error={(p.errors.repair || p.errors.parse || p.errors.lex)!} onRetry={p.runAll} />}
             {p.running.repair && <Spinner label="Generating and validating repair candidates…" />}
             {!repairFresh && !p.running.repair && !p.errors.repair && (

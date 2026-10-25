@@ -121,8 +121,8 @@ std::string reconstruct_source(const std::string& original, const std::vector<To
   int last = -1;          // last original token index whose lead was handled
   std::string carry;      // newline-bearing lead of a deleted token
 
-  bool deleted_before = false;
-  bool glue_next = false;  // last emitted token was a synthetic '(' or '['  // a deleted token sits just before the next original
+  bool deleted_before = false;  // a deleted token sits just before the next original
+  bool glue_next = false;       // the last emitted token was a synthetic '(' or '['
   auto skip_deleted_until = [&](int j) {
     deleted_before = false;
     for (int k = last + 1; k < j; ++k) {

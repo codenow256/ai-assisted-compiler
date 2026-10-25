@@ -54,7 +54,7 @@
 | S32 | syntax | dangling else | valid=True | parses; status NO_REPAIR_NEEDED | as expected |
 | S33 | syntax | EOF inside an expression (needs 3+ insertions) | status=['NO_SAFE_REPAIR'] | first error 3:1; status NO_SAFE_REPAIR | as expected |
 | S34 | syntax | EOF inside an argument list (needs 3+ insertions) | status=['NO_SAFE_REPAIR'] | first error 1:19; status NO_SAFE_REPAIR | as expected |
-| S35 | syntax | excessive nesting (6000 parentheses) | resource_limit=True | first error 1:5010; nesting limit reported; status NO_SAFE_REPAIR | as expected |
+| S35 | syntax | excessive nesting (6000 parentheses) | resource_limit=True | first error 1:5010; nesting limit reported; status UNSUPPORTED_CONSTRUCT | as expected |
 | R01 | repair | obvious single-token insertion | status=['RECOMMENDED'] | first error 3:3; status RECOMMENDED; top plan: insert ';' at 2:12 | as expected |
 | R02 | repair | obvious deletion | status=['LOW_CONFIDENCE', 'MULTIPLE_PLAUSIBLE', 'RECOMMENDED'] | first error 3:13; status MULTIPLE_PLAUSIBLE; top plan: delete '+' at 3:12 | as expected |
 | R03 | repair | substitution candidate | status=['MULTIPLE_PLAUSIBLE', 'RECOMMENDED', 'UNSUPPORTED_CONSTRUCT'] | lexical: operator ':' is not part of MiniC; first error 2:12; status UNSUPPORTED_CONSTRUCT; top plan: replace ':' with ';' at 2:12 | as expected |

@@ -1,4 +1,4 @@
-"""Parallax FastAPI application.
+"""IntelliFix FastAPI application.
 
 Run (from parallax/backend):  uvicorn app.main:app --port 8000
 Every response that carries compiler output is produced by a real
@@ -25,7 +25,7 @@ from fastapi.staticfiles import StaticFiles
 from starlette.concurrency import run_in_threadpool
 
 from . import astdiff, grammar
-from .compiler import CompilerError, CompilerRunner
+from .compiler import BUILD_HINT, CompilerError, CompilerRunner
 from .config import PARALLAX_ROOT, get_settings
 from .schemas import CompareRequest, EvaluateRequest, ParseRequest, RepairRequest, SourceRequest
 
@@ -37,7 +37,7 @@ runner = CompilerRunner(settings)
 # FastAPI's interactive docs live under /api so they never shadow the UI's
 # /docs route. (Swagger UI loads its assets from a CDN; it is an optional
 # developer page and the only part that needs network access.)
-app = FastAPI(title="Parallax API", version=API_VERSION,
+app = FastAPI(title="IntelliFix API", version=API_VERSION,
               description="Evidence-ranked multi-hypothesis syntax repair for MiniC.",
               docs_url="/api/swagger", redoc_url=None, openapi_url="/api/openapi.json")
 app.add_middleware(CORSMiddleware, allow_origins=list(settings.cors_origins), allow_methods=["GET", "POST"],
@@ -117,9 +117,9 @@ async def health():
     return {
         "status": "ok" if available and version else "degraded",
         "api_version": API_VERSION,
-        "compiler": {"available": bool(available and version), "binary": settings.compiler_path.name,
+        "compiler": {"available": bool(available and version), "binary": runner.binary().name,
                      "version": version.get("version") if version else None},
-        "hint": None if available else "Build the compiler (see README: 'Build the compiler').",
+        "hint": None if available else BUILD_HINT,
     }
 
 
@@ -280,7 +280,9 @@ async def grammar_state(number: int):
 
 # ------------------------------------------------------------------ docs
 DOCS_DIR = PARALLAX_ROOT / "docs"
-DOC_NAME = re.compile(r"^[A-Z0-9_]+$")
+DOC_NAME = re.compile(r"^[A-Za-z0-9_]+$")
+DOC_IMAGE = re.compile(r"^[A-Za-z0-9_-]+(/[A-Za-z0-9_-]+)*\.(png|jpg|jpeg|svg)$")
+IMAGE_TYPES = {"png": "image/png", "jpg": "image/jpeg", "jpeg": "image/jpeg", "svg": "image/svg+xml"}
 
 
 @app.get("/api/docs")
@@ -291,6 +293,18 @@ async def docs_index():
         first = f.read_text(encoding="utf-8").splitlines()[:1]
         out.append({"name": f.stem, "title": first[0].lstrip("# ").strip() if first else f.stem})
     return {"docs": out}
+
+
+@app.get("/api/docs/images/{path:path}")
+async def doc_image(path: str):
+    """Images referenced by the Markdown docs (docs/images/…); nothing else is served."""
+    root = (DOCS_DIR / "images").resolve()
+    if not DOC_IMAGE.match(path):
+        return error_response(400, "INVALID_IMAGE_PATH", "Malformed image path.")
+    target = (root / path).resolve()
+    if root not in target.parents or not target.is_file():
+        return error_response(404, "IMAGE_NOT_FOUND", f"No image {path}.")
+    return FileResponse(target, media_type=IMAGE_TYPES[target.suffix.lstrip(".").lower()])
 
 
 @app.get("/api/docs/{name}")

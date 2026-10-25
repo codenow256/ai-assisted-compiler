@@ -286,3 +286,24 @@ TEST(repair_doubled_brace_far_from_detection_point) {
     for (const Edit& e : R.candidates[i].edits) found |= e.generator == "duplicate";
   CHECK(found);
 }
+
+// Regression (found by the professor-style suite): a valid but very deeply
+// nested program used to be "repaired" by deleting braces after a 3.5 s
+// search, and none of the proposed plans parsed.
+TEST(repair_parser_nesting_limit_is_reported_not_repaired) {
+  std::string src = "int main() " + std::string(3000, '{') + std::string(3000, '}');
+  RepairReport R = repair(src);
+  CHECK(R.original.resource_limit);
+  CHECK_EQ(R.decision.status, std::string("UNSUPPORTED_CONSTRUCT"));
+  CHECK(R.candidates.empty());
+  CHECK(R.budget.elapsed_ms() < 1000);
+}
+
+// Regression (professor-style suite, P73): an unterminated block comment
+// swallows the rest of the file; replacing it with '}' parses but discards
+// "return 0;", so it must not be recommended.
+TEST(repair_never_recommends_discarding_an_unterminated_comment) {
+  RepairReport R = repair("int main() { /* forgot to close\n return 0; }\n");
+  CHECK(R.decision.status != std::string("RECOMMENDED"));
+  CHECK_EQ(R.decision.status, std::string("LOW_CONFIDENCE"));
+}

@@ -1,1 +1,1 @@
-"""Parallax FastAPI backend: orchestrates the parallaxc compiler."""
+"""IntelliFix FastAPI backend: orchestrates the parallaxc compiler."""

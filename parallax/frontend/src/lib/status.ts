@@ -20,7 +20,7 @@ export const STATUS: Record<DecisionStatus | "COMPILER_FAILURE", StatusMeta> = {
     label: "Multiple plausible repairs",
     tone: "warning",
     short: "Alternatives",
-    meaning: "Structurally different repairs have similar evidence (margin below tau). Parallax ranks them but does not pick one for you.",
+    meaning: "Structurally different repairs have similar evidence (margin below tau). IntelliFix ranks them but does not pick one for you.",
   },
   LOW_CONFIDENCE: {
     label: "Low confidence",
@@ -34,7 +34,8 @@ export const STATUS: Record<DecisionStatus | "COMPILER_FAILURE", StatusMeta> = {
     label: "Unsupported construct",
     tone: "info",
     short: "Unsupported",
-    meaning: "The error is a C construct MiniC deliberately omits; rewriting it would change the program's meaning.",
+    meaning:
+      "The error is a C construct MiniC deliberately omits (rewriting it would change the program's meaning), or the input nests deeper than the parser supports.",
   },
   COMPILER_FAILURE: { label: "Compiler failure", tone: "danger", short: "Failure", meaning: "The compiler failed unexpectedly. This is not a problem with your code." },
 };

@@ -92,6 +92,7 @@ static std::string check_char_literal(const std::string& lit) {
 %}
 
 %option reentrant noyywrap nounput noinput never-interactive 8bit nodefault
+%option nounistd
 %option warn batch
 %option extra-type="parallax::LexState*"
 %option prefix="minic_"

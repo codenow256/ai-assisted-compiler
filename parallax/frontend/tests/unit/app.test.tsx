@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { useEffect } from "react";
 import { DEFAULT_OPTIONS, ProjectProvider, useProject } from "../../src/app/ProjectContext";
 import summary from "../../../evaluation/results/summary.json";
@@ -11,7 +11,7 @@ describe("navigation", () => {
   it("renders every section from the sidebar", async () => {
     mockApi(defaultHandlers({ "/docs": () => ({ docs: [] }), "/docs/README": () => ({ name: "README", markdown: "# Hi" }), "/evaluation/results": () => ({ summary, report_markdown: "", provenance: { file: "", generated_utc: "t", git_commit: "c", kind: "stored" } }) }));
     renderApp("/");
-    expect(await screen.findByRole("heading", { level: 1, name: "Parallax" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { level: 1, name: "IntelliFix" })).toBeInTheDocument();
     const pages: [string, string][] = [
       ["Code workbench", "Code workbench"],
       ["Lexical analysis", "Lexical analysis"],
@@ -47,6 +47,26 @@ describe("workbench and repair laboratory", () => {
     fireEvent.click(screen.getAllByRole("button", { name: /Full analysis/ })[0]);
     expect(await screen.findAllByText("Recommended repair")).not.toHaveLength(0);
     expect(screen.getByText(/insert ';' at 3:16/)).toBeInTheDocument();
+  });
+
+  it("Run lexer and Run parser show their results on the workbench itself", async () => {
+    const lexData = { ...fixtures.semicolon.data };
+    mockApi(defaultHandlers({ "/lex": () => ({ ...fixtures.semicolon, data: lexData }), "/parse": () => fixtures.semicolon }));
+    const src = fixtures.examples.examples.find((e) => e.id === "02_missing_semicolon")!.source;
+    renderApp("/workbench", src);
+    expect(within(await screen.findByTestId("run-lex")).getByText("not run yet")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /Run lexer/ }));
+    expect(await within(screen.getByTestId("run-lex")).findByText(/38 tokens, 0 lexical error/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /Run parser/ }));
+    expect(await within(screen.getByTestId("run-parse")).findByText(/rejected: unexpected type-keyword 'int' at 4:3/)).toBeInTheDocument();
+  });
+
+  it("shows a compiler-unavailable error in the run row instead of a result", async () => {
+    mockApi(defaultHandlers({ "/lex": () => new Response(JSON.stringify({ error: { code: "COMPILER_UNAVAILABLE", message: "The parallaxc compiler binary was not found or is not executable.", hint: "cmake" } }), { status: 503 }) }));
+    renderApp("/workbench", "int main() { return 0; }");
+    fireEvent.click(await screen.findByRole("button", { name: /Run lexer/ }));
+    expect(await within(screen.getByTestId("run-lex")).findByText(/COMPILER_UNAVAILABLE/)).toBeInTheDocument();
+    expect(screen.getByText("Compiler not built")).toBeInTheDocument();
   });
 
   it("accept requires confirmation and can be undone", async () => {

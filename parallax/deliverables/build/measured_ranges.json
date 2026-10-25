@@ -1,0 +1,9 @@
+{
+  "_source": "docs/IntelliFix_Evaluation_and_Reproducibility.md §4: three full evaluation runs (2026-10-24 18:45, 2026-10-25 12:05, 2026-10-25 12:07 UTC). Only the latest run is stored in summary.json; the earlier two were kept as local snapshots during the audit.",
+  "cpct_top1_test_min": 47.4,
+  "cpct_top1_test_max": 49.1,
+  "cpct_agreement_min": 68.6,
+  "cpct_agreement_max": 70.1,
+  "engine_ms_mean_min": 9.6,
+  "engine_ms_mean_max": 13.9
+}

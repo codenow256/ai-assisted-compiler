@@ -17,7 +17,7 @@ MiniC is a small, C-like teaching language. It is **not** ISO C. Every feature l
 | Operators | `+ - * / % = == != < <= > >= && \|\| !` |
 | Punctuation | `( ) { } [ ] ; ,` |
 
-**Recognised but unsupported** (reported as `UNSUPPORTED` tokens with an explanation): string literals, preprocessor lines (`#…`), `++ -- += -= *= /= %= &= \|= ^= <<= >>= -> << >> & \| ^ ~ ? : .`, and the C keywords `struct union enum switch case default do goto typedef sizeof const unsigned signed long short double static extern volatile register auto inline`. They are recognised so that Parallax can say “this is C, not MiniC” rather than inventing a repair.
+**Recognised but unsupported** (reported as `UNSUPPORTED` tokens with an explanation): string literals, preprocessor lines (`#…`), `++ -- += -= *= /= %= &= \|= ^= <<= >>= -> << >> & \| ^ ~ ? : .`, and the C keywords `struct union enum switch case default do goto typedef sizeof const unsigned signed long short double static extern volatile register auto inline`. They are recognised so that IntelliFix can say “this is C, not MiniC” rather than inventing a repair.
 
 ## 2. Grammar (summary)
 
@@ -66,7 +66,7 @@ Assignment is a **statement**, not an expression: `x = y = 1;` and `if (x = 1)` 
 
 | Supported | Not supported (and why) |
 |---|---|
-| global and local variables, multiple declarators, initialisers | pointers, structs, unions, enums (would need a type system Parallax does not have) |
+| global and local variables, multiple declarators, initialisers | pointers, structs, unions, enums (would need a type system IntelliFix does not have) |
 | one-dimensional arrays with constant size; array parameters `int a[]` | multi-dimensional arrays, array initialisers |
 | functions with parameters, `void` functions, `f(void)` | prototypes and declarations without bodies |
 | `if/else`, `while`, `for` (C99-style init declaration), `break`, `continue`, `return` | `do-while`, `switch`, `goto`, labels |

@@ -1,0 +1,11 @@
+{
+  "_source": "PARALLAX_E2E=1 ./scripts/test_all.sh on 2026-10-25 (all layers PASS); counts read from its output",
+  "total": 301,
+  "rows": [
+    ["Compiler unit tests (C++)", "lexer, parser, AST, repair engine; 2 regression tests for defects found in this audit", "68 / 68"],
+    ["Backend API tests (pytest)", "all endpoints, limits, timeouts, crashes, garbage output, Windows binary lookup, static-file safety", "33 / 33"],
+    ["Evaluation tests (pytest)", "metrics, dataset split, 61-case error catalog, 88 professor-style cases, fuzzing, HTTP sequences", "161 / 161"],
+    ["Frontend unit tests (Vitest)", "workbench buttons and result rows, error states, stale results, documentation links", "27 / 27"],
+    ["End-to-end (Playwright, Chromium)", "real browser against the real backend and compiler", "12 / 12"]
+  ]
+}

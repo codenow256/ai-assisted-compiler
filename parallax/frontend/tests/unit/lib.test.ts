@@ -64,5 +64,11 @@ describe("rewriteDocLinks", () => {
     expect(rewriteDocLinks('<a href="../README.md">r</a>')).toContain('href="/docs/README"');
     expect(rewriteDocLinks('<a href="https://example.org/a.md">x</a>')).toContain("https://example.org/a.md");
     expect(rewriteDocLinks('<a href="evaluation/results/report.md">r</a>')).toContain('class="repo-path"');
+    expect(rewriteDocLinks('<a href="IntelliFix_Glossary.md">g</a>')).toContain('href="/docs/IntelliFix_Glossary"');
+  });
+  it("serves doc images through the API", () => {
+    expect(rewriteDocLinks('<img src="images/walkthrough/05-a.png" alt="x">')).toContain('src="/api/docs/images/walkthrough/05-a.png"');
+    expect(rewriteDocLinks('<a href="images/walkthrough/05-a.png">05</a>')).toContain('href="/api/docs/images/walkthrough/05-a.png"');
+    expect(rewriteDocLinks('<img src="images/../secret.png">')).not.toContain("/api/docs/images/../");
   });
 });

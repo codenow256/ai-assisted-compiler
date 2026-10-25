@@ -1,8 +1,14 @@
-# Parallax
+# IntelliFix
 
-**Evidence-Ranked Multi-Hypothesis Syntax Error Detection, Localization, and Correction with Confidence-Aware Abstention**
+**IntelliFix: An Intelligent Compiler for Syntax Error Analysis, Detection, and Correction**
 
-Parallax is a syntax-error investigation workbench for **MiniC**, a small C-like teaching language. It has a Flex/Bison/C++ compiler, a bounded multi-candidate repair engine, a reproducible evaluation harness, a FastAPI backend and a React/TypeScript interface. When a program has a syntax error, Parallax:
+Technique: evidence-ranked multi-hypothesis syntax repair with confidence-aware abstention.
+
+Team: Goutam Jayasingh (24BCE2417) · S Charumeena (24BCI0238) · Raguraman Govindasamy (24BDS0409)
+
+> **Naming.** *IntelliFix* is the product name used in the interface and in all documents. The code keeps its original internal name *Parallax* in identifiers that other files depend on: the `parallax/` directory, the `parallaxc` binary, the C++ `parallax` namespace and `include/parallax/` headers, `PARALLAX_*` environment variables and browser-storage keys. Renaming those would break builds and scripts without changing anything users see.
+
+IntelliFix is a syntax-error investigation workbench for **MiniC**, a small C-like teaching language. It has a Flex/Bison/C++ compiler, a bounded multi-candidate repair engine, a reproducible evaluation harness, a FastAPI backend and a React/TypeScript interface. When a program has a syntax error, IntelliFix:
 
 1. generates alternative local repairs, using the parser's own expected-token sets and layout cues;
 2. validates every candidate with the real parser, on reconstructed source that is re-lexed and re-parsed;
@@ -23,12 +29,12 @@ These are measured, not projected. Full tables: [`docs/RESULTS_AND_IMPACT.md`](d
 
 | System | Top-1 repair = reference AST | Wrong but confident (of all cases) | Coverage |
 |---|---|---|---|
-| Parallax (full), abstention at dev-tuned τ = 1.5 | **71.5%** [67.5, 75.1] | **6.1%** [4.4, 8.5] | 50.7% |
-| Parallax, forced top-1 (no abstention) | 71.5% | 28.5% | 100% |
+| IntelliFix (full), abstention at dev-tuned τ = 1.5 | **71.5%** [67.5, 75.1] | **6.1%** [4.4, 8.5] | 50.7% |
+| IntelliFix, forced top-1 (no abstention) | 71.5% | 28.5% | 100% |
 | Local least-cost repair (baseline C) | 55.2% [51.0, 59.3] | 44.6% | 99.8% |
-| CPCT+ via grmtools `nimbleparse` (baseline G, 2 replicates) | ≈48–49% | ≈51–52% | 100% |
+| CPCT+ via grmtools `nimbleparse` (baseline G, 2 replicates) | ≈47–49% (varies between runs) | ≈51–53% | 100% |
 
-Paired bootstrap, Parallax − least-cost top-1: **+16.3 points**, 95% CI [13.1, 19.4]. Results that did **not** improve are reported too. The follow-on stability evidence gives no measurable accuracy gain (+0.2 points, CI includes 0). Selective risk on test (12.0%) exceeds the 10% target that τ was tuned for on dev. The errors are **synthetic mutations**, not real student code.
+Paired bootstrap, IntelliFix − least-cost top-1: **+16.3 points**, 95% CI [13.1, 19.4]. Results that did **not** improve are reported too. The follow-on stability evidence gives no measurable accuracy gain (+0.2 points, CI includes 0). Selective risk on test (12.0%) exceeds the 10% target that τ was tuned for on dev. The errors are **synthetic mutations**, not real student code.
 
 ---
 
@@ -79,6 +85,18 @@ Open <http://127.0.0.1:8000>, choose **Guided demo** in the sidebar, or open the
 
 Development mode with hot reload: `./scripts/run_dev.sh` (API on :8000, Vite on <http://localhost:5173>).
 
+### Windows
+
+The UI and backend run on Windows as they are. The **native compiler must be built first**; until then the UI correctly shows “Compiler not built”. You need a C++ compiler: MSYS2 MinGW-w64 (recommended) or Visual Studio Build Tools with the “Desktop development with C++” workload, plus `win_flex`/`win_bison`. Then, from `parallax`:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\windows\check_environment.ps1   # what is missing?
+powershell -ExecutionPolicy Bypass -File scripts\windows\build.ps1               # builds parallaxc.exe and the UI
+powershell -ExecutionPolicy Bypass -File scripts\windows\run_backend.ps1         # http://127.0.0.1:8000
+```
+
+Step by step: [`docs/INSTALLATION_AND_TROUBLESHOOTING.md` §3](docs/INSTALLATION_AND_TROUBLESHOOTING.md). Status: the Windows build is cross-compiled with MinGW-w64 and tested under Wine (68/68 tests). The PowerShell scripts and the MSVC build have **not** been executed.
+
 ### Use the compiler directly
 
 ```bash
@@ -95,7 +113,7 @@ Development mode with hot reload: `./scripts/run_dev.sh` (API on :8000, Vite on 
 PARALLAX_E2E=1 ./scripts/test_all.sh        # also Playwright E2E (backend must run on :8000)
 ```
 
-Layers (latest run, see [`docs/TESTING.md`](docs/TESTING.md)): 66 C++ tests, 32 API tests, 71 evaluation tests (including 61 error-catalog cases), 24 frontend unit tests and 12 end-to-end checks, all passing.
+Layers (latest run, 25 Oct 2026, see [`docs/TESTING.md`](docs/TESTING.md)): 68 C++ tests, 33 API tests, 161 evaluation tests (including 61 error-catalog and 88 professor-style cases, seeded fuzzing and HTTP sequences), 27 frontend unit tests and 12 end-to-end checks, all passing.
 
 ## Reproduce the evaluation
 
@@ -122,7 +140,7 @@ CPCT+ runs only if `nimbleparse` is installed (`cargo install nimbleparse`); oth
 | [RESULTS_AND_IMPACT](docs/RESULTS_AND_IMPACT.md) | measured results, including negative ones |
 | [ERROR_CATALOG](docs/ERROR_CATALOG.md) / [observed results](docs/ERROR_CATALOG_RESULTS.md) | cases, expected and observed behaviour |
 | [TESTING](docs/TESTING.md) | test layers, commands, outcomes |
-| [INSTALLATION_AND_TROUBLESHOOTING](docs/INSTALLATION_AND_TROUBLESHOOTING.md) | setup on Linux/macOS/Windows (WSL) |
+| [INSTALLATION_AND_TROUBLESHOOTING](docs/INSTALLATION_AND_TROUBLESHOOTING.md) | setup on Linux, macOS, Windows (MSYS2, Visual Studio Build Tools or WSL2) |
 | [DEMO_SCRIPT](docs/DEMO_SCRIPT.md) | timed live demonstration |
 | [VIVA_PREPARATION](docs/VIVA_PREPARATION.md) | likely questions and defensible answers |
 | [DECISION_LOG](docs/DECISION_LOG.md) | design decisions and reasons |
@@ -130,9 +148,25 @@ CPCT+ runs only if `nimbleparse` is installed (`cargo install nimbleparse`); oth
 | [CONTRIBUTION_AND_IMPACT](docs/CONTRIBUTION_AND_IMPACT.md) | feature-to-test and feature-to-evidence tables |
 | [PRESENTATION_OUTLINE](docs/PRESENTATION_OUTLINE.md) | short talk outline |
 
+**Project-submission material (IntelliFix_\*)**
+
+| Document | Use it for |
+|---|---|
+| [Capability matrix](docs/IntelliFix_Capability_Matrix.md) | what is implemented, partial, blocked or untested, with evidence |
+| [Random-input test report](docs/IntelliFix_Random_Input_Test_Report.md) (generated) | 88 professor-style cases, 800 fuzz inputs, 7 HTTP sequences |
+| [Live evaluation guide](docs/IntelliFix_Live_Evaluation_Guide.md) | handling an examiner's own input; decision tree |
+| [Evaluation and reproducibility](docs/IntelliFix_Evaluation_and_Reproducibility.md) | audit of every headline number |
+| [Research contribution and novelty](docs/IntelliFix_Research_Contribution_and_Novelty.md) | contribution-to-evidence table; claims to avoid |
+| [Complete learning guide](docs/IntelliFix_Complete_Learning_Guide.md) · [From zero to advanced](docs/IntelliFix_From_Zero_to_Advanced_Guide.md) · [Glossary](docs/IntelliFix_Glossary.md) | learning the project |
+| [End-to-end trace](docs/IntelliFix_End_to_End_Trace.md) · [Visual walkthrough](docs/IntelliFix_Visual_Walkthrough.md) | one real run, stage by stage; screenshots |
+| [Viva question bank](docs/IntelliFix_Viva_Question_Bank.md) · [Mock viva](docs/IntelliFix_Mock_Viva.md) | viva preparation |
+| [Demo script](docs/IntelliFix_Demo_Script.md) · [Quick reference](docs/IntelliFix_Demo_Quick_Reference.md) · [Presentation and live-demo guide](docs/IntelliFix_Presentation_and_Live_Demo_Guide.md) · [Team plan](docs/IntelliFix_Team_Presentation_Plan.md) | the presentation |
+
+Editable deliverables (Word/PowerPoint) are in [`deliverables/`](deliverables).
+
 ## Limitations in one paragraph
 
-Parallax validates **syntax only**: a parser-valid repair can still change meaning. MiniC is a subset of C. The benchmark uses synthetic mutations of 30 hand-written programs. The evidence weights were hand-set (on the dev split), and the decision margin is a score difference, **not a probability**. Repairs that need three or more tokens at one error site are outside the bounded search. See [`docs/KNOWN_LIMITATIONS.md`](docs/KNOWN_LIMITATIONS.md).
+IntelliFix validates **syntax only**: a parser-valid repair can still change meaning. MiniC is a subset of C. The benchmark uses synthetic mutations of 30 hand-written programs. The evidence weights were hand-set (on the dev split), and the decision margin is a score difference, **not a probability**. Repairs that need three or more tokens at one error site are outside the bounded search. See [`docs/KNOWN_LIMITATIONS.md`](docs/KNOWN_LIMITATIONS.md).
 
 ## Troubleshooting (most common)
 
@@ -142,4 +176,4 @@ Parallax validates **syntax only**: a parser-valid repair can still change meani
 
 ## License
 
-MIT for Parallax code (see [`LICENSE`](LICENSE)); third-party components are listed in [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
+MIT for IntelliFix code (see [`LICENSE`](LICENSE)); third-party components are listed in [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).

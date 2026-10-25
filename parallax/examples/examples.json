@@ -28,7 +28,7 @@
   "title": "Missing '{'",
   "category": "syntax",
   "description": "A while loop whose body lost its opening brace; the error surfaces lines later.",
-  "why": "Structurally different repairs parse; indentation evidence ranks the intended one first, but the margin is small so Parallax reports alternatives.",
+  "why": "Structurally different repairs parse; indentation evidence ranks the intended one first, but the margin is small so IntelliFix reports alternatives.",
   "expected_status": "MULTIPLE_PLAUSIBLE"
  },
  {
@@ -36,7 +36,7 @@
   "title": "Missing operand",
   "category": "syntax",
   "description": "A binary operator without its right operand.",
-  "why": "Deleting the operator or inventing an operand are both possible; Parallax does not pretend to know which.",
+  "why": "Deleting the operator or inventing an operand are both possible; IntelliFix does not pretend to know which.",
   "expected_status": "MULTIPLE_PLAUSIBLE"
  },
  {
@@ -60,7 +60,7 @@
   "title": "Missing variable name",
   "category": "abstain",
   "description": "A declaration without a name.",
-  "why": "Every repair must invent an identifier, so Parallax reports low confidence instead of guessing.",
+  "why": "Every repair must invent an identifier, so IntelliFix reports low confidence instead of guessing.",
   "expected_status": "LOW_CONFIDENCE"
  },
  {
@@ -84,7 +84,7 @@
   "title": "Unsupported C construct",
   "category": "unsupported",
   "description": "Uses i++, which MiniC deliberately omits.",
-  "why": "Parallax distinguishes 'not MiniC' from a typo and refuses to silently rewrite it.",
+  "why": "IntelliFix distinguishes 'not MiniC' from a typo and refuses to silently rewrite it.",
   "expected_status": "UNSUPPORTED_CONSTRUCT"
  },
  {
@@ -92,7 +92,7 @@
   "title": "Extra ')'",
   "category": "syntax",
   "description": "A duplicated closing parenthesis after a call.",
-  "why": "Deleting the extra ')' and inserting a matching '(' produce the same AST and are grouped; the runner-up (turning ')' into ';', i.e. an extra empty statement) is structurally different, and the margin (1.0) is below the dev-selected threshold, so Parallax lists alternatives while ranking the intended repair first.",
+  "why": "Deleting the extra ')' and inserting a matching '(' produce the same AST and are grouped; the runner-up (turning ')' into ';', i.e. an extra empty statement) is structurally different, and the margin (1.0) is below the dev-selected threshold, so IntelliFix lists alternatives while ranking the intended repair first.",
   "expected_status": "MULTIPLE_PLAUSIBLE"
  }
 ]

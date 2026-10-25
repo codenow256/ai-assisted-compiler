@@ -21,3 +21,6 @@ evaluation/results/tmp/
 
 # The repository root .gitignore ignores lib/; Parallax has source in lib/ folders.
 !lib/
+
+# deliverable builders live in deliverables/build (their node_modules stay ignored)
+!/deliverables/build/

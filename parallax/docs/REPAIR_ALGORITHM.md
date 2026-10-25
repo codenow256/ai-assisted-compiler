@@ -29,7 +29,7 @@ An edit is `Insert(pos, kind)`, `Delete(pos)` or `Replace(pos, kind)` on a token
 | delete | 1.0 | one removed token |
 | replace | 1.5 | one local change, but it both removes and invents; cheaper than delete + insert (2.0) |
 
-Inserted identifiers and literals get **visible placeholders** (`__hole`, `0`, `0.0`, `'?'`, `true`/`false`). Parallax never pretends to know a missing name.
+Inserted identifiers and literals get **visible placeholders** (`__hole`, `0`, `0.0`, `'?'`, `true`/`false`). IntelliFix never pretends to know a missing name.
 
 ## 3. Candidate generation (bounded)
 
@@ -131,7 +131,7 @@ Checked in this order:
 | Status | Condition |
 |---|---|
 | `NO_REPAIR_NEEDED` | the original parses |
-| `UNSUPPORTED_CONSTRUCT` | the first error token is an `UNSUPPORTED` C construct (unless abstention is disabled) |
+| `UNSUPPORTED_CONSTRUCT` | the first error token is an `UNSUPPORTED` C construct (unless abstention is disabled), **or** the parser hit its stack limit (nesting too deep); in the second case no search is run, because no token edit near the limit can make the input parse |
 | `NO_SAFE_REPAIR` | no candidate is accepted and the budget is not exhausted |
 | `BUDGET_EXHAUSTED` | the budget ran out before a complete plan was found |
 | `LOW_CONFIDENCE` | the best plan does not reach a valid program, **or** it contains placeholder tokens |
@@ -141,7 +141,7 @@ Checked in this order:
 
 With abstention disabled (ablation F), any existing plan is `RECOMMENDED`.
 
-**τ selection.** On the dev split, τ ∈ {0, 0.25, …, 4} is chosen to maximise coverage subject to dev selective risk ≤ 10%. The result is **τ = 1.5**. This is a threshold on a score margin; no probability calibration is claimed (so no calibration error is reported). The policy is exactly reproducible offline from stored margins; the evaluation checks this against direct `--tau` runs (25/25 identical).
+**τ selection.** On the dev split, τ ∈ {0, 0.25, …, 4} is chosen to maximise coverage subject to dev selective risk ≤ 10%. The result is **τ = 1.5**. This is a threshold on a score margin; no probability calibration is claimed (so no calibration error is reported). The policy is exactly reproducible offline from stored margins; the evaluation checks this against direct `--tau` runs (25/25 identical in the 25 Oct 2026 re-run, after fixing a harness bug that had hidden this count).
 
 ## 9. Search limits and failure handling
 
@@ -156,7 +156,7 @@ With abstention disabled (ablation F), any existing plan is `RECOMMENDED`.
 
 Budget exhaustion sets `budget.exhausted` and stops further generation; the status reflects it. Deep nesting is caught by the parser's stack limit. The process is bounded by the backend timeout (15 s) and the input limit (64 KB).
 
-**Complexity.** Let *n* be the number of tokens and *k* the largest expected-set size (≤ 25). One parse is O(*n*). A repair step tries O(*w*·*k*) single edits (*w* = 4 positions), plus O(*s*·*k*) pairs only when needed (*s* = 12 seeds). Lanes multiply this by at most 3 + 3·2 + … bounded by the 12-leaf cap. Measured on the test split: mean 306 parser invocations per case (p95 1112), 9.6 ms engine time on average.
+**Complexity.** Let *n* be the number of tokens and *k* the largest expected-set size (≤ 25). One parse is O(*n*). A repair step tries O(*w*·*k*) single edits (*w* = 4 positions), plus O(*s*·*k*) pairs only when needed (*s* = 12 seeds). Lanes multiply this by at most 3 + 3·2 + … bounded by the 12-leaf cap. Measured on the test split: mean 306 parser invocations per case (p95 1112), about 10–14 ms engine time on average (9.6–13.9 ms across three runs; it depends on machine load, the parse count does not).
 
 ## 10. Pseudocode (top level)
 

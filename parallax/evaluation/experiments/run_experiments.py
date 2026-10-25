@@ -354,13 +354,13 @@ def main() -> int:
     # re-thresholded status on a deterministic sample of test cases.
     rng = random.Random(1)
     sample = rng.sample(test, min(25, len(test))) if test else []
-    agree = 0
+    tau_agree = 0  # (named apart from the CPCT+ replicate list below, which used to overwrite it)
     for c in sample:
         doc = compiler.run("repair", c["corrupted"], ["--tau", str(tau)], timeout=TIMEOUT_S)
         direct = doc["repair"]["decision"]["status"] if "repair" in doc else "COMPILER_FAILURE"
         p = by_id[c["id"]]["P"]
         if direct == status_at_tau(p["status"], p["margin"], tau):
-            agree += 1
+            tau_agree += 1
 
     cpct = None
     status = cpctplus_adapter.availability()
@@ -394,7 +394,7 @@ def main() -> int:
         "runtime_seconds": elapsed,
         "systems": SYSTEMS,
         "tau_selection": {**tau_sel, "target_risk": TARGET_RISK, "selected_on": "dev",
-                          "offline_rethreshold_check": {"sample": len(sample), "agree": agree}},
+                          "offline_rethreshold_check": {"sample": len(sample), "agree": tau_agree}},
         "dev": evaluate_split(dev, rows, tau) if dev else None,
         "test": evaluate_split(test, rows, tau) if test else None,
         "test_default_tau": evaluate_split(test, rows, 1.0) if test else None,

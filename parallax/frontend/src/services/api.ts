@@ -1,4 +1,4 @@
-// Typed client for the Parallax FastAPI backend. Every call has a timeout,
+// Typed client for the IntelliFix FastAPI backend. Every call has a timeout,
 // can be aborted (stale-request handling), and failures become ApiError
 // values with a stable `code` so the UI can explain them precisely.
 import type {
@@ -58,7 +58,7 @@ async function request<T>(path: string, init: RequestInit & { timeoutMs?: number
     }
     throw new ApiError(
       "BACKEND_UNAVAILABLE",
-      "Cannot reach the Parallax backend.",
+      "Cannot reach the IntelliFix backend.",
       "Start it with: cd parallax/backend && uvicorn app.main:app --port 8000",
     );
   } finally {

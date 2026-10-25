@@ -22,17 +22,17 @@ The references were checked against publisher pages or official repositories on 
 | Selective prediction / reject option | abstain when unsure; evaluate with risk–coverage curves | El-Yaniv & Wiener, *On the Foundations of Noise-free Selective Classification*, JMLR 11:1605–1641, 2010 — [JMLR](https://jmlr.org/papers/v11/el-yaniv10a.html); Geifman & El-Yaniv, *Selective Classification for Deep Neural Networks*, NeurIPS 2017 — [arXiv:1705.08500](https://arxiv.org/abs/1705.08500) |
 | Binomial confidence intervals | Wilson score interval *(background)* | Wilson, JASA 1927 |
 
-## 3. What Parallax inherits
+## 3. What IntelliFix inherits
 
-- **Local repair with a progress criterion** (accept an edit if parsing continues N tokens past it) comes from the Burke–Fisher and Corchuelo et al. family; Parallax uses N = 3.
+- **Local repair with a progress criterion** (accept an edit if parsing continues N tokens past it) comes from the Burke–Fisher and Corchuelo et al. family; IntelliFix uses N = 3.
 - **Insert/delete/replace edit operations with costs** come from minimum-distance repair.
 - **Grammar-guided candidate vocabularies** use Bison's LAC to obtain exact expected tokens at any prefix position.
 - **Panic-mode recovery** (Bison `error` productions) is used both as a baseline and to count residual diagnostics.
 - **Risk–coverage evaluation and AURC** come from selective classification.
 
-## 4. What Parallax integrates (engineering contribution)
+## 4. What IntelliFix integrates (engineering contribution)
 
-The following combination, as one inspectable and tested pipeline, is what Parallax adds:
+The following combination, as one inspectable and tested pipeline, is what IntelliFix adds:
 
 1. Multi-candidate local generation guided by exact LAC expected sets, with **layout-informed generators** that reach further back (line-end `;`, brace insertion at indentation changes, doubled delimiters).
 2. **Two-level validation**: token-level parsing, then **source round-trip** (rebuild text with the user's original whitespace and comments, re-lex, check equality with the edited stream, re-parse). A token-index edit therefore cannot land at a wrong source position unnoticed.
@@ -68,10 +68,10 @@ Paired differences on the **held-out test split** with confidence intervals that
 | H4 | **Weak.** Coverage 50.7% vs 48.9% at the same wrong-confident rate; AURC 0.139 vs 0.143. Small effect. |
 | H5 | **Not supported.** +0.2 points, CI [−0.4, 0.9]. |
 
-## 8. What Parallax cannot claim
+## 8. What IntelliFix cannot claim
 
 - That any individual technique is novel.
 - That a recommended repair is what the programmer intended, or that it is semantically correct.
 - That the results generalise to real student programs or to full C: the benchmark consists of synthetic mutations of 30 programs.
 - That the margin is a probability. No calibration to probabilities was attempted; calibration error is therefore not reported.
-- That Parallax is better than CPCT+ at what CPCT+ was designed for. CPCT+ aims to report all minimum-cost repairs and to reduce cascading errors, not to choose the intended repair. Our comparison measures one specific use (top-1 AST recovery) on one grammar.
+- That IntelliFix is better than CPCT+ at what CPCT+ was designed for. CPCT+ aims to report all minimum-cost repairs and to reduce cascading errors, not to choose the intended repair. Our comparison measures one specific use (top-1 AST recovery) on one grammar.

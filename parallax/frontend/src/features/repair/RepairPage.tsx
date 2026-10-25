@@ -159,7 +159,7 @@ function OptionsPanel() {
         <label className="toggle">
           Strategy
           <select className="select" value={o.strategy} onChange={(e) => set({ strategy: e.target.value as typeof o.strategy })}>
-            <option value="parallax">Parallax (evidence ranking)</option>
+            <option value="parallax">IntelliFix (evidence ranking)</option>
             <option value="least-cost">Least-cost baseline (C)</option>
           </select>
         </label>
@@ -353,7 +353,7 @@ function ClassesView({ doc, onPick }: { doc: RepairDoc; onPick: (candidateId: nu
   return (
     <div className="stack">
       <p className="small muted">
-        A class is a set of accepted candidates whose repaired programs have the identical canonical AST (node kinds, attributes and child order; spans, whitespace, comments and redundant parentheses ignored). Candidates that cannot be completed yet are grouped by the structure of their panic-mode recovery tree. The decision margin is measured between the best <em>class</em> and the best <em>different</em> class, so equivalent candidates never make Parallax doubt itself.
+        A class is a set of accepted candidates whose repaired programs have the identical canonical AST (node kinds, attributes and child order; spans, whitespace, comments and redundant parentheses ignored). Candidates that cannot be completed yet are grouped by the structure of their panic-mode recovery tree. The decision margin is measured between the best <em>class</em> and the best <em>different</em> class, so equivalent candidates never make IntelliFix doubt itself.
         {!r.config.grouping && " Grouping is disabled for this run: every candidate is its own class."}
       </p>
       <div className="table-wrap">

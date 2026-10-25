@@ -6,25 +6,25 @@ Each answer has five parts: **A** a short answer for the viva · **T** the techn
 **A** An integrated, inspectable pipeline that generates several syntax repairs, validates each with the real parser, ranks them with interpretable evidence, groups them by AST, explores follow-on errors, and abstains when the evidence is weak. It is evaluated against baselines and ablations. **T** See RESEARCH_POSITIONING §4. **F** `repair_engine.cpp`, `evaluation/`. **E** test split: top-1 +16.3 pts over least-cost (CI 13.1–19.4); wrong-confident 6.1% vs 28.5%. **L** No single technique is new; the claims are about integration and measurement on synthetic data.
 
 ### 2. How is this different from ordinary Bison error reporting?
-**A** Bison reports where it got stuck and which tokens it expected. Parallax uses that information to propose, validate and compare repairs, and decides whether one deserves a recommendation. **T** LAC expected sets drive generation; panic mode is one baseline. **F** `minic.y`. **E** baseline A localises exactly in 76.3% of cases, Parallax's first edit in 86.7%. **L** Parallax costs about 300 parses per error, versus 1.
+**A** Bison reports where it got stuck and which tokens it expected. IntelliFix uses that information to propose, validate and compare repairs, and decides whether one deserves a recommendation. **T** LAC expected sets drive generation; panic mode is one baseline. **F** `minic.y`. **E** baseline A localises exactly in 76.3% of cases, IntelliFix's first edit in 86.7%. **L** IntelliFix costs about 300 parses per error, versus 1.
 
 ### 3. Panic mode vs local repair?
 **A** Panic mode throws tokens away until it can resynchronise. It reports errors but never fixes them, and it creates cascades. Local repair edits a few tokens so parsing can continue. **T** `error ';'` / `error '}'` productions vs insert/delete/replace with a progress check. **E** B reports 3.85 diagnostics per case for 1–2 real errors; 61% of cases have spurious ones. **L** Local repair can choose a wrong but cheap fix.
 
 ### 4. What is the relationship to CPCT+?
-**A** CPCT+ (Diekmann & Tratt, ECOOP 2020) finds the complete set of minimum-cost repair sequences at an error and picks one. Parallax shares the local-repair idea but ranks candidates with extra evidence and can decline to choose. We ran the real CPCT+ (grmtools `nimbleparse` 0.15.0) as baseline G. **T** Same productions and token stream; we replay its first sequence. **F** `evaluation/baselines/cpctplus_adapter.py`. **E** G top-1 about 48–49%; its two replicates agree on only 70.1% of cases (ties are broken arbitrarily). **L** CPCT+ is designed for recovery (fewer cascades), not intent; we did not measure that.
+**A** CPCT+ (Diekmann & Tratt, ECOOP 2020) finds the complete set of minimum-cost repair sequences at an error and picks one. IntelliFix shares the local-repair idea but ranks candidates with extra evidence and can decline to choose. We ran the real CPCT+ (grmtools `nimbleparse` 0.15.0) as baseline G. **T** Same productions and token stream; we replay its first sequence. **F** `evaluation/baselines/cpctplus_adapter.py`. **E** G top-1 about 47–49% (it varies between runs); its two replicates agree on only 68.6–70.1% of cases (ties are broken arbitrarily). **L** CPCT+ is designed for recovery (fewer cascades), not intent; we did not measure that.
 
 ### 5. Why are multiple candidates necessary?
 **A** Because many edits make a program parse, and the cheapest is often wrong. **E** For `int c = a b;` there are 20 distinct valid ASTs at cost 1. The least-cost baseline is right 55% of the time; evidence ranking over the same candidates 71.5%. **F** `repair_ambiguous_operator_is_multiple_plausible`.
 
 ### 6. Why isn't parser validity proof of intended meaning?
-**A** The grammar accepts many programs; validity says nothing about which one was meant. **E** `int = 5;` parses after inventing `__hole`, so Parallax reports LOW_CONFIDENCE; deleting `while` makes `(b != 0) {…}` parse after inserting `;`, a known false-confident failure. **L** A semantic check would catch some of these; MiniC has none beyond names.
+**A** The grammar accepts many programs; validity says nothing about which one was meant. **E** `int = 5;` parses after inventing `__hole`, so IntelliFix reports LOW_CONFIDENCE; deleting `while` makes `(b != 0) {…}` parse after inserting `;`, a known false-confident failure. **L** A semantic check would catch some of these; MiniC has none beyond names.
 
 ### 7. How is the repair cost calculated?
 **A** Insert 1, delete 1, replace 1.5 (one local change, but it both removes and invents a token). **F** `edit_cost` in `repair_stream.cpp`. **L** The weights are a design choice; cost is only one feature of the score.
 
 ### 8. How are candidate edits generated?
-**A** At the error and up to 3 tokens before it, Parallax asks the parser which tokens it would accept (an exact LAC probe), then tries inserting, deleting or replacing with those tokens. Layout generators reach further back for line-end `;`, braces at indentation changes and doubled delimiters. Pairs of edits are tried only if no single edit works. **F** `generate_step`. **E** about 100 candidates per case on average. **L** Bounded: ≥ 3 edits at one site are out of scope (catalog S33/S34).
+**A** At the error and up to 3 tokens before it, IntelliFix asks the parser which tokens it would accept (an exact LAC probe), then tries inserting, deleting or replacing with those tokens. Layout generators reach further back for line-end `;`, braces at indentation changes and doubled delimiters. Pairs of edits are tried only if no single edit works. **F** `generate_step`. **E** about 100 candidates per case on average. **L** Bounded: ≥ 3 edits at one site are out of scope (catalog S33/S34).
 
 ### 9. How is each candidate validated?
 **A** Twice. The edited token stream is parsed; then the source is rebuilt from it with the original whitespace and comments, re-lexed (it must reproduce exactly the edited tokens) and re-parsed. **F** `classify`, `analyse`. **E** test `repair_every_accepted_candidate_is_parser_validated`. **L** The validation is syntactic only.
@@ -42,13 +42,13 @@ Each answer has five parts: **A** a short answer for the viva · **T** the techn
 **A** Cost cannot tell `;` from `,` or a correct `{` from deleting a later `}`. Layout, names, arity and residual errors can. **E** Without layout evidence top-1 drops 8.9 points; arity fixes the missing-comma category (100% vs 38%).
 
 ### 14. What does diagnostic stability mean?
-**A** For each explored hypothesis about the first error, Parallax repairs the later errors and records where they occur. A later error site found under every explored hypothesis is “stable across the tested hypotheses”. **F** `compute_stability`. **L** It is evidence, not proof of independence; only up to 3 hypotheses are explored.
+**A** For each explored hypothesis about the first error, IntelliFix repairs the later errors and records where they occur. A later error site found under every explored hypothesis is “stable across the tested hypotheses”. **F** `compute_stability`. **L** It is evidence, not proof of independence; only up to 3 hypotheses are explored.
 
 ### 15. What can make a later error appear or disappear?
 **A** The first repair changes the parser's state for everything after it. Deleting `if` turns `(s > 10 {` into a call-like expression with different errors; inserting `;` leaves the `if` intact. Panic mode can also invent cascades by resynchronising in the wrong place.
 
 ### 16. Why is abstention a feature?
-**A** A wrong confident fix misleads the learner. When evidence is weak, Parallax ranks alternatives but does not choose. **E** Wrong-confident falls from 28.5% to 6.1% (CI of the difference −25.9 to −18.9 points) at 50.7% coverage.
+**A** A wrong confident fix misleads the learner. When evidence is weak, IntelliFix ranks alternatives but does not choose. **E** Wrong-confident falls from 28.5% to 6.1% (CI of the difference −25.9 to −18.9 points) at 50.7% coverage.
 
 ### 17. How is confidence calibrated?
 **A** It isn't calibrated to probabilities, and we say so. The decision uses a score margin and a threshold τ chosen on the dev split for ≤ 10% selective risk. **E** τ = 1.5; dev risk 5.5%; test risk 12.0% (did not fully transfer). **L** No probability or ECE claims.
@@ -99,16 +99,16 @@ Each answer has five parts: **A** a short answer for the viva · **T** the techn
 **A** Missing compiler → HTTP 503 with the build command; backend down → UI banner with the start command; Flex/Bison missing → CMake fails clearly; no `nimbleparse` → G reported as not run. **E** `test_missing_compiler_is_503`, the offline UI test.
 
 ### 33. What is the time complexity of the bounded search?
-**A** O(*w*·*k*) candidate parses per step, each O(*n*), with *w* = 4 positions and *k* ≤ 25 expected kinds, plus at most 12 seeds × O(*k*) for pairs, times at most 12 lane leaves; hard-capped at 30,000 parses or 4 s. **E** mean 306 parses and 9.6 ms per case.
+**A** O(*w*·*k*) candidate parses per step, each O(*n*), with *w* = 4 positions and *k* ≤ 25 expected kinds, plus at most 12 seeds × O(*k*) for pairs, times at most 12 lane leaves; hard-capped at 30,000 parses or 4 s. **E** mean 306 parses per case (deterministic) and about 10–14 ms engine time (depends on machine load).
 
 ### 34. How are resource limits enforced?
 **A** In the engine (parse and time budget, window, depth, leaves), in the parser (5000-entry stack), in the CLI and API (64 KB input, 1 MB body) and in the backend (15 s timeout with kill, 4 concurrent processes).
 
 ### 35. How do you ensure reproducibility?
-**A** Seeded generation, deterministic engine (tie-breaks; test `repair_is_deterministic`), recorded environment and commit, pinned dependencies, one script per step. **E** A re-run reproduced every Parallax metric exactly. **L** CPCT+ is non-deterministic, hence two replicates.
+**A** Seeded generation, deterministic engine (tie-breaks; test `repair_is_deterministic`), recorded environment and commit, pinned dependencies, one script per step. **E** A re-run reproduced every IntelliFix metric exactly. **L** CPCT+ is non-deterministic, hence two replicates.
 
-### 36. Which parts are established and which are Parallax's?
-**A** Established: panic mode, local insert/delete/replace repair with a progress check, LAC, AST equality, selective prediction. Parallax's: their combination, the layout/name/indentation evidence, AST-class margins, hypothesis lanes with stability reporting, the abstention policy, and the evaluation and UI.
+### 36. Which parts are established and which are IntelliFix's?
+**A** Established: panic mode, local insert/delete/replace repair with a progress check, LAC, AST equality, selective prediction. IntelliFix's: their combination, the layout/name/indentation evidence, AST-class margins, hypothesis lanes with stability reporting, the abstention policy, and the evaluation and UI.
 
 ### 37. What would you change with more time?
 **A** Real student data; learned or cross-validated weights with calibration; a larger dev set for τ; semantic checks (types) as evidence; wider search (cost 3) using CPCT+-style search; a user study; macOS/Windows CI.

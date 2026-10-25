@@ -33,7 +33,12 @@ add_library(parallax_core STATIC
   ${BISON_MiniCParser_OUTPUTS}
   ${FLEX_MiniCLexer_OUTPUTS})
 target_include_directories(parallax_core PUBLIC include ${GEN_DIR})
-if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+if(MSVC)
+  # /utf-8: sources contain UTF-8 comments; /EHsc: standard exceptions;
+  # silence the CRT "unsafe function" deprecations triggered by Flex output.
+  target_compile_options(parallax_core PUBLIC /utf-8 /EHsc)
+  target_compile_definitions(parallax_core PUBLIC _CRT_SECURE_NO_WARNINGS _CRT_NONSTDC_NO_DEPRECATE)
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   target_compile_options(parallax_core PRIVATE -Wall -Wextra)
   # Flex/Bison generated code trips a few harmless warnings.
   set_source_files_properties(${FLEX_MiniCLexer_OUTPUTS} ${BISON_MiniCParser_OUTPUTS}
@@ -42,6 +47,11 @@ endif()
 
 add_executable(parallaxc src/main.cpp)
 target_link_libraries(parallaxc PRIVATE parallax_core)
+if(MINGW)
+  # A MinGW/MSYS2 build would otherwise need libstdc++/libgcc DLLs on PATH
+  # when the backend launches it from an ordinary Windows shell.
+  target_link_options(parallaxc PRIVATE -static -static-libgcc -static-libstdc++)
+endif()
 
 enable_testing()
 add_executable(parallax_tests tests/test_main.cpp tests/test_lexer.cpp tests/test_parser.cpp tests/test_repair.cpp)

@@ -109,7 +109,7 @@ export function LearningPage() {
     },
     {
       id: "abstention", title: "10. Confidence & abstention", route: "/repair",
-      simple: "If two different fixes look equally good, Parallax says so instead of guessing.",
+      simple: "If two different fixes look equally good, IntelliFix says so instead of guessing.",
       technical: "RECOMMENDED only if the plan is complete, invents nothing, and beats every structurally different alternative (at the root and each later step) by τ; τ is chosen on dev to keep selective risk ≤ 10%.",
       input: "class scores, plans", output: "decision status with reasons",
       why: "A wrong confident correction is worse than an honest “here are the options”.",
@@ -118,7 +118,7 @@ export function LearningPage() {
     },
     {
       id: "metrics", title: "11. Evaluation metrics", route: "/evaluation",
-      simple: "We break known-good programs on purpose and check whether Parallax restores them.",
+      simple: "We break known-good programs on purpose and check whether IntelliFix restores them.",
       technical: "Top-1/top-3 AST match against the original, exact token match, coverage, selective accuracy, wrong-and-confident rate, AURC, localisation, cost; Wilson intervals and paired bootstrap; dev/test split by program.",
       input: "benchmark cases", output: "summary.json, report.md",
       why: "Claims about improvement need measurements, including where the method does not help.",
@@ -132,7 +132,7 @@ export function LearningPage() {
       <div className="page-head">
         <div>
           <h1>Learning center</h1>
-          <p>The Parallax pipeline, one stage at a time. Each stage has a plain explanation, a technical one, and a live example from your latest run.</p>
+          <p>The IntelliFix pipeline, one stage at a time. Each stage has a plain explanation, a technical one, and a live example from your latest run.</p>
         </div>
       </div>
       <div className="stack">

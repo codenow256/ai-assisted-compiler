@@ -1,4 +1,4 @@
-/* Parallax design system. Tokens first; components below.
+/* IntelliFix design system. Tokens first; components below.
    Status is never conveyed by colour alone: badges always carry an icon
    and text. */
 
@@ -98,7 +98,7 @@ h2 { font-size: 17px; font-weight: 640; }
 h3 { font-size: 14px; font-weight: 640; }
 h4 { font-size: 12px; font-weight: 650; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
 p { margin: 0; }
-code, pre, .mono { font-family: var(--font-mono); font-size: 12.5px; }
+code, pre, .mono, .cm-content { font-family: var(--font-mono); font-size: 12.5px; font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
 :focus-visible { outline: none; box-shadow: var(--focus); border-radius: 6px; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .muted { color: var(--text-muted); }
@@ -385,3 +385,7 @@ table.table { width: 100%; border-collapse: collapse; font-size: 13px; }
 .chart-tip { position: absolute; pointer-events: none; background: var(--surface); border: 1px solid var(--border-strong); border-radius: 8px; box-shadow: var(--shadow-md); padding: 7px 10px; font-size: 12px; z-index: 5; white-space: nowrap; }
 .chart-tip .row { gap: 6px; }
 .chart-wrap { position: relative; }
+
+/* Source code must show the characters the compiler sees: no ligatures (`<=` must not render as `≤`). */
+.kbd, .code-block, .code-inline, .diff, .tree, [class*="mono"] { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
+.md img { max-width: 100%; height: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); margin: 6px 0 12px; }

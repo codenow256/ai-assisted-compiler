@@ -1,4 +1,4 @@
-// Parallax repair engine. Pipeline (docs/REPAIR_ALGORITHM.md):
+// IntelliFix repair engine. Pipeline (docs/REPAIR_ALGORITHM.md):
 //   localise -> generate (grammar-guided, bounded) -> token-level parser
 //   validation -> source reconstruction + re-lex + re-parse -> evidence ->
 //   ranking -> AST grouping -> hypothesis lanes (follow-on diagnostics) ->
@@ -657,6 +657,22 @@ class Engine {
                         "first error at token " + std::to_string(R.error_index) + " with " +
                             std::to_string(R.expected_at_error.size()) + " expected token kinds"});
 
+    // The parser ran out of stack (nesting too deep). That is a capacity
+    // limit, not a syntax error: editing tokens near the limit cannot give a
+    // program the parser accepts, so do not search for one.
+    if (R.original.resource_limit || R.original_first.resource_limit) {
+      R.stages.push_back({"generate-and-validate", "skipped", 0.0,
+                          "parser nesting limit reached: no token edit can make this input parse"});
+      Decision& D = R.decision;
+      D.tau = cfg_.tau;
+      D.status = "UNSUPPORTED_CONSTRUCT";
+      D.summary = "The input nests deeper than the parser supports (parser stack limit); this is a capacity limit, "
+                  "not a syntax error.";
+      D.reasons.push_back("parser resource limit reached at the first error; reduce the nesting depth");
+      R.stages.push_back({"decide", "ran", 0.0, D.status});
+      return;
+    }
+
     // Stage: generation + token-level validation + source round trip
     auto t1 = Clock::now();
     int dups = 0;
@@ -906,6 +922,24 @@ class Engine {
       D.reasons.push_back(std::to_string(placeholders) + " placeholder token(s) in the best plan");
       return;
     }
+    // A lexical-error token that spans several lines (an unterminated block
+    // comment) usually hides real code. Deleting or replacing it parses, but
+    // silently throws that code away, so never recommend it.
+    for (const LaneStep& st : leaf->steps)
+      for (const Edit& e : st.edits)
+        if (e.op != EditOp::Insert && e.removed_kind == TokenKind::Error && e.anchor_origin >= 0 &&
+            e.anchor_origin < n_) {
+          // The token's lexeme is only "/*"; its span covers everything it swallowed.
+          const Token& t = R.lexed.tokens[e.anchor_origin];
+          if (t.kind != TokenKind::Error || t.end.line <= t.start.line) continue;
+          D.status = "LOW_CONFIDENCE";
+          D.summary = "The best repair removes a multi-line lexical error (for example an unterminated comment) "
+                      "and with it the source text inside it.";
+          D.reasons.push_back("the plan discards lines " + std::to_string(t.start.line) + "-" +
+                              std::to_string(t.end.line) +
+                              " hidden inside a lexical-error token; check what they contain");
+          return;
+        }
     if (D.has_margin && D.margin < cfg_.tau) {
       D.status = "MULTIPLE_PLAUSIBLE";
       D.summary = "Several structurally different repairs have similar evidence.";

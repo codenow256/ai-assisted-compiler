@@ -20,6 +20,11 @@
 #include <sstream>
 #include <string>
 
+#ifdef _WIN32
+#include <fcntl.h>
+#include <io.h>
+#endif
+
 #include "parallax/json.hpp"
 #include "parallax/repair.hpp"
 #include "parallax/serialize.hpp"
@@ -58,6 +63,13 @@ bool parse_double(const char* s, double lo, double hi, double* out) {
 }  // namespace
 
 int main(int argc, char** argv) {
+#ifdef _WIN32
+  // Text-mode stdio on Windows would turn "\r\n" into "\n" (shifting every
+  // byte offset) and treat Ctrl-Z as end of input. Use binary mode so the
+  // compiler sees exactly the bytes the backend sent.
+  _setmode(_fileno(stdin), _O_BINARY);
+  _setmode(_fileno(stdout), _O_BINARY);
+#endif
   std::ios::sync_with_stdio(false);
   if (argc < 2) return usage("missing mode: lex | analyze | repair | tree | version");
   std::string mode = argv[1];

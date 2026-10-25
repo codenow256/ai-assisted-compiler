@@ -38,7 +38,7 @@ def test_health_reports_compiler(client):
     r = client.get("/api/health").json()
     assert r["status"] == "ok"
     assert r["compiler"]["available"] is True
-    assert r["compiler"]["binary"] == "parallaxc"  # no absolute paths leak
+    assert r["compiler"]["binary"] in ("parallaxc", "parallaxc.exe")  # no absolute paths leak
 
 
 @needs_compiler
@@ -216,6 +216,10 @@ def _fake_compiler(tmp_path: Path, body: str) -> Path:
     return exe
 
 
+posix_only = pytest.mark.skipif(os.name == "nt", reason="fake compiler uses a #! script")
+
+
+@posix_only
 def test_timeout_is_504(client, monkeypatch, tmp_path):
     exe = _fake_compiler(tmp_path, "import time\ntime.sleep(5)\n")
     monkeypatch.setattr(appmain, "runner", CompilerRunner(Settings(compiler_path=exe, timeout_s=0.5)))
@@ -224,6 +228,7 @@ def test_timeout_is_504(client, monkeypatch, tmp_path):
     assert r.json()["error"]["code"] == "COMPILER_TIMEOUT"
 
 
+@posix_only
 def test_compiler_crash_is_500(client, monkeypatch, tmp_path):
     exe = _fake_compiler(tmp_path, "import sys\nsys.exit(139)\n")
     monkeypatch.setattr(appmain, "runner", CompilerRunner(Settings(compiler_path=exe)))
@@ -232,6 +237,7 @@ def test_compiler_crash_is_500(client, monkeypatch, tmp_path):
     assert r.json()["error"]["code"] == "COMPILER_FAILURE"
 
 
+@posix_only
 def test_compiler_garbage_output_is_500(client, monkeypatch, tmp_path):
     exe = _fake_compiler(tmp_path, "print('not json')\n")
     monkeypatch.setattr(appmain, "runner", CompilerRunner(Settings(compiler_path=exe)))
@@ -307,10 +313,25 @@ def test_live_evaluation_small(client):
 
 def test_docs_endpoints_reject_traversal(client):
     assert client.get("/api/docs/..%2F..%2Fetc").status_code in (400, 404)
-    assert client.get("/api/docs/lower").status_code == 400
+    assert client.get("/api/docs/no_such_doc").status_code == 404
+    assert client.get("/api/docs/a.b").status_code == 400
     idx = client.get("/api/docs").json()["docs"]
     for d in idx[:3]:
         assert client.get(f"/api/docs/{d['name']}").status_code == 200
+
+
+def test_mixed_case_docs_open_and_doc_images_are_served_safely(client):
+    # Regression: names like IntelliFix_Glossary were listed but returned 400.
+    names = [d["name"] for d in client.get("/api/docs").json()["docs"]]
+    mixed = [n for n in names if n != n.upper()]
+    for n in mixed:
+        assert client.get(f"/api/docs/{n}").status_code == 200, n
+    img = PARALLAX_ROOT / "docs" / "images" / "walkthrough" / "05-workbench-full-analysis.png"
+    if img.is_file():
+        r = client.get("/api/docs/images/walkthrough/05-workbench-full-analysis.png")
+        assert r.status_code == 200 and r.headers["content-type"] == "image/png"
+    for bad in ("../README.md", "walkthrough/../../../LICENSE", "x.py", "%2e%2e/%2e%2e/LICENSE.png"):
+        assert client.get(f"/api/docs/images/{bad}").status_code in (400, 404), bad
 
 
 def test_static_ui_never_serves_files_outside_dist(client):

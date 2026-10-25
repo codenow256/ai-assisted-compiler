@@ -70,7 +70,7 @@ await step("parser view shows exact expected tokens and LR items", async () => {
   await page.getByText(/Grammar items in state/).waitFor();
 });
 
-await step("ambiguous operator: Parallax lists alternatives instead of recommending", async () => {
+await step("ambiguous operator: IntelliFix lists alternatives instead of recommending", async () => {
   await page.getByRole("link", { name: "Code workbench" }).click();
   await page.selectOption("#sample", "07_ambiguous_operator");
   await page.keyboard.press("Control+Enter");
