@@ -5,7 +5,7 @@
 | Time | Action | What the audience sees (real output) | Point to make |
 |---|---|---|---|
 | 0:00 | Overview page | pipeline of 7 stages; three idea cards | “Detect → generate → validate → rank → group → explore → decide.” |
-| 0:45 | Workbench → sample **Valid program** → *Run full analysis* | `No repair needed`; stage timings (µs–ms) | the compiler is real; timings are measured |
+| 0:45 | Workbench → sample **Valid program** → *Analyze* | `No repair needed`; stage timings (µs–ms) | the compiler is real; timings are measured |
 | 1:30 | Lexical analysis; click a token | table of tokens with spans; source highlight; the Flex rule that emitted it | positions are bytes / lines / code-point columns |
 | 2:15 | AST explorer → Tree; click `Binary` | tree; source span highlighted | parse tree vs AST: no parentheses or semicolons in the AST |
 | 3:00 | Workbench → **Missing semicolon** → run | detection at 4:3 (`int i`), one line *after* the cause; status **Recommended repair**; `insert ';' at 3:16` | detection ≠ localisation |

@@ -44,9 +44,14 @@ describe("workbench and repair laboratory", () => {
     const select = await screen.findByLabelText("Sample program");
     await waitFor(() => expect(screen.getAllByRole("option").length).toBeGreaterThan(5));
     fireEvent.change(select, { target: { value: "02_missing_semicolon" } });
-    fireEvent.click(screen.getAllByRole("button", { name: /Full analysis/ })[0]);
+    fireEvent.click(screen.getAllByRole("button", { name: /^Analyze$/ })[0]);
     expect(await screen.findAllByText("Recommended repair")).not.toHaveLength(0);
-    expect(screen.getByText(/insert ';' at 3:16/)).toBeInTheDocument();
+    const ex = screen.getByTestId("explanation");
+    // plain-language explanation built from the real diagnostic and decision
+    expect(ex.textContent).toMatch(/Line 4: the parser did not expect the type keyword int here/);
+    expect(ex.textContent).toMatch(/The type keyword int starts a new line.*previous line \(3\) is missing its ;/);
+    expect(ex.textContent).toMatch(/everything up to and including the value 0 \(line 3\) is valid MiniC.*IntelliFix recommends one fix: insert ; at 3:16/);
+    expect(document.body.textContent).toMatch(/Insert ; at 3:16/);
   });
 
   it("Run lexer and Run parser show their results on the workbench itself", async () => {
@@ -71,15 +76,16 @@ describe("workbench and repair laboratory", () => {
 
   it("accept requires confirmation and can be undone", async () => {
     const src = fixtures.examples.examples.find((e) => e.id === "02_missing_semicolon")!.source;
-    mockApi(defaultHandlers({ "/repair": () => fixtures.semicolon }));
+    let repairCalls = 0;
+    mockApi(defaultHandlers({ "/repair": () => (repairCalls++, fixtures.semicolon) }));
     renderApp("/repair", src);
     fireEvent.click((await screen.findAllByRole("button", { name: /Run repair/ }))[0]);
     fireEvent.click(await screen.findByRole("button", { name: "Accept" }));
     expect(screen.getByText(/Replace the editor content/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Apply" }));
     expect(await screen.findByText("1 repair applied")).toBeInTheDocument();
-    // the result is now stale for the repaired source
-    expect(screen.getByText(/source changed since this result/)).toBeInTheDocument();
+    // applying re-analyzes the repaired source with the real pipeline (here: the mocked API)
+    await waitFor(() => expect(repairCalls).toBe(2));
     fireEvent.click(screen.getByRole("button", { name: /Undo/ }));
     await waitFor(() => expect(screen.queryByText("1 repair applied")).not.toBeInTheDocument());
   });

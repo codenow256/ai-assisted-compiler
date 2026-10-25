@@ -7,7 +7,7 @@
 | Run lexer | tokens and lexical errors |
 | Run parser | accept or reject, first error, LR state |
 | Repair suggestions | candidates and decision |
-| Full analysis (Ctrl+Enter) | all three |
+| Analyze (Ctrl+Enter) | all three |
 
 ## Samples and what they show (τ = 1.5)
 

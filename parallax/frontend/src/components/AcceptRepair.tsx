@@ -24,7 +24,7 @@ export function AcceptRepair({ source, edits, label = "Accept repair", reason }:
           <button
             className="btn primary sm"
             onClick={() => {
-              p.applyRepair(source, reason);
+              p.applyRepair(source, reason, { reanalyze: true });
               setConfirming(false);
             }}
           >
@@ -43,7 +43,7 @@ export function AcceptRepair({ source, edits, label = "Accept repair", reason }:
           {e.op} <code>{e.op === "delete" ? e.removed_text : e.text}</code> at {e.at.line}:{e.at.column}
         </span>
       ))}
-      . The original stays in the undo history. IntelliFix validates syntax only — check that the meaning is what you intended.
+      . The original stays in the undo history and IntelliFix re-analyzes the result. IntelliFix validates syntax only — check that the meaning is what you intended.
     </Banner>
   );
 }

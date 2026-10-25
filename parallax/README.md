@@ -66,36 +66,75 @@ parallax/
 
 No paid service, API key or network access is needed at run time.
 
-## Quick start
+## Run it on a fresh laptop
+
+The website has three parts that must all be present: the **native compiler** `parallaxc` (C++, built with CMake, Flex and Bison), the **backend** (Python/FastAPI, which runs the compiler) and the **web interface** (built with Node.js; the backend serves it). If the compiler is not built, the site still opens but every analysis shows **“Compiler not built”** — that is the most common setup problem.
+
+### Linux (Ubuntu/Debian) — tested
 
 ```bash
-cd parallax
-# 1. dependencies (Ubuntu/Debian: sudo apt-get install -y g++ cmake bison flex python3-pip nodejs npm)
+# 1. prerequisites (Node.js 18 or newer; on older Ubuntu install Node 22 from nodesource.com or with nvm)
+sudo apt-get update
+sudo apt-get install -y git g++ cmake bison flex python3 python3-pip python3-venv nodejs npm
+
+# 2. get the code
+git clone -b feature/parallax-syntax-repair https://github.com/codenow256/ai-assisted-compiler.git
+cd ai-assisted-compiler/parallax
+
+# 3. Python dependencies (a virtual environment avoids "externally managed environment" errors)
+python3 -m venv .venv && . .venv/bin/activate
 python3 -m pip install -r backend/requirements.txt
+
+# 4. build the compiler and the web interface (cmake + make, npm ci + npm run build)
 (cd frontend && npm ci)
+./scripts/build.sh
 
-# 2. build the compiler and the UI
-./scripts/build.sh                 # cmake + make, then `npm run build`
-
-# 3. run: the backend serves the API and the built UI on one port
-./scripts/run_backend.sh           # http://127.0.0.1:8000
+# 5. start (keep this terminal open), then open http://127.0.0.1:8000
+./scripts/run_backend.sh
 ```
 
-Open <http://127.0.0.1:8000>, choose **Guided demo** in the sidebar, or open the **Code workbench** and pick a sample.
+Already have the repository? `cd ai-assisted-compiler && git fetch origin && git checkout feature/parallax-syntax-repair && git pull`, then steps 3–5.
 
-Development mode with hot reload: `./scripts/run_dev.sh` (API on :8000, Vite on <http://localhost:5173>).
+### Windows 10/11 — scripts written, **not yet run on a real Windows machine**
 
-### Windows
+The compiler code was cross-compiled for Windows with MinGW-w64 and passed all 68 C++ tests under Wine; the PowerShell scripts below and an MSVC build have not been executed. If a step fails, follow [`docs/INSTALLATION_AND_TROUBLESHOOTING.md` §3](docs/INSTALLATION_AND_TROUBLESHOOTING.md).
 
-The UI and backend run on Windows as they are. The **native compiler must be built first**; until then the UI correctly shows “Compiler not built”. You need a C++ compiler: MSYS2 MinGW-w64 (recommended) or Visual Studio Build Tools with the “Desktop development with C++” workload, plus `win_flex`/`win_bison`. Then, from `parallax`:
+1. **Prerequisites** (PowerShell): `winget install Git.Git Python.Python.3.12 OpenJS.NodeJS.LTS MSYS2.MSYS2` (or install them from their websites).
+2. **C++ toolchain** — open the **“MSYS2 UCRT64”** terminal and run:
+   `pacman -S --needed mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-ninja bison flex`
+3. **PATH** — add `C:\msys64\ucrt64\bin` and `C:\msys64\usr\bin` to your user PATH (Settings → “Edit environment variables for your account”), then open a **new** PowerShell window.
+4. **Get the code, build, start:**
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts\windows\check_environment.ps1   # what is missing?
-powershell -ExecutionPolicy Bypass -File scripts\windows\build.ps1               # builds parallaxc.exe and the UI
-powershell -ExecutionPolicy Bypass -File scripts\windows\run_backend.ps1         # http://127.0.0.1:8000
+git clone -b feature/parallax-syntax-repair https://github.com/codenow256/ai-assisted-compiler.git
+cd ai-assisted-compiler\parallax
+powershell -ExecutionPolicy Bypass -File scripts\windows\check_environment.ps1   # lists anything missing
+python -m pip install -r backend\requirements.txt
+powershell -ExecutionPolicy Bypass -File scripts\windows\build.ps1               # builds compiler\build\parallaxc.exe and the UI
+powershell -ExecutionPolicy Bypass -File scripts\windows\run_backend.ps1         # then open http://127.0.0.1:8000
 ```
 
-Step by step: [`docs/INSTALLATION_AND_TROUBLESHOOTING.md` §3](docs/INSTALLATION_AND_TROUBLESHOOTING.md). Status: the Windows build is cross-compiled with MinGW-w64 and tested under Wine (68/68 tests). The PowerShell scripts and the MSVC build have **not** been executed.
+Instead of MSYS2 you can use **Visual Studio Build Tools** with the **“Desktop development with C++”** workload plus `winget install WinFlexBison.win_flexbison`, and run `build.ps1` from the **“x64 Native Tools Command Prompt for VS”** (that prompt is what puts `cl.exe` on PATH). WSL2 with the Linux steps also works.
+
+### Check that it works
+
+1. The sidebar badge (bottom left) says **Compiler 1.0.0**, not “Compiler missing”.
+2. Code workbench → load the sample **Missing semicolon** → **Analyze**: the explanation says the parser stopped on line 4 and that line 3 is probably missing its `;`, and a repair is recommended.
+3. `http://127.0.0.1:8000/api/health` shows `"available": true`.
+
+### Troubleshooting
+
+| Symptom | Fix |
+|---|---|
+| “Compiler not built” / `COMPILER_UNAVAILABLE` | build the compiler (step 4); on Windows check that `gcc --version` (MSYS2) or `cl` (Developer prompt) works in the same window |
+| `Could NOT find BISON` / `FLEX` | install them (Linux: `apt-get install bison flex`; Windows: the MSYS2 `pacman` line or `win_flexbison`) and open a new terminal |
+| `parse.error custom` error while building | Bison is older than 3.6 — install a newer one |
+| `pip` says “externally managed environment” | use the virtual environment in step 3 |
+| “Backend not reachable” in the browser | the backend terminal was closed or crashed — start it again |
+| port 8000 is busy | Linux: `PORT=8001 ./scripts/run_backend.sh`; Windows: `$env:PORT=8001` before `run_backend.ps1`; open that port |
+| `npm ci` fails | Node.js is older than 18, or a proxy blocks npm (`npm config set proxy …`) |
+
+Development mode with hot reload: `./scripts/run_dev.sh` (API on :8000, Vite on <http://localhost:5173>). The **Guided demo** button in the sidebar walks through the main features with live compiler runs.
 
 ### Use the compiler directly
 
@@ -113,7 +152,7 @@ Step by step: [`docs/INSTALLATION_AND_TROUBLESHOOTING.md` §3](docs/INSTALLATION
 PARALLAX_E2E=1 ./scripts/test_all.sh        # also Playwright E2E (backend must run on :8000)
 ```
 
-Layers (latest run, 25 Oct 2026, see [`docs/TESTING.md`](docs/TESTING.md)): 68 C++ tests, 33 API tests, 161 evaluation tests (including 61 error-catalog and 88 professor-style cases, seeded fuzzing and HTTP sequences), 27 frontend unit tests and 12 end-to-end checks, all passing.
+Layers (final run, see [`docs/TESTING.md`](docs/TESTING.md)): 68 C++ tests, 33 API tests, 161 evaluation tests (including 61 error-catalog and 88 professor-style cases, seeded fuzzing and HTTP sequences), 132 frontend unit tests (including explanations for all 88 professor-style inputs, from real compiler responses) and 17 real-browser end-to-end checks, all passing.
 
 ## Reproduce the evaluation
 
@@ -152,6 +191,7 @@ CPCT+ runs only if `nimbleparse` is installed (`cargo install nimbleparse`); oth
 
 | Document | Use it for |
 |---|---|
+| [Interactive and explanation features](docs/IntelliFix_Interactive_Features.md) | explanations for every input, ambiguity questions, hints, explained AST, before/after; clarification bound and proposed user study |
 | [Capability matrix](docs/IntelliFix_Capability_Matrix.md) | what is implemented, partial, blocked or untested, with evidence |
 | [Random-input test report](docs/IntelliFix_Random_Input_Test_Report.md) (generated) | 88 professor-style cases, 800 fuzz inputs, 7 HTTP sequences |
 | [Live evaluation guide](docs/IntelliFix_Live_Evaluation_Guide.md) | handling an examiner's own input; decision tree |
@@ -162,7 +202,7 @@ CPCT+ runs only if `nimbleparse` is installed (`cargo install nimbleparse`); oth
 | [Viva question bank](docs/IntelliFix_Viva_Question_Bank.md) · [Mock viva](docs/IntelliFix_Mock_Viva.md) | viva preparation |
 | [Demo script](docs/IntelliFix_Demo_Script.md) · [Quick reference](docs/IntelliFix_Demo_Quick_Reference.md) · [Presentation and live-demo guide](docs/IntelliFix_Presentation_and_Live_Demo_Guide.md) · [Team plan](docs/IntelliFix_Team_Presentation_Plan.md) | the presentation |
 
-Editable deliverables (Word/PowerPoint) are in [`deliverables/`](deliverables).
+Editable deliverables (Word/PowerPoint) are in [`deliverables/`](deliverables); the final presentation is `IntelliFix_Final_Presentation.pptx` with `IntelliFix_Final_Presentation_Script.docx`.
 
 ## Limitations in one paragraph
 

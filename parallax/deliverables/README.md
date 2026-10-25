@@ -4,6 +4,8 @@ All files are editable and are generated from repository data, so they can be re
 
 | File | What it is |
 |---|---|
+| **`IntelliFix_Final_Presentation.pptx`** | **final** 15-slide deck (final features, real screenshots, native charts, speaker notes with technical details, transitions and likely questions) |
+| **`IntelliFix_Final_Presentation_Script.docx`** | **final** spoken script per slide: what to say, technical details, demo action, transition, likely questions |
 | `IntelliFix_Presentation.pptx` | 15-slide deck with speaker notes, native charts and real screenshots |
 | `IntelliFix_Presenter_Script.docx` | spoken text per slide (same source as the speaker notes), timing, demo checklist |
 | `IntelliFix_Project_Report.docx` | course project report: chapters 1–8, References, Appendix A; TOC, List of Figures and List of Tables as Word fields |
@@ -22,7 +24,9 @@ From `parallax/`, with the compiler built (`compiler/build/parallaxc`) and the e
 cd deliverables/build && npm install && cd ../..
 node deliverables/build/take_screenshots.cjs     # optional: needs the backend on :8000 (and a compiler-less one on :8001)
 node deliverables/build/make_figures.cjs         # charts and diagrams from evaluation/results/summary.json
-node deliverables/build/build_presentation.js    # → IntelliFix_Presentation.pptx
+node deliverables/build/build_final_presentation.js  # → IntelliFix_Final_Presentation.pptx
+node deliverables/build/build_final_script.js        # → IntelliFix_Final_Presentation_Script.docx
+node deliverables/build/build_presentation.js    # → IntelliFix_Presentation.pptx (earlier version)
 node deliverables/build/build_documents.js       # → the three .docx files
 ```
 

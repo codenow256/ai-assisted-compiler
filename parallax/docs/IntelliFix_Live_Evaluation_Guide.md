@@ -10,7 +10,7 @@ Every result quoted here was produced by the real compiler, at the UI's threshol
 | Backend running | `./scripts/run_backend.sh` or `scripts\windows\run_backend.ps1` | `Uvicorn running on http://127.0.0.1:8000` |
 | Health | open `http://127.0.0.1:8000/api/health` | `"compiler":{"available":true,...}` |
 | UI badge | sidebar, bottom left | “Compiler 1.0.0”, not “Compiler missing” |
-| Smoke test | Workbench → sample *Missing semicolon* → **Full analysis** | all three run rows filled; status **Recommended repair** |
+| Smoke test | Workbench → sample *Missing semicolon* → **Analyze** | all three run rows filled; status **Recommended repair** |
 | Clean slate | **Clear** | empty editor, run rows say “not run yet” |
 
 If the badge says **Compiler missing**, nothing will work. Do not improvise: read INSTALLATION_AND_TROUBLESHOOTING.md §3. Never show stored screenshots in place of live output.
@@ -22,7 +22,7 @@ If the badge says **Compiler missing**, nothing will work. Do not improvise: rea
 | **Run lexer** | Flex scanner only | tokens and lexical errors, with exact line:column | *Lexer* row on the workbench, details on **Lexical analysis** |
 | **Run parser** | lexer + Bison parser | accept or reject; the first error and the panic-mode diagnostics | *Parser* row; **Grammar & parsing** and **AST explorer** |
 | **Repair suggestions** | lexer + parser + repair engine | candidate edits, validation, ranking, decision | *Repair engine* row; **Repair laboratory**, **Hypothesis explorer** |
-| **Full analysis** | all three | everything above | all three rows |
+| **Analyze** | all three | everything above | all three rows |
 
 Each row shows a **current text / earlier text** badge. If you edit after running, the badge tells the examiner that the shown result belongs to the earlier text. Run again.
 

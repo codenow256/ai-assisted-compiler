@@ -37,7 +37,7 @@ evaluation/ (Python, offline)
   → results/summary.json, report.md, per_case.jsonl → served by /api/evaluation/results
 ```
 
-## Data flow of one “Run full analysis”
+## Data flow of one “Analyze”
 
 1. The UI sends three requests in parallel: `/api/lex`, `/api/parse` (with trace) and `/api/repair` (with the options). Each carries a sequence number; any earlier in-flight request of the same kind is aborted.
 2. The backend validates the schema and the size, then launches `parallaxc` with an argument array. The source goes in on stdin; there are no temporary files or shell.

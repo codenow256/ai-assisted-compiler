@@ -389,3 +389,43 @@ table.table { width: 100%; border-collapse: collapse; font-size: 13px; }
 /* Source code must show the characters the compiler sees: no ligatures (`<=` must not render as `≤`). */
 .kbd, .code-block, .code-inline, .diff, .tree, [class*="mono"] { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
 .md img { max-width: 100%; height: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); margin: 6px 0 12px; }
+
+/* ---------------------------------------------------------------- explanation panel (workbench) */
+.explain { border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; box-shadow: var(--shadow-sm); border-left-width: 1px; }
+.explain-success { background: linear-gradient(0deg, var(--surface), var(--surface)), var(--success-soft); border-color: color-mix(in srgb, var(--success) 35%, var(--border)); }
+.explain-danger { border-color: color-mix(in srgb, var(--danger) 35%, var(--border)); }
+.explain-warning { border-color: color-mix(in srgb, var(--warning) 35%, var(--border)); }
+.explain-info { border-color: color-mix(in srgb, var(--info) 35%, var(--border)); }
+.explain-head h3 { margin: 2px 0 0; font-size: 16px; line-height: 1.35; }
+.explain-success .explain-head h3 { color: var(--success); }
+.explain-danger .explain-head h3 { color: var(--danger); }
+.explain p { margin: 0; line-height: 1.55; }
+.explain .loc { align-self: flex-start; display: inline-flex; gap: 6px; align-items: center; border: 1px solid var(--border); background: var(--surface-2); border-radius: var(--radius-sm); padding: 4px 10px; font-size: 12.5px; cursor: pointer; color: var(--text); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.explain .loc:hover { border-color: var(--accent); }
+.explain .next { border-top: 1px dashed var(--border); padding-top: 8px; color: var(--text-muted); }
+.hints { background: var(--surface-2); border-radius: var(--radius-sm); padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; }
+.hint-steps { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
+.clarify { border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border)); background: var(--accent-soft); border-radius: var(--radius-sm); padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.clarify .choice { display: flex; gap: 8px; align-items: flex-start; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 10px; cursor: pointer; font-size: 13px; }
+.clarify .choice.on { border-color: var(--accent); box-shadow: var(--focus); }
+.clarify .choice input { margin-top: 3px; }
+.block { display: block; }
+.btn.chip { padding: 1px 8px; border-radius: 999px; font-family: var(--font-mono); }
+.linklike { background: none; border: none; padding: 0; color: var(--accent-text); cursor: pointer; font: inherit; font-family: var(--font-mono); text-decoration: underline dotted; }
+
+/* ---------------------------------------------------------------- AST explorer */
+.search-box { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0 8px; background: var(--surface); }
+.search-box .input { border: none; box-shadow: none; padding-left: 0; min-width: 220px; background: transparent; }
+.tree .node.hit { background: color-mix(in srgb, var(--warning) 22%, transparent); border-radius: 4px; }
+.tree .node.mark-added { background: var(--success-soft); }
+.tree .node.mark-removed { background: var(--danger-soft); text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--danger) 50%, transparent); }
+.tree .node.mark-changed { background: var(--warning-soft); }
+.tree .plain-title { font-family: var(--font-sans); }
+.mark-badge { font-family: var(--font-sans); font-size: 10.5px; padding: 0 6px; border-radius: 999px; margin-left: 4px; }
+.mark-badge.added { background: var(--success); color: #fff; }
+.mark-badge.removed { background: var(--danger); color: #fff; }
+.mark-badge.changed { background: var(--warning); color: #fff; }
+.explain-kv dt { font-weight: 600; color: var(--text); }
+.explain-kv dd { line-height: 1.5; }
+.tree { overflow-x: auto; }
+.tree li { white-space: nowrap; }

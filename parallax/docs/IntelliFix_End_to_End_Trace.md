@@ -22,7 +22,7 @@ int main() {
 ```
 Browser (React)                     Backend (FastAPI, Python)                Compiler (parallaxc, C++)
 ───────────────                     ─────────────────────────                ─────────────────────────
-Full analysis button
+Analyze button
  └ ProjectContext.runAll()
     ├ runLex()    ─ POST /api/lex ───▶ check size ≤ 64 KB ─ subprocess ─────▶ parallaxc lex      (stdin = source)
     ├ runParse()  ─ POST /api/parse ──▶ … + LR state from parser.output ────▶ parallaxc analyze --trace

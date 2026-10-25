@@ -32,7 +32,10 @@ await step("workbench loads samples from the backend", async () => {
 await step("missing semicolon: real run yields RECOMMENDED with the expected repair", async () => {
   await page.selectOption("#sample", "02_missing_semicolon");
   await page.keyboard.press("Control+Enter");
-  await page.getByText("insert ';' at 3:16").first().waitFor({ timeout: 10000 });
+  await page.getByTestId("explanation").getByText(/IntelliFix recommends one fix/).waitFor({ timeout: 10000 });
+  const ex = await page.getByTestId("explanation").innerText();
+  expect(/Line 4: the parser did not expect the type keyword int/.test(ex), "plain-language headline missing");
+  expect(/previous line \(3\) is missing its ;/.test(ex), "missing-semicolon explanation missing");
   expect(await page.locator(".topbar").getByText("Recommended repair").count() > 0, "status badge missing");
 });
 
@@ -75,7 +78,7 @@ await step("ambiguous operator: IntelliFix lists alternatives instead of recomme
   await page.selectOption("#sample", "07_ambiguous_operator");
   await page.keyboard.press("Control+Enter");
   await page.locator(".topbar").getByText("Multiple plausible repairs").waitFor({ timeout: 10000 });
-  await page.getByRole("link", { name: "Repair laboratory" }).click();
+  await page.getByRole("link", { name: "Repair laboratory" }).first().click();
   await page.getByRole("tab", { name: /AST classes/ }).click();
   await page.getByText(/structurally distinct outcomes/).waitFor();
 });
@@ -85,16 +88,16 @@ await step("hypothesis lanes for two errors", async () => {
   await page.selectOption("#sample", "06_multiple_errors");
   await page.keyboard.press("Control+Enter");
   await page.locator(".topbar").getByText("Recommended repair").waitFor({ timeout: 10000 });
-  await page.getByRole("link", { name: "Hypothesis explorer" }).click();
+  await page.getByRole("link", { name: "Hypothesis explorer" }).first().click();
   await page.getByText("stable across tested hypotheses").first().waitFor();
 });
 
 await step("AST compare: repaired program vs candidate", async () => {
-  await page.getByRole("link", { name: "AST explorer" }).click();
+  await page.getByRole("link", { name: "AST explorer" }).first().click();
   await page.getByRole("button", { name: /Build AST/ }).first().click();
-  await page.getByRole("tab", { name: /Compare/ }).click();
+  await page.getByRole("tab", { name: /Before/ }).click();
   await page.getByRole("button", { name: /Compare ASTs/ }).click();
-  await page.locator(".banner").filter({ hasText: /structural|Cannot compare|Structurally identical/ }).first().waitFor();
+  await page.locator(".banner").filter({ hasText: /structural change|No node-by-node|Structurally identical/ }).first().waitFor();
 });
 
 await step("evaluation page renders stored measured results", async () => {
@@ -110,6 +113,69 @@ await step("guided demo drives real runs and can be exited", async () => {
   await page.getByText("Step 2 of 16").waitFor();
   await page.getByRole("button", { name: "Exit demo" }).click();
   expect((await page.getByText("Step 2 of 16").count()) === 0, "demo did not close");
+});
+
+const loadDraft = async (src) => {
+  await page.evaluate((s) => localStorage.setItem("parallax-draft", JSON.stringify({ source: s, origin: { kind: "user", label: "e2e.mc" } })), src);
+  await page.goto(`${BASE}/workbench`);
+  await page.locator(".cm-content").waitFor();
+};
+const analyze = async () => {
+  await page.getByRole("button", { name: /^Analyze$/ }).last().click();
+  await page.getByTestId("explanation").waitFor({ timeout: 10000 });
+};
+
+await step("ambiguity: the user fills in the missing expression; the parser validates it; apply re-analyzes", async () => {
+  await loadDraft("int main() {\n  int price = 5;\n  int total = price + ;\n  return total;\n}\n");
+  await analyze();
+  await page.getByTestId("clarify").waitFor();
+  await page.getByText("Fill in the missing value or expression yourself").click();
+  await page.getByTestId("clarify").getByRole("button", { name: "price", exact: true }).click();
+  await page.getByRole("button", { name: "Check with the parser" }).click();
+  await page.getByTestId("clarify").getByText("Valid MiniC").waitFor();
+  await page.getByRole("button", { name: /Apply and re-analyze/ }).click();
+  await page.getByTestId("explanation").getByText(/Your program is valid MiniC/).waitFor({ timeout: 10000 });
+  expect((await page.locator(".cm-content").innerText()).includes("price + price"), "fill-in not applied");
+  await page.getByRole("button", { name: "Undo repair" }).click();
+  await page.waitForFunction(() => document.querySelector(".cm-content")?.textContent?.includes("price + ;"));
+});
+
+await step("student practice: progressive hints, then the student's own fix is checked", async () => {
+  await loadDraft("int main() {\n  int x = 1\n  return x;\n}\n");
+  await analyze();
+  await page.getByRole("button", { name: /Show a hint/ }).click();
+  await page.getByText(/Look at line 3/).waitFor();
+  await page.getByRole("button", { name: /try it in the editor/ }).click();
+  await page.locator(".cm-line").nth(1).click();
+  await page.keyboard.press("End");
+  await page.keyboard.type(";");
+  await page.getByRole("button", { name: "Check my fix" }).click();
+  await page.getByText("Your fix works: the program now parses.").waitFor({ timeout: 10000 });
+});
+
+await step("AST explorer: a selected node is explained and search finds nodes", async () => {
+  await page.getByRole("link", { name: "AST explorer", exact: true }).first().click();
+  await page.locator(".tree .node").filter({ hasText: "Return" }).first().click();
+  await page.getByText("Ends the function and gives back a value.").waitFor();
+  await page.getByText(/statement 2/).first().waitFor();
+  await page.getByPlaceholder(/Find a node/).fill("x");
+  expect((await page.locator(".tree .node.hit").count()) >= 2, "search did not mark nodes");
+});
+
+await step("invalid code: the AST explorer shows a labelled partial tree, not a fake AST", async () => {
+  await loadDraft("int main() {\n  int a = 1;\n  int b = (a + 2;\n  return b;\n}\n");
+  await analyze();
+  await page.getByRole("link", { name: "AST explorer", exact: true }).first().click();
+  await page.getByText("Your code has syntax errors, so there is no complete AST").waitFor();
+  await page.getByText("Partial tree from error recovery").waitFor();
+  await page.getByRole("button", { name: /Show the AST after the top-ranked repair/ }).click();
+  await page.getByText(/AST after the top-ranked repair/).first().waitFor();
+});
+
+await step("empty input gets a clear explanation", async () => {
+  await loadDraft("");
+  await analyze();
+  await page.getByTestId("explanation").getByText(/The editor is empty/).waitFor();
 });
 
 await step("no uncaught page errors", async () => expect(pageErrors.length === 0, pageErrors.join("; ")));

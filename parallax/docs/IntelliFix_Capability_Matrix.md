@@ -58,7 +58,14 @@ Evidence was last run on 25 Oct 2026. Re-run all layers with `./scripts/test_all
 
 | Capability | Status | Evidence |
 |---|---|---|
-| Workbench: editor, samples, Open, Reset, Clear, Undo; Run lexer, Run parser, Repair suggestions, Full analysis | Implemented | `frontend/tests/unit/app.test.tsx` (26 tests); screenshots 02–05 |
+| Plain-language explanation for every result state (valid, empty, syntax error, lexical error, unsupported C, nesting limit, cascades, each decision status) | Implemented (final round) | `tests/unit/explain.test.ts`: 102 tests over all 88 professor-style inputs with real compiler responses |
+| Interactive ambiguity resolution (real plans or a user fill-in, parser-checked, apply + re-analyze, undo) | Implemented | unit; E2E “ambiguity: the user fills in the missing expression…” |
+| Progressive hints and “Check my fix” for student attempts | Implemented | E2E “student practice” |
+| Explained AST explorer: plain-language node details, child roles, source text, search, expand/collapse all, partial tree for invalid code, AST of the top repair (labelled) | Implemented | E2E (2 steps); unit (every node kind explained) |
+| Before/after AST with change marks from the compiler's structural diff | Implemented (both sides need a complete AST; otherwise a labelled partial-vs-complete view without marks) | E2E |
+| Plan comparison table with “Use this” | Implemented | workbench; accept flow covered by E2E |
+| Usability or learning benefit for students | **Not measured** (study proposed in IntelliFix_Interactive_Features.md) | — |
+| Workbench: editor, samples, Open, Reset, Clear, Undo; Run lexer, Run parser, Repair suggestions, Analyze | Implemented | `frontend/tests/unit/app.test.tsx` (26 tests); screenshots 02–05 |
 | Per-run result rows with a current/earlier-text badge | Implemented (fixed 25 Oct: lexer and parser results were not shown on the workbench) | test "Run lexer and Run parser show their results…" |
 | Lexical analysis, Grammar & parsing (LR state, items, actions), AST explorer, Repair laboratory, Hypothesis explorer, Evaluation & impact, Learning center, Documentation | Implemented | screenshots 06–17 |
 | Accept repair / Undo; compare two candidates | Implemented | unit tests |

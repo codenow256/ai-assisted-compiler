@@ -40,7 +40,7 @@ For each slide: its single message, and what to open in the running app if an ex
 | “Is this real or a mock-up?” | Overview → “Every result below comes from the compiler; nothing is simulated”. Then stop the backend and show “Backend not reachable”. |
 | “Show me the grammar” | Grammar & parsing → *Grammar* tab, or `compiler/grammar/minic.y` |
 | “Show me the score calculation” | Repair laboratory → Evidence breakdown, then Compare two candidates |
-| “What about this input?” (types code) | Workbench → Full analysis; if it is surprising, use the decision tree in the Live Evaluation Guide §5 |
+| “What about this input?” (types code) | Workbench → Analyze; if it is surprising, use the decision tree in the Live Evaluation Guide §5 |
 | “Where are the numbers from?” | Evaluation → **summary.json** download; `evaluation/results/report.md` |
 
 ## 4. Rules for every speaker

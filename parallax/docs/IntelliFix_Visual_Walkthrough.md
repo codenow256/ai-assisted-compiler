@@ -19,9 +19,9 @@ Sample *Missing semicolon* (`int total = 0` without `;` on line 3).
 | Sample loaded | [02](images/walkthrough/02-workbench-loaded.png) | the explanation card (“Bison only notices at the next line”); every run row says *not run yet* |
 | **Run lexer** | [03](images/walkthrough/03-workbench-after-lexer.png) | Lexer row: “38 tokens, 0 lexical error(s), 1 comment(s)”. No error: spelling is fine |
 | **Run parser** | [04](images/walkthrough/04-workbench-after-parser.png) | Parser row: “rejected: unexpected type-keyword 'int' at 4:3”; `int` is underlined on **line 4** |
-| **Full analysis** | [05](images/walkthrough/05-workbench-full-analysis.png) | Repair row “Recommended repair: 60 candidates, 3 parser-validated, 3 AST classes”; green panel with “score margin 2.00 >= tau = 1.50”; the diff adds `;` at the end of **line 3**; **Accept repair** |
+| **Analyze** | [05](images/walkthrough/05-workbench-full-analysis.png) | Repair row “Recommended repair: 60 candidates, 3 parser-validated, 3 AST classes”; green panel with “score margin 2.00 >= tau = 1.50”; the diff adds `;` at the end of **line 3**; **Accept repair** |
 
-![Full analysis](images/walkthrough/05-workbench-full-analysis.png)
+![Analyze](images/walkthrough/05-workbench-full-analysis.png)
 
 Each row has a **current text** badge. If you type after running, it changes to **earlier text**, so no one mistakes an old result for the current code.
 
@@ -64,7 +64,24 @@ Each row has a **current text** badge. If you type after running, it changes to 
 
 Screenshot 18 is the state the team saw on Windows before MSVC or MinGW was set up. It was produced with the same UI and a second backend whose `PARALLAX_COMPILER` points to a file that does not exist.
 
-## 6. Re-take the screenshots
+## 6. Explanations, questions, hints and the explained AST (final version)
+
+| Feature | Screenshot | What to point at |
+|---|---|---|
+| Ambiguity question | [20](images/walkthrough/20-ambiguity-question.png) | for `int total = price + ;` IntelliFix asks instead of guessing: delete `+`, replace it, or fill in the expression |
+| Answer checked by the parser | [21](images/walkthrough/21-ambiguity-validated.png) | the user chose `price` (a name declared earlier); “Valid MiniC” comes from a real parse |
+| After “Apply and re-analyze” | [22](images/walkthrough/22-ambiguity-applied.png) | the program is re-analyzed; Undo repair restores the original |
+| Hints and “Check my fix” | [23](images/walkthrough/23-hints-practice.png) | three progressive hints; the student's own edit is checked by the compiler |
+| Valid program explained | [24](images/walkthrough/24-valid-explained.png) | what the program contains, from the AST; “valid syntax is not correct behaviour” |
+| Explained AST node | [25](images/walkthrough/25-ast-explained-node.png) | the Binary `*` node: meaning, role, children, exact source |
+| Partial tree for invalid code | [26](images/walkthrough/26-ast-partial-tree.png) | labelled partial tree with an Error node; option to view the repaired program's AST |
+| Before and after | [27](images/walkthrough/27-ast-before-after.png) | plan 1 (`+`) vs plan 2 (`−`): one changed node, marked in both trees |
+
+![Ambiguity question](images/walkthrough/20-ambiguity-question.png)
+
+![Explained AST node](images/walkthrough/25-ast-explained-node.png)
+
+## 7. Re-take the screenshots
 
 1. Start the backend on :8000.
 2. Optionally start a second one with `PARALLAX_COMPILER=/nonexistent` on :8001.

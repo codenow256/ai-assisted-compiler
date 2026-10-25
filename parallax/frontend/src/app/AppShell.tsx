@@ -133,7 +133,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <span className="kbd">Ctrl</span> + <span className="kbd">Enter</span> runs everything
           </span>
           <button className="btn primary" onClick={() => p.runAll()} disabled={anyRunning}>
-            <Play size={14} aria-hidden /> {anyRunning ? "Running…" : "Run full analysis"}
+            <Play size={14} aria-hidden /> {anyRunning ? "Running…" : "Analyze"}
           </button>
         </header>
         <main id="main" className="page fade-in" key={loc.pathname}>

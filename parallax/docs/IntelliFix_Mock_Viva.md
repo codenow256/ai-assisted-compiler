@@ -14,7 +14,7 @@ Practise it in pairs. One person reads **Examiner**; the other answers without l
 **Model:** They report where they *detect* the error, which is often not where it was made. A missing `;` is reported on the next line. And when they suggest a fix, they usually commit to one, even when several fixes are equally plausible. IntelliFix addresses both: localisation, and honest uncertainty.
 
 **Examiner:** Show me.
-**Do:** Workbench → *Missing semicolon* → **Full analysis**. Point at: the parser row, which says 4:3; the diff, which changes line 3; the margin, 2.00 ≥ 1.50.
+**Do:** Workbench → *Missing semicolon* → **Analyze**. Point at: the parser row, which says 4:3; the diff, which changes line 3; the margin, 2.00 ≥ 1.50.
 
 ---
 

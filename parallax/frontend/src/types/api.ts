@@ -329,7 +329,7 @@ export interface CompareResult {
   after: { ok: boolean; ast: AstNode | null; ast_hash?: string; diagnostics: string[] };
   comparable: boolean;
   equivalent: boolean;
-  changes: { change: string; path: string; before: string | null; after: string | null; detail: string }[];
+  changes: { change: string; path: string; before: string | null; after: string | null; detail: string; before_span?: AstNode["span"] | null; after_span?: AstNode["span"] | null }[];
   rule: string;
 }
 

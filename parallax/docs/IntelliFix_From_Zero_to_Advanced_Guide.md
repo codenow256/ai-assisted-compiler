@@ -87,7 +87,7 @@ How to use it: try each exercise before opening its answer. A level is done when
 
 **Read:** Learning Guide B7–B10; End-to-End Trace §3. **Pages:** Repair laboratory → Evidence breakdown; Hypothesis explorer.
 
-| # | Exercise (button: **Full analysis**) |
+| # | Exercise (button: **Analyze**) |
 |---|---|
 | 4.1 | Missing-semicolon sample: write down the score of `insert ';' at 3:16` from its evidence rows. |
 | 4.2 | Same sample: why is `replace 'int' with ';'` scored −4.00? |

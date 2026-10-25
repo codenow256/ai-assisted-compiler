@@ -63,7 +63,7 @@ interface ProjectState {
   runAll: () => Promise<void>;
   options: RepairOptions;
   setOptions: (o: RepairOptions) => void;
-  applyRepair: (newSource: string, reason: string) => void;
+  applyRepair: (newSource: string, reason: string, opts?: { reanalyze?: boolean }) => void;
   undo: () => void;
   history: HistoryEntry[];
   highlight: Highlight | null;
@@ -230,13 +230,15 @@ export function ProjectProvider({ children, initialSource }: { children: ReactNo
   }, [runLex, runParse, runRepair]);
 
   const applyRepair = useCallback(
-    (newSource: string, reason: string) => {
+    (newSource: string, reason: string, opts?: { reanalyze?: boolean }) => {
       setHistory((h) => [...h, { source: sourceRef.current, origin, reason }]);
       setSourceState(newSource);
+      sourceRef.current = newSource; // so an immediate re-analysis runs on the new text
       setOrigin((o) => ({ ...o, kind: "repair", label: o.label.replace(/( \(repaired\))?$/, " (repaired)") }));
       setHighlight(null);
+      if (opts?.reanalyze) void Promise.all([runLex(), runParse(true), runRepair()]);
     },
-    [origin],
+    [origin, runLex, runParse, runRepair],
   );
 
   const undo = useCallback(() => {

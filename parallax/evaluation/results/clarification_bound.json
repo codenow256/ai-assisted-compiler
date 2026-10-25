@@ -1,0 +1,82 @@
+{
+ "tau": 1.5,
+ "note": "Offline bound for interactive clarification on the ambiguous subset.",
+ "dev": {
+  "abstained_cases": 187,
+  "of_split": 360,
+  "first_option_user": {
+   "k": 78,
+   "n": 187,
+   "rate": 0.41711229946524064,
+   "ci95": [
+    0.3488039386316686,
+    0.4887575630372005
+   ]
+  },
+  "oracle_user": {
+   "k": 87,
+   "n": 187,
+   "rate": 0.46524064171123,
+   "ci95": [
+    0.3951700247282673,
+    0.5367106050038393
+   ]
+  },
+  "by_ambiguity": {
+   "structural": {
+    "n": 82,
+    "first": 59,
+    "oracle": 64
+   },
+   "content-lost": {
+    "n": 70,
+    "first": 13,
+    "oracle": 16
+   },
+   "operator-choice": {
+    "n": 35,
+    "first": 6,
+    "oracle": 7
+   }
+  }
+ },
+ "test": {
+  "abstained_cases": 256,
+  "of_split": 540,
+  "first_option_user": {
+   "k": 136,
+   "n": 256,
+   "rate": 0.53125,
+   "ci95": [
+    0.47011065908802135,
+    0.5914653498710004
+   ]
+  },
+  "oracle_user": {
+   "k": 153,
+   "n": 256,
+   "rate": 0.59765625,
+   "ci95": [
+    0.5365714317341859,
+    0.6558535962627576
+   ]
+  },
+  "by_ambiguity": {
+   "content-lost": {
+    "n": 84,
+    "first": 23,
+    "oracle": 26
+   },
+   "structural": {
+    "n": 122,
+    "first": 95,
+    "oracle": 107
+   },
+   "operator-choice": {
+    "n": 50,
+    "first": 18,
+    "oracle": 20
+   }
+  }
+ }
+}

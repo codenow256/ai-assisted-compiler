@@ -17,7 +17,7 @@ The script prints `PASS` / `FAIL` / `SKIPPED` for each layer and exits non-zero 
 | Compiler unit tests (C++) | `ctest --test-dir compiler/build` (runs `parallax_tests` and a `parallaxc version` smoke test) | 68 test functions | lexer (20), parser/AST/names (22), repair engine (26, including 2 regression tests from the 25 Oct audit) |
 | Backend API (pytest) | `cd backend && python3 -m pytest` | 33 | every endpoint, schemas, error codes, timeouts, crashes, missing compiler, concurrency, grammar report, docs and doc-image path safety, live evaluation |
 | Evaluation + error catalog (pytest) | `python3 -m pytest evaluation/tests` | 161 (10 metric/dataset + 61 catalog cases + 88 professor-style cases + fuzzing + HTTP sequences) | metric definitions, Wilson/bootstrap, τ rule, split by family, dataset reproducibility, every catalog expectation |
-| Frontend unit (vitest) | `cd frontend && npx vitest run` | 27 | positions, diff, lexer-rule lookup, API client errors and aborts, navigation, accept/undo, stale responses, evaluation rendering; fixtures are **real captured backend responses** |
+| Frontend unit (vitest) | `cd frontend && npx vitest run` | 132 (incl. 102 explanation tests over real compiler responses for all 88 professor-style inputs) | positions, diff, lexer-rule lookup, API client errors and aborts, navigation, accept/undo, stale responses, evaluation rendering; fixtures are **real captured backend responses** |
 | Frontend typecheck | `cd frontend && npx tsc -b` | — | strict TypeScript |
 | End-to-end (Playwright) | `cd frontend && node tests/e2e/run-e2e.mjs` | 12 checks | real compiler + backend + built UI: sample loading, RECOMMENDED repair, accept/confirm/undo, refresh persistence, token highlighting with the Flex rule, LR items, abstention on an ambiguous case, hypothesis stability, AST compare, evaluation page, guided demo, no page errors |
 
@@ -31,8 +31,8 @@ Run on 2026-10-25 with `PARALLAX_E2E=1 ./scripts/test_all.sh`, all layers PASS (
 | ctest entries | 2 | 0 | 0 |
 | Backend API | 33 | 0 | 0 |
 | Evaluation + catalog + professor-style | 161 | 0 | 0 |
-| Frontend unit | 27 | 0 | 0 |
-| End-to-end | 12 | 0 | 0 |
+| Frontend unit | 132 | 0 | 0 |
+| End-to-end | 17 | 0 | 0 |
 
 **Also run:** the Windows build (MinGW-w64 cross-compile) under Wine 9.0: 68/68 C++ tests, catalog output identical to Linux. Seeded fuzzing: 800 inputs, 0 invariant violations (`docs/IntelliFix_Random_Input_Test_Report.md`).
 
