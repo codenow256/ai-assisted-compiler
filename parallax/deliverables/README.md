@@ -41,3 +41,16 @@ The builders stop with an error if the text they contain no longer matches the d
 - test counts from `build/test_counts_final.json` (496 tests)
 
 The earlier deliverables (first presentation, report, paper) are unchanged. Where they name pages of the earlier ten-page interface, see `docs/IntelliFix_UX_v2.md` §4 for the mapping.
+
+## Implementation-focused deck (26 Oct 2026)
+
+`IntelliFix_Final_Presentation.pptx` (15 slides) and its presenter script were regenerated with a different focus:
+
+- **the implementation and the five-step Workspace:** architecture, text → tokens → tree, diagnosis, fixes, one error at a time, asking instead of guessing, safe repairs, tree, honest completion;
+- **one brief, conceptual research slide.**
+
+How to rebuild or reuse:
+
+- **Builder:** `build/build_implementation_presentation.js`. Its content, with speaker notes, is in `build/implementation_slides_content.js`.
+- **Screenshots:** `docs/images/walkthrough/v3-*.png`, taken by `build/take_screenshots_v3.cjs` from a real run.
+- **Earlier deck:** the previous research-heavy version is kept as `IntelliFix_Final_Presentation_previous.pptx`. Its builder, `build/build_final_presentation.js`, still exists, but running it would overwrite `IntelliFix_Final_Presentation.pptx`.

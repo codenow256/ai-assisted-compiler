@@ -4,7 +4,7 @@
 "use strict";
 const path = require("path");
 const { d, FONT, pt, runs, makeRenderer, numberingConfig, write } = require("./docx_lib");
-const { SLIDES, TEAM } = require("./final_slides_content");
+const { SLIDES, TEAM } = require("./implementation_slides_content");
 
 const OUT = path.join(__dirname, "..", "IntelliFix_Final_Presentation_Script.docx");
 const W = 11906 - 2 * 1300;
@@ -19,7 +19,7 @@ async function main() {
     { raw: center("IntelliFix — Final Presentation Script", 22, { bold: true }) },
     { raw: center("An Intelligent Compiler for Syntax Error Analysis, Detection, and Correction", 13, { italics: true }) },
     { raw: center(TEAM.map((t) => `${t.name} (${t.reg})`).join("  ·  "), 11) },
-    "This script goes with **IntelliFix_Final_Presentation.pptx**; its spoken text is the same as the slides' speaker notes (both are generated from `deliverables/build/final_slides_content.js`). Speaking parts are a suggested split by section; they do **not** say who implemented what (see `docs/IntelliFix_Team_Presentation_Plan.md` §4).",
+    "This script goes with **IntelliFix_Final_Presentation.pptx**; its spoken text is the same as the slides' speaker notes (both are generated from `deliverables/build/implementation_slides_content.js`). Speaking parts are a suggested split by section; they do **not** say who implemented what (see `docs/IntelliFix_Team_Presentation_Plan.md` §4).",
     { table: { caption: "Running order", widths: [0.07, 0.43, 0.35, 0.15], align: [null, null, null, "r"], head: ["#", "Slide", "Speaker", "Minutes"],
       rows: [...SLIDES.map((s) => [String(s.n), s.title, s.speaker, String(s.minutes)]), ["", "**Total (with a 6-minute demo)**", "", `**${total}**`]] } },
     { h1: "Before you start", newPage: false },
@@ -41,15 +41,16 @@ async function main() {
       blocks.push({ bullets: s.questions.map(([q, a]) => `**${q}** ${a}`) });
     }
   }
-  blocks.push({ h1: "Live demo checklist (slide 14)", newPage: false });
-  blocks.push({ table: { caption: "Demo steps with the expected screen (observed on the final build, τ = 1.5)", widths: [0.38, 0.62], head: ["Do", "Expect"], rows: [
-    ["Sample Missing semicolon → Analyze", "Step 2 Diagnosis: Missing delimiter; the parser stopped at line 4 (int); line 3 is probably missing its ;. Compare fixes → Recommended: insert ; at 3:16, score gap 2.00 → Use this fix → Apply & verify → Apply: “Verified”"],
-    ["Load sample “Missing expression after +” → Analyze → step 3 Fixes", "“Is the + extra, or is something missing after it?”: delete +, replace + with ;, fill in (suggests price), or write the line yourself"],
-    ["Fill in price → Check with the parser → Use this answer → (step 4) → Apply & verify → Apply", "“Valid MiniC”; step 4 shows the Error node replaced by DeclStmt; step 5 “Verified”, 1 report disappeared; Undo repair restores the original"],
-    ["AST Explorer → click a node, or click in the code", "meaning, role in the parent, tokens it absorbs, grammar rule, expression diagram; search marks matching nodes"],
-    ["Sample Ambiguous operator → Analyze → AST Explorer → Before & after", "Option 1 (+) vs option 2 (−): 1 structural change, the Binary operator"],
-    ["Code with an error → Show a hint ×3 → I'll try it → fix → Check my fix", "“Your fix works: the program now parses.”"],
-    ["Research & Method", "71.5% vs 55.2%; 28.5% → 6.1% wrong-but-confident at 50.7% coverage; limitations"],
+  blocks.push({ h1: "Live demo checklist", newPage: false });
+  blocks.push({ table: { caption: "Demo steps with the expected screen (observed on the current build, τ = 1.5)", widths: [0.38, 0.62], head: ["Do", "Expect"], rows: [
+    ["Sample Missing semicolon → Analyze", "Step 2: Missing delimiter; noticed on line 4, line 3 probably lacks its ;"],
+    ["Fixes → Use this fix → Apply & verify → Apply", "“Verified: every check IntelliFix performs passes”, corrections and unchecked items listed; Undo restores"],
+    ["Paste the several-errors example (price = 5 / price + ; / total++ / return total) → Analyze", "Several syntax errors; 3 reports with roles; “more may appear once earlier ones are fixed”"],
+    ["Fixes → Use this fix (; at 2:16) → Apply → Fix the next error", "1 no longer reported, 1 newly visible; next error on line 3"],
+    ["Answer “Is the + extra…?” with price → Check with the parser → Use this answer → Apply", "“This error is fixed; later errors remain”; next error: ++"],
+    ["Use the rewrite total = total + 1; → Apply; last ; → Apply", "Completion summary with 4 corrections"],
+    ["AST Explorer → click Binary + → click a ; in the code", "role, grammar rule, expression diagram; the ; selects its statement"],
+    ["Research & Method (brief)", "two takeaways; synthetic benchmark, no user study"],
   ] } });
   blocks.push({ h1: "Rules for answering", newPage: false });
   blocks.push({ bullets: [
