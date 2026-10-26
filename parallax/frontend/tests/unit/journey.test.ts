@@ -28,6 +28,9 @@ describe("every input gets a category, an honest statement and a next action", (
     X15_missing_semicolon: "missing-delimiter",
     X16_unfinished_function: "incomplete-code",
     X17_long_valid: "valid",
+    // audit regressions: one `)` fixes both reports, so this is not "several errors"
+    X18_missing_rparen: "missing-delimiter",
+    X19_int_out_of_range: "lexical",
   };
   for (const [id, cat] of Object.entries(expected)) {
     it(`${id} → ${cat}`, () => {
@@ -38,7 +41,11 @@ describe("every input gets a category, an honest statement and a next action", (
       expect(e.nextSteps.length).toBeGreaterThan(0);
     });
   }
-  it("all 105 real inputs map to a described category", () => {
+  it("an out-of-range number is described as an invalid token, not an invalid character", () => {
+    expect(CATEGORY.lexical.label).toBe("Invalid token (lexical error)");
+    expect(CATEGORY.lexical.establishes).toMatch(/out-of-range number/);
+  });
+  it("all real inputs map to a described category", () => {
     for (const { doc, source } of Object.values(ALL)) {
       const c = classifyInput(doc, source);
       expect(CATEGORY[c].label).toBeTruthy();

@@ -148,3 +148,17 @@ describe("partial trees and before/after", () => {
     expect(ch).toEqual([expect.objectContaining({ change: "changed", before: "Binary op=+", after: "Binary op=-" })]);
   });
 });
+
+describe("large trees stay responsive", () => {
+  it("draws at most 1500 rows and says how much is hidden; the selected node is always drawn", async () => {
+    const { render, screen } = await import("@testing-library/react");
+    const { AstOutline } = await import("../../src/components/AstOutline");
+    const span = (o: number) => ({ start: { offset: o, line: 1, column: 1 }, end: { offset: o + 1, line: 1, column: 2 }, tokens: "0..1" });
+    const kids = Array.from({ length: 3000 }, (_, i) => ({ kind: "EmptyStmt", span: span(i), children: [] }));
+    const root = { kind: "Program", span: span(0), children: [{ kind: "Block", span: span(0), children: kids }] } as unknown as AstNode;
+    render(<AstOutline root={root} selected="0/0/2999" />);
+    expect(document.querySelectorAll(".orow").length).toBeLessThanOrEqual(1502);
+    expect(screen.getByRole("note").textContent).toMatch(/more branch\(es\) are not drawn/);
+    expect(document.querySelector('[data-ast-path="0/0/2999"]')).not.toBeNull();
+  });
+});

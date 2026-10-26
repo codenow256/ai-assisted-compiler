@@ -133,7 +133,7 @@ function TreeExplorer({ shown, hasFix, view, setView, diagnostics }: { shown: Sh
   const node = shown && sel ? nodeAtPath(shown.root, sel) : null;
   const highlights: EditorHighlight[] = useMemo(() => (node ? [{ from: node.span.start.offset, to: node.span.end.offset, tone: "select" }] : []), [node]);
 
-  if (!shown) return <p className="small muted">The parser produced no tree for this input (for example, the file ends inside a comment or the nesting limit was reached). Nothing is drawn rather than inventing nodes.</p>;
+  if (!shown) return <p className="small muted">The parser could not build even a partial tree for this input (it stopped before completing any function or declaration). Nothing is drawn rather than inventing nodes; the diagnosis in the Workspace explains the error.</p>;
   const partial = shown.kind === "partial";
   return (
     <div className="stack">

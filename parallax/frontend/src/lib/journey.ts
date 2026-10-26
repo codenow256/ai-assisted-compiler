@@ -40,7 +40,7 @@ export const CATEGORY: Record<InputCategory, CategoryMeta> = {
   "missing-content": { label: "Missing expression or name", establishes: "Something is missing here, but its content cannot be recovered from the code.", next: "Tell IntelliFix what you meant: type the missing part." },
   ambiguous: { label: "Ambiguous repair", establishes: "Several structurally different fixes parse, with similar evidence.", next: "Answer the question: which change did you mean?" },
   "multiple-errors": { label: "Several syntax errors", establishes: "The first error is reliable; later reports may be consequences of it.", next: "Fix the first error, then re-check which reports remain." },
-  lexical: { label: "Invalid characters", establishes: "The lexer found characters that are not part of MiniC, before parsing.", next: "Replace or delete the highlighted character." },
+  lexical: { label: "Invalid token (lexical error)", establishes: "Before parsing, the lexer found text that is not a valid MiniC token: an invalid character, an out-of-range number or an over-long name.", next: "Replace or delete the highlighted text." },
   "unterminated-comment": { label: "Unterminated comment", establishes: "A `/*` comment never ends, so everything after it is hidden inside the comment.", next: "Add `*/` where the comment should end." },
   "incomplete-code": { label: "Incomplete code", establishes: "The file ends before a function, block or statement is complete.", next: "Finish the construct that is still open (often a missing `}`)." },
   unsupported: { label: "Unsupported C construct", establishes: "This is valid C but not MiniC; rewriting it automatically could change its meaning.", next: "Rewrite it with MiniC features, as the message suggests." },
@@ -79,7 +79,9 @@ export function classifyInput(doc: Doc, source: string): InputCategory {
   if (d && (d.unexpected === "EOF" || d.message.startsWith("unexpected end of input"))) return "incomplete-code";
   const plans = rep?.decision.plans ?? [];
   const top = plans[0];
-  if (parse.diagnostics.length > 1 || (top?.valid && top.edits.length > 1)) return "multiple-errors";
+  // Several errors only if the evidence says so: when one valid single edit fixes everything,
+  // the later reports came from the parser's recovery, not from separate mistakes.
+  if (top?.valid ? top.edits.length > 1 : parse.diagnostics.length > 1) return "multiple-errors";
   if (plans.some((p) => p.edits.length === 1 && p.edits[0].placeholder) && (status === "MULTIPLE_PLAUSIBLE" || status === "LOW_CONFIDENCE")) return "missing-content";
   if (status === "MULTIPLE_PLAUSIBLE" || status === "LOW_CONFIDENCE") return "ambiguous";
   if (status === "NO_SAFE_REPAIR" || status === "BUDGET_EXHAUSTED") return "no-safe-repair";

@@ -191,6 +191,7 @@ CPCT+ runs only if `nimbleparse` is installed (`cargo install nimbleparse`); oth
 
 | Document | Use it for |
 |---|---|
+| **Start here (beginners):** [Beginner guide](docs/INTELLIFIX_BEGINNER_GUIDE.md) · [Test matrix](docs/INTELLIFIX_TEST_MATRIX.md) · [Demo script](docs/INTELLIFIX_DEMO_SCRIPT.md) · [Viva guide](docs/INTELLIFIX_VIVA_GUIDE.md) | the whole project in simple English, page by page; 25 audited test cases with evidence; verified demo examples and a timed 9-minute demo; 27 viva questions with honest answers |
 | [Interface v2: the repair journey](docs/IntelliFix_UX_v2.md) | three destinations, the five Workspace steps, features A–F status, every input category, old → new page mapping, tested professor demo |
 | [Interactive and explanation features](docs/IntelliFix_Interactive_Features.md) | explanations for every input, ambiguity questions, hints, explained AST, before/after; clarification bound and proposed user study |
 | [Capability matrix](docs/IntelliFix_Capability_Matrix.md) | what is implemented, partial, blocked or untested, with evidence |

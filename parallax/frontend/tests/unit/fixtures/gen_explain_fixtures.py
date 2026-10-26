@@ -32,6 +32,8 @@ EXTRA = {
     "X14_valid": "int square(int n) {\n  return n * n;\n}\n\nint main() {\n  int total = 0;\n  int i;\n  for (i = 0; i < 3; i = i + 1) {\n    total = total + square(i);\n  }\n  return total;\n}\n",
     "X15_missing_semicolon": "int main() {\n  int x = 1\n  return x;\n}\n",
     "X16_unfinished_function": "int main() {\n  int x = 1;\n",
+    "X18_missing_rparen": "int main() {\n  int x = 1;\n  if (x > 0 {\n    x = 2;\n  }\n  return x;\n}\n",
+    "X19_int_out_of_range": "int main() {\n  return 2147483648;\n}\n",
     "X17_long_valid": "int main() {\n  int s = 0;\n" + "  s = s + 1;\n" * 400 + "  return s;\n}\n",
 }
 

@@ -8,6 +8,8 @@ import { categoryOf, shortLabel } from "../lib/astModel";
 import { infoFor, nodeMatches } from "../lib/astInfo";
 import type { AstNode } from "../types/api";
 
+const MAX_ROWS = 1500;
+
 export type Mark = "added" | "removed" | "changed";
 export const markKey = (kind: string, span: { start: { offset: number }; end: { offset: number } }) => `${kind}@${span.start.offset}-${span.end.offset}`;
 
@@ -63,8 +65,12 @@ export function AstOutline({ root, selected, onSelect, expandDepth = 6, query = 
     return { hits, autoOpen };
   }, [root, query, marks, selected]);
 
+  // Very large trees (a 64 KB program has ~25,000 nodes) are drawn up to MAX_ROWS rows; the rest
+  // stay reachable by collapsing, searching or clicking code, and the hidden count is shown.
   const rows: Row[] = [];
+  let hidden = 0;
   const walk = (n: AstNode, path: string, depth: number, parent: AstNode | null, idx: number) => {
+    if (rows.length >= MAX_ROWS && path !== selected && !autoOpen.has(path) && !hits.has(path)) { hidden++; return; }
     const hasKids = n.children.length > 0;
     const base = autoOpen.has(path) || (forced ?? depth < expandDepth);
     const open = hasKids && (toggled.has(path) ? toggled.get(path)! : base);
@@ -124,6 +130,7 @@ export function AstOutline({ root, selected, onSelect, expandDepth = 6, query = 
           </div>
         );
       })}
+      {hidden > 0 && <div className="tiny muted" style={{ padding: "6px 10px" }} role="note">{hidden.toLocaleString()} more branch(es) are not drawn, to keep the page responsive. Collapse a branch, search, or click the code to reach them.</div>}
     </div>
   );
 }

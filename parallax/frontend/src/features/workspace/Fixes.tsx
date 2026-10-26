@@ -18,7 +18,10 @@ export function Fixes({ doc, source, onChosen, onPractice }: { doc: RepairDoc; s
   const cards = useMemo(() => planCards(doc, source), [doc, source]);
   const choose = (prop: Proposal) => { p.setProposal(prop); onChosen(); };
   const fromCard = (c: PlanCard, kind: Proposal["kind"]): Proposal => ({ source: c.plan.source, forSource: source, label: c.words, kind, edits: c.plan.edits, parses: c.plan.valid });
-  const asks = status === "MULTIPLE_PLAUSIBLE" || status === "LOW_CONFIDENCE";
+  const unsupported = status === "UNSUPPORTED_CONSTRUCT";
+  // Ask only when there is a real option to offer (plans that would delete code hidden in an
+  // unterminated comment are never offered).
+  const asks = (status === "MULTIPLE_PLAUSIBLE" || status === "LOW_CONFIDENCE") && cards.some((c) => !c.hidesCode);
   const firstLine = doc.parse.diagnostics[0]?.start.line ?? 1;
 
   if (doc.parse.ok) return <Banner tone="success" title="No fix needed">The parser accepted the whole program, so there is nothing to repair. Continue to the tree to see its structure.</Banner>;
@@ -37,21 +40,26 @@ export function Fixes({ doc, source, onChosen, onPractice }: { doc: RepairDoc; s
           <p className="tiny muted">“Parses” means the real parser accepts the repaired program. It does not prove the program means what you intended.</p>
         </div>
       )}
-      {!cards.length && (
-        <Banner tone={status === "UNSUPPORTED_CONSTRUCT" ? "info" : "warning"} title="IntelliFix does not propose a fix here">
-          {status === "UNSUPPORTED_CONSTRUCT" ? "The code uses a construct that MiniC leaves out on purpose, or nests too deeply. Rewriting it automatically could change what the program means." : status === "BUDGET_EXHAUSTED" ? "The search ran out of its budget (30,000 parser runs or 4 seconds) before finding a complete fix." : "No edit of at most two tokens near the error lets the parser continue. The code may need a larger rewrite, or it may not be MiniC."}{" "}
+      {(!cards.length || unsupported || !asks && status !== "RECOMMENDED") && (
+        <Banner tone={unsupported ? "info" : "warning"} title="IntelliFix does not propose a fix here">
+          {unsupported ? "The code uses a construct that MiniC leaves out on purpose, or nests too deeply. Rewriting it automatically could change what the program means." : cards.length && cards.every((c) => c.hidesCode) ? "The only edits that parse would delete the unterminated comment together with the code hidden inside it. Only you know where the comment should end." : status === "BUDGET_EXHAUSTED" ? "The search ran out of its budget (30,000 parser runs or 4 seconds) before finding a complete fix." : "No edit of at most two tokens near the error lets the parser continue. The code may need a larger rewrite, or it may not be MiniC."}{" "}
           {doc.repair.decision.reasons[0] && <span className="faint">Engine: {doc.repair.decision.reasons[0]}</span>}
         </Banner>
       )}
-      {(!cards.length || cards.every((c) => c.hidesCode)) && (
+      {(!cards.length || unsupported || cards.every((c) => c.hidesCode)) && (
         <div className="stack">
           <CustomLine source={source} line={firstLine} onUse={(s) => choose({ source: s, forSource: source, label: `your own version of line ${firstLine}`, kind: "answer", edits: [], parses: true })} />
           <div className="row"><button className="btn sm" onClick={onPractice}><PencilLine size={13} aria-hidden /> Use the hints and fix it in the editor</button></div>
         </div>
       )}
-      {cards.length > (status === "RECOMMENDED" ? 1 : 0) && (
+      {unsupported && cards.length > 0 && (
+        <Disclosure summary={`Edits the parser would accept (${cards.length}) — not offered, because they change what the program means`}>
+          <ul className="hint-list small">{cards.map((c) => <li key={c.index}><Rich text={c.words} /></li>)}</ul>
+        </Disclosure>
+      )}
+      {!unsupported && !cards.every((c) => c.hidesCode) && cards.length > (status === "RECOMMENDED" ? 1 : 0) && (
         <section className="stack" aria-label="Compare the fixes">
-          <h3 className="section-title">{status === "RECOMMENDED" ? `Alternatives the engine also checked (${cards.length - 1})` : `How the ${cards.length} options differ`}</h3>
+          <h3 className="section-title">{status === "RECOMMENDED" ? `Alternatives the engine also checked (${cards.length - 1})` : cards.length === 1 ? "The only option the engine found" : `How the ${cards.length} options differ`}</h3>
           <p className="tiny muted">Each option is a real candidate: the engine applied the edit and re-ran the parser. The score is a sum of named evidence (cost, whether all errors are resolved, layout cues …). It ranks options; it is not a probability.</p>
           <div className="fix-grid">
             {cards.slice(status === "RECOMMENDED" ? 1 : 0).map((c) => (

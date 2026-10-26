@@ -3,7 +3,7 @@
 // reliability/coverage trade-off, the ablation and the limitations. Every
 // number is read at runtime from evaluation/results/summary.json (and the
 // clarification simulation file); nothing is typed in by hand.
-import { ArrowRight, BookOpen, Table2 } from "lucide-react";
+import { ArrowRight, BookOpen, GraduationCap, Table2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Banner, ErrorBanner, Spinner } from "../../components/ui";
@@ -137,6 +137,7 @@ export function ResearchPage() {
           <div className="row">
             <Link className="btn" to="/evaluation"><Table2 size={14} aria-hidden /> All results: tables, charts, per-category breakdowns <ArrowRight size={13} aria-hidden /></Link>
             <Link className="btn" to="/docs"><BookOpen size={14} aria-hidden /> Documentation &amp; method details</Link>
+            <Link className="btn" to="/learn"><GraduationCap size={14} aria-hidden /> Learning center</Link>
           </div>
           <p className="tiny faint">Source: evaluation/results/summary.json, generated {data!.provenance.generated_utc} at commit {data!.provenance.git_commit}.</p>
         </div>

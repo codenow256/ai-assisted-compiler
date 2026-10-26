@@ -148,8 +148,8 @@ describe("Workspace: one connected journey on real compiler output", () => {
     renderApp("/", SRC("semicolon"), <Probe />);
     await analyze();
     await screen.findByTestId("explanation");
-    fireEvent.click(screen.getByRole("button", { name: /Show a hint/ }));
-    expect(screen.getByText(/Look at line 3/)).toBeInTheDocument();
+    fireEvent.click(await screen.findByRole("button", { name: /Show a hint/ }));
+    expect(await screen.findByText(/Look at line 3/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /Next hint \(2\/3\)/ }));
     fireEvent.click(screen.getByRole("button", { name: /Next hint \(3\/3\)/ }));
     expect(screen.getByText(/Fixes the parser accepted/)).toBeInTheDocument();
@@ -177,6 +177,32 @@ describe("Workspace: one connected journey on real compiler output", () => {
       expect(document.querySelector(".ws-step")!.textContent!.length).toBeGreaterThan(60);
     });
   }
+
+  it("unsupported C: no fix is offered, the parser-accepted edits are listed as not offered", async () => {
+    mockApi(real());
+    renderApp("/", SRC("unsupported"));
+    await analyze();
+    await screen.findByTestId("explanation");
+    step(/^Fixes/);
+    const panel = document.querySelector(".ws-step") as HTMLElement;
+    expect(within(panel).getByText("IntelliFix does not propose a fix here")).toBeInTheDocument();
+    expect(within(panel).queryByRole("button", { name: /Choose this fix|Use this fix/ })).toBeNull();
+    expect(within(panel).getByText(/not offered, because they change what the program means/)).toBeInTheDocument();
+    expect(within(panel).getByLabelText(/Your version of line/)).toBeInTheDocument();
+  });
+
+  it("unterminated comment: no question with zero options; explains why and offers the user's own line", async () => {
+    mockApi(real());
+    renderApp("/", SRC("unterminated"));
+    await analyze();
+    await screen.findByTestId("explanation");
+    step(/^Fixes/);
+    const panel = document.querySelector(".ws-step") as HTMLElement;
+    expect(within(panel).queryByTestId("clarify")).toBeNull();
+    expect(panel.textContent).not.toMatch(/0 structurally different/);
+    expect(panel.textContent).toMatch(/delete the unterminated comment together with the code hidden inside it/);
+    expect(within(panel).getByLabelText(/Your version of line/)).toBeInTheDocument();
+  });
 
   it("a compiler failure is reported as such; the code is kept", async () => {
     const missing = () => new Response(JSON.stringify({ error: { code: "COMPILER_UNAVAILABLE", message: "The parallaxc compiler binary was not found or is not executable.", hint: "cmake" } }), { status: 503 });
