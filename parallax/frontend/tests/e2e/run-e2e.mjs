@@ -68,7 +68,7 @@ await step("missing semicolon: diagnose → recommended fix → tree → apply �
   await page.getByText(/Partial tree → complete tree/).waitFor(T);
   await page.getByRole("button", { name: "Apply & verify", exact: true }).click();
   await page.getByTestId("apply").click();
-  await page.getByText(/Verified: the compiler re-parsed your code/).waitFor(T);
+  await page.getByText(/Verified: every check IntelliFix performs passes/).waitFor(T);
   expect((await editor()).includes("int total = 0;"), "editor not updated");
   await page.getByTestId("verify").getByRole("button", { name: /Undo repair/ }).click();
   await page.waitForFunction(() => !document.body.innerText.includes("1 repair applied"));
@@ -136,7 +136,7 @@ await step("two errors: first error vs later reports; the plan fixes both and ve
   await page.getByRole("button", { name: "Apply & verify", exact: true }).click();
   await page.getByTestId("apply").click();
   await page.getByText(/Verified/).waitFor(T);
-  await page.getByText("Disappeared (3)").waitFor();
+  await page.getByText("No longer reported (3)").waitFor();
 });
 
 await step("every other input category gets an honest, specific response", async () => {
@@ -229,6 +229,53 @@ await step("specialist views are reached from the Workspace (token table, parser
   await page.getByText("Flex rule(s) that emit this kind").waitFor();
   await page.getByRole("banner").getByRole("link", { name: /Workspace/ }).click();
   await page.getByTestId("analyze").waitFor();
+});
+
+await step("sequential correction: several errors fixed one at a time until every check passes (no `++` deletion)", async () => {
+  await loadDraft("int main() {\n  int price = 5\n  int total = price + ;\n  total++;\n  return total\n}\n");
+  await analyze();
+  const applyAndNext = async () => {
+    await page.getByRole("button", { name: "Apply & verify", exact: true }).click();
+    await page.getByTestId("apply").click();
+    await Promise.race([page.getByTestId("next-error").waitFor(T), page.getByTestId("completion").waitFor(T)]);
+  };
+  // 1: missing ; (recommended, punctuation only)
+  await stepBtn("Fixes").click();
+  await page.getByTestId("recommended").getByText(/Insert ; at 2:16/).waitFor();
+  await page.getByTestId("recommended").getByRole("button", { name: /Use this fix/ }).click();
+  await applyAndNext();
+  await page.getByTestId("next-error-btn").click();
+  // 2: `price + ;` is ambiguous: answer the question with a value, validated by the parser
+  const q = page.getByTestId("clarify");
+  await q.getByText("Is the + extra, or is something missing after it?").waitFor(T);
+  await q.getByText("Fill in the missing value or expression yourself").click();
+  await q.getByRole("button", { name: "price", exact: true }).click();
+  await q.getByRole("button", { name: "Check with the parser" }).click();
+  await q.getByText("This error is fixed; later errors remain").waitFor(T);
+  await q.getByRole("button", { name: /Use this answer/ }).click();
+  await applyAndNext();
+  await page.getByTestId("next-error-btn").click();
+  // 3: `total++;` gets a supported rewrite, not a deletion
+  const rw = page.getByTestId("rewrite");
+  await rw.locator(".line-change .now").getByText("total = total + 1;").waitFor(T);
+  await rw.getByRole("button", { name: "Check with the parser" }).click();
+  await rw.locator(".banner").waitFor(T);
+  await rw.getByRole("button", { name: /Use this rewrite/ }).click();
+  await applyAndNext();
+  await page.getByTestId("next-error-btn").click();
+  // 4: last missing ;
+  await page.getByTestId("recommended").getByRole("button", { name: /Use this fix/ }).click();
+  await applyAndNext();
+  await page.getByTestId("completion").getByText(/Corrections made \(4\)/).waitFor();
+  const src = await editor();
+  expect(src.includes("price + price") && src.includes("total = total + 1;") && src.includes("return total;"), "intended operations lost: " + src);
+});
+
+await step("undeclared name: syntax OK but not reported as success", async () => {
+  await loadDraft("int main() {\n  int price = 5;\n  int total = price + 1;\n  total = tal + 1;\n  return total;\n}\n");
+  await analyze();
+  await page.getByTestId("explanation").getByText("Syntax OK, name problems").waitFor();
+  expect(!(await page.getByTestId("explanation").innerText()).includes("Your program is valid MiniC"), "claimed valid");
 });
 
 await step("phone width: no horizontal page scroll", async () => {

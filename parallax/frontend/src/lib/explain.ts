@@ -142,6 +142,7 @@ export interface ClarifyOption {
   label: string; // plain description of the real candidate
   detail: string;
   source?: string; // ready-made repaired program (real candidate)
+  risky?: boolean; // the candidate removes code (operators, names, values, unsupported constructs)
   fill?: { at: number; remove: number; kind: "expression" | "name"; placeholder: string; suggestions: string[] };
 }
 
@@ -169,6 +170,29 @@ export function planWords(pl: Plan): string {
   return pl.edits.length > 3 ? `${w}, and ${pl.edits.length - 3} more edit(s)` : w;
 }
 
+// ------------------------------------------------------------------ repair safety
+/** Punctuation whose removal does not delete any operation, name or value. */
+const PUNCT_KINDS = new Set(["SEMI", "COMMA", "LPAREN", "RPAREN", "LBRACE", "RBRACE", "LBRACKET", "RBRACKET", "ERROR"]);
+
+/**
+ * Why an edit may change what the program does, or null if it only adds or
+ * removes punctuation / replaces an invalid character. Parser acceptance says
+ * nothing about intent, so these edits are never presented as safe.
+ */
+export function riskOf(e: Edit): string | null {
+  if (e.placeholder) return `invents \`${e.text}\`; the real name or value is unknown`;
+  if (e.op === "insert") return null;
+  const removed = e.removed_text ?? "";
+  if (e.removed_kind === "ERROR" && removed.startsWith("/*")) return "deletes code hidden inside an unterminated comment";
+  if (e.removed_kind === "UNSUPPORTED")
+    return /^(\+\+|--)$/.test(removed)
+      ? `deletes \`${removed}\`, so the ${removed === "++" ? "increment" : "decrement"} is lost (MiniC has no \`${removed}\`; write \`x = x ${removed[0]} 1\` instead)`
+      : `deletes \`${removed}\`, which MiniC does not support; the operation is lost instead of rewritten`;
+  if (e.removed_kind && PUNCT_KINDS.has(e.removed_kind)) return null;
+  return `removes \`${removed}\` from your code`;
+}
+export const planRisks = (pl: { edits: Edit[] }): string[] => pl.edits.map(riskOf).filter((r): r is string => !!r);
+
 /** A plan that throws away a multi-line lexical error (e.g. an unterminated comment) hides code: never offer it as a choice. */
 const discardsHiddenCode = (pl: Plan) => pl.edits.some((e) => e.op !== "insert" && e.removed_kind === "ERROR" && (e.removed_text ?? "").startsWith("/*"));
 
@@ -190,7 +214,9 @@ export function clarifyOptions(doc: RepairDoc): ClarifyOption[] {
         fill: { at: hole.at.offset, remove: hole.op === "replace" ? new TextEncoder().encode(hole.removed_text ?? "").length : 0, kind: isName ? "name" : "expression", placeholder: isName ? "e.g. count" : "e.g. 1 or price", suggestions: isName ? [] : names },
       });
     } else if (!hole) {
-      out.push({ id: `plan${i}`, label: planWords(pl).replace(/^./, (c) => c.toUpperCase()), detail: pl.valid ? "Real candidate; the whole program parses after this change." : "Real candidate; later errors remain after this change.", source: pl.source });
+      const risks = planRisks(pl);
+      const base = pl.valid ? "Real candidate; the parser accepts the whole program after this change." : "Real candidate; later errors remain after this change.";
+      out.push({ id: `plan${i}`, label: planWords(pl).replace(/^./, (c) => c.toUpperCase()), detail: risks.length ? `${base} Warning: it ${risks.join("; it ")}. The parser accepting it does not mean it is what you meant.` : base, source: pl.source, risky: risks.length > 0 });
     }
   });
   return out;
@@ -210,6 +236,22 @@ export function explain(doc: RepairDoc | AnalyzeDoc, source: string): Explanatio
 
   if (parse.ok) {
     const hasCode = doc.tokens.length > 0;
+    const names = parse.name_warnings ?? [];
+    if (hasCode && names.length) {
+      // Syntax is fine, but the name check (an implemented, static check) found problems: not a success.
+      const w = names[0];
+      return {
+        tone: "warning",
+        headline: `The syntax is valid, but the name check found ${names.length} problem${names.length > 1 ? "s" : ""}: ${w.message} (line ${w.start.line}).`,
+        paragraphs: [
+          `The lexer and parser accept every token, so there is no syntax error to repair. IntelliFix also checks how names are used (declared before use, declared once, called with the right number of arguments). That check reports: ${names.slice(0, 4).map((x) => `${x.message} at line ${x.start.line}, column ${x.start.column}`).join("; ")}${names.length > 4 ? `; and ${names.length - 4} more` : ""}.`,
+          "A misspelt or undeclared name is not a syntax error, so the repair engine does not change it: only you know which name you meant. Types and run-time behaviour are not checked at all.",
+        ],
+        location: { line: w.start.line, column: w.start.column, from: w.start.offset, to: Math.max(w.end.offset, w.start.offset + 1), lineText: lineText(source, w.start.line) },
+        facts: parse.ast ? summarizeProgram(parse.ast) : undefined,
+        nextSteps: [`Correct the name on line ${w.start.line} in the editor (declare it, or use the name you meant), then press Analyze.`],
+      };
+    }
     return {
       tone: "success",
       headline: hasCode ? "Your program is valid MiniC: it parses without syntax errors." : !source.length ? "The editor is empty: there is no program to analyze." : !trimmed ? "Only whitespace: there is no program to analyze." : "Only comments: once the lexer removes them, no program is left.",

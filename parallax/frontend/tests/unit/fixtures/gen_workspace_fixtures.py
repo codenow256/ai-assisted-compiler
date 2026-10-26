@@ -36,6 +36,11 @@ SOURCES = {
     "missing_name": "int main() {\n  int = 42;\n  return 0;\n}\n",
     "not_code": "hello world this is not code",
     "unfinished": "int main() {\n  int x = 1;\n",
+    # reliability acceptance examples
+    "accept_multi": "int main() {\n  int price = 5\n  int total = price + ;\n  total++;\n  return total\n}\n",
+    "accept_rhs_pp": "int main() {\n  int price = 5;\n  int total = price + ;\n  total++;\n  return total;\n}\n",
+    "accept_undeclared": "int main() {\n  int price = 5;\n  int total = price + 1;\n  total = tal + 1;\n  return total;\n}\n",
+    "accept_pp_only": "int main() {\n  int price = 5;\n  int total = price + 1;\n  total++;\n  return total;\n}\n",
 }
 out = {"repair": {}, "parse": {}, "compare": {}}
 for k, src in SOURCES.items():

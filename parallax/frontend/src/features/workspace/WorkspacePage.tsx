@@ -12,7 +12,8 @@ import { SourceDiff } from "../../components/SourceDiff";
 import { Badge, Banner, ErrorBanner, Spinner } from "../../components/ui";
 import { countNodes } from "../../lib/astModel";
 import { explain } from "../../lib/explain";
-import { CATEGORY, classifyError, classifyInput, compareDiagnostics, type InputCategory } from "../../lib/journey";
+import { CATEGORY, CHECKS_DONE, CHECKS_NOT_DONE, classifyError, classifyInput, compareDiagnostics, completionOf, type InputCategory } from "../../lib/journey";
+import { Rich } from "../../components/Rich";
 import { STATUS } from "../../lib/status";
 import type { AnalyzeDoc, RepairDoc } from "../../types/api";
 import { TreeComparison } from "../ast/AstPage";
@@ -69,7 +70,7 @@ export function WorkspacePage() {
     2: run ? "done" : "todo",
     3: !run ? "todo" : valid && !p.history.length ? "skip" : p.proposal || p.history.length ? "done" : "todo",
     4: !run ? "todo" : p.proposal || valid ? "done" : "todo",
-    5: p.history.length && fresh && valid ? "done" : "todo",
+    5: p.history.length && fresh && run && completionOf(run.doc) === "complete" ? "done" : "todo",
   };
   states[step] = "current";
   const sub: Record<StepId, string> = {
@@ -77,7 +78,7 @@ export function WorkspacePage() {
     2: category ? CATEGORY[category].label : "not analyzed",
     3: !run ? "—" : valid && !p.history.length ? "not needed" : valid ? "fix applied" : p.proposal ? "fix chosen" : repairDoc ? `${repairDoc.repair.decision.plans.length} option(s)` : "—",
     4: valid ? "complete AST" : run ? (p.proposal ? "before → after" : "partial tree") : "—",
-    5: p.history.length ? (valid && fresh ? "verified" : "applied") : p.proposal ? "ready to apply" : "—",
+    5: p.history.length ? (fresh && run && completionOf(run.doc) === "complete" ? "all checks pass" : fresh && !valid ? "errors remain" : "applied") : p.proposal ? "ready to apply" : "—",
   };
 
   const highlights: EditorHighlight[] = useMemo(() => {
@@ -183,7 +184,7 @@ export function WorkspacePage() {
             )}
             {step === 3 && run && (repairDoc ? <Fixes doc={repairDoc} source={run.source} onChosen={() => setStep(4)} onPractice={() => { setPractice({ line: run.doc.parse.diagnostics[0]?.start.line ?? 1, source: run.source }); setStep(2); }} /> : <Banner tone="neutral" title="The repair engine has not run for this code">Press Analyze to generate and check repair candidates.</Banner>)}
             {step === 4 && run && <StepTree valid={valid} source={run.source} />}
-            {step === 5 && <StepVerify fresh={fresh} validNow={valid} lastDiagnostics={lastHistory?.diagnostics ?? null} onUndo={() => { p.undo({ reanalyze: true }); setStep(2); }} />}
+            {step === 5 && <StepVerify fresh={fresh} lastDiagnostics={lastHistory?.diagnostics ?? null} onUndo={() => { p.undo({ reanalyze: true }); setStep(2); }} onNext={() => setStep(3)} />}
 
             {step < 5 && run && !err && (
               <div className="step-nav">
@@ -250,7 +251,7 @@ function StepTree({ valid, source }: { valid: boolean; source: string }) {
   );
 }
 
-function StepVerify({ fresh, validNow, lastDiagnostics, onUndo }: { fresh: boolean; validNow: boolean; lastDiagnostics: import("../../types/api").Diagnostic[] | null; onUndo: () => void }) {
+function StepVerify({ fresh, lastDiagnostics, onUndo, onNext }: { fresh: boolean; lastDiagnostics: import("../../types/api").Diagnostic[] | null; onUndo: () => void; onNext: () => void }) {
   const p = useProject();
   const prop = p.proposal && p.proposal.forSource === p.source ? p.proposal : null;
   if (prop) {
@@ -269,24 +270,46 @@ function StepVerify({ fresh, validNow, lastDiagnostics, onUndo }: { fresh: boole
     );
   }
   if (p.history.length) {
-    const nowDiags = p.parse && p.parse.source === p.source ? p.parse.envelope.data.parse.diagnostics : null;
+    const nowDoc = p.parse && p.parse.source === p.source ? p.parse.envelope.data : null;
+    const nowDiags = nowDoc ? nowDoc.parse.diagnostics : null;
     const cmp = lastDiagnostics && nowDiags ? compareDiagnostics(lastDiagnostics, nowDiags) : null;
     const last = p.history[p.history.length - 1];
+    const state = nowDoc ? completionOf(nowDoc) : null;
+    const next = nowDiags?.[0];
+    const names = nowDoc?.parse.name_warnings ?? [];
     return (
       <div className="stack" data-testid="verify">
-        {!fresh || !nowDiags ? <Spinner label="Re-running the compiler on the repaired code…" /> : validNow ? (
-          <Banner tone="success" title="Verified: the compiler re-parsed your code and accepts it">The fix “{last.reason}” was applied and the lexer, parser and repair engine ran again on the new text.</Banner>
+        {!fresh || !nowDoc ? <Spinner label="Re-running the compiler on the repaired code…" /> : state === "complete" ? (
+          <div className="stack" data-testid="completion">
+            <Banner tone="success" title="Verified: every check IntelliFix performs passes on the current code">The fix “{last.reason}” was applied and the lexer, parser, name check and repair engine ran again on the new text.</Banner>
+            <div className="small"><strong>Corrections made ({p.history.length}):</strong>
+              <ol className="hint-list">{p.history.map((h, i) => <li key={i}><Rich text={h.reason} /></li>)}</ol>
+            </div>
+            <div className="small"><strong>Checked:</strong><ul className="hint-list">{CHECKS_DONE.map((c) => <li key={c}>{c}</li>)}</ul></div>
+            <div className="small"><strong>Not checked by IntelliFix:</strong><ul className="hint-list">{CHECKS_NOT_DONE.map((c) => <li key={c}>{c}</li>)}</ul></div>
+          </div>
+        ) : state === "name-warnings" ? (
+          <Banner tone="warning" title={`Syntax errors are fixed, but the name check found ${names.length} problem(s)`}>
+            {names.slice(0, 3).map((w) => `${w.message} (line ${w.start.line})`).join("; ")}. This is not a syntax error, so IntelliFix does not repair it: correct the name in the editor and press Analyze.
+          </Banner>
+        ) : state === "empty" ? (
+          <Banner tone="warning" title="The program is now empty">An empty program parses, but there is nothing left to check. Undo or write the code again.</Banner>
         ) : (
-          <Banner tone="warning" title="Applied, but the parser still reports errors">The fix “{last.reason}” was applied and the code re-analyzed. Go back to step 2 for the remaining problem.</Banner>
+          <div className="stack" data-testid="next-error">
+            <Banner tone="warning" title={`Applied. ${nowDiags!.length} error report(s) remain in the re-analyzed program`}>
+              The fix “{last.reason}” was applied and the whole program was analyzed again. Next error: <strong>line {next!.start.line}, column {next!.start.column}</strong> — {next!.message}.
+            </Banner>
+            <div className="row"><button className="btn primary sm" onClick={onNext} data-testid="next-error-btn">Fix the next error →</button><span className="tiny muted">The diagnosis and the fixes now describe the updated code.</span></div>
+          </div>
         )}
         {cmp && (
           <div className="verify-grid">
-            <div><strong className="small">Disappeared ({cmp.fixed.length})</strong><ul className="hint-list small">{cmp.fixed.map((d, i) => <li key={i} className="gone">{d.message} <span className="faint">(was line {d.start.line})</span></li>)}</ul></div>
-            <div><strong className="small">Still reported ({cmp.remaining.length})</strong><ul className="hint-list small">{cmp.remaining.length ? cmp.remaining.map((d, i) => <li key={i}>{d.message} <span className="faint">(line {d.start.line})</span></li>) : <li className="faint">none</li>}</ul></div>
-            <div><strong className="small">New ({cmp.added.length})</strong><ul className="hint-list small">{cmp.added.length ? cmp.added.map((d, i) => <li key={i}>{d.message} <span className="faint">(line {d.start.line})</span></li>) : <li className="faint">none</li>}</ul></div>
+            <div><strong className="small">No longer reported ({cmp.fixed.length})</strong><ul className="hint-list small">{cmp.fixed.map((d, i) => <li key={i} className="gone">{d.message} <span className="faint">(was line {d.start.line})</span></li>)}</ul></div>
+            <div><strong className="small">Still reported ({cmp.remaining.length})</strong><ul className="hint-list small">{cmp.remaining.length ? cmp.remaining.map((d, i) => <li key={i}>{d.message} <span className="faint">(now line {d.start.line})</span></li>) : <li className="faint">none</li>}</ul></div>
+            <div><strong className="small">Newly visible ({cmp.added.length})</strong><ul className="hint-list small">{cmp.added.length ? cmp.added.map((d, i) => <li key={i}>{d.message} <span className="faint">(line {d.start.line})</span></li>) : <li className="faint">none</li>}</ul></div>
           </div>
         )}
-        {cmp && <p className="tiny faint">Reports are matched by their message, because line and column numbers shift after an edit.</p>}
+        {cmp && <p className="tiny faint">Reports are compared by their exact message, because line numbers shift after an edit. A report whose message changed counts as “no longer reported” plus “newly visible”, never as fixed. Errors after a reported one may only appear once it is fixed.</p>}
         <div className="row">
           <button className="btn sm" onClick={onUndo}><Undo2 size={13} aria-hidden /> Undo repair</button>
           <Link className="btn sm" to="/ast"><ListTree size={13} aria-hidden /> Compare the trees</Link>

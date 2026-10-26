@@ -82,9 +82,10 @@ describe("Workspace: one connected journey on real compiler output", () => {
     expect(await screen.findByText(/How your chosen fix/)).toBeInTheDocument();
     step(/^Apply & verify$/);
     fireEvent.click(await screen.findByTestId("apply"));
-    expect(await screen.findByText(/Verified: the compiler re-parsed your code and accepts it/)).toBeInTheDocument();
+    expect(await screen.findByText(/Verified: every check IntelliFix performs passes on the current code/)).toBeInTheDocument();
+    expect(screen.getByTestId("completion").textContent).toMatch(/Not checked by IntelliFix:.*run-time behaviour/);
     expect(calls).toContain("semicolon_fixed"); // re-analysis ran on the repaired text
-    expect(screen.getByText(/Disappeared \(1\)/)).toBeInTheDocument();
+    expect(screen.getByText(/No longer reported \(1\)/)).toBeInTheDocument();
     fireEvent.click(within(screen.getByTestId("verify")).getByRole("button", { name: /Undo repair/ }));
     await waitFor(() => expect(screen.queryByText(/1 repair applied/)).not.toBeInTheDocument());
   });

@@ -90,7 +90,7 @@ export function Diagnosis({ doc, source, ex, category, practice, setPractice, on
               </li>
             ))}
           </ol>
-          <p className="tiny faint">After you apply a fix, step 5 re-runs the parser and shows which reports actually disappeared.</p>
+          <p className="tiny faint">These are all the errors the parser can report for this version of the code. More may become visible once earlier ones are fixed. Step 3 offers fixes for the first error; after you apply one, the whole program is analyzed again and step 5 shows which reports are no longer reported, which remain and which are newly visible.</p>
         </section>
       )}
 

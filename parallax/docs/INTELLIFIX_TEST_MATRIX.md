@@ -119,3 +119,12 @@ Every case's exact source is in `scripts/audit/cases.py`. To try a case by hand:
 1. Paste its source into **Workspace**.
 2. Press **Analyze**.
 3. Compare the category, the headline and step 3 with the "Actual result" column.
+
+## 7. Reliability update (26 Oct 2026): sequential correction, repair safety, truthful status
+
+| Case | Source | Verified behaviour (browser, real compiler) | Evidence |
+|---|---|---|---|
+| R1 sequential multi-error | `int main() {\n  int price = 5\n  int total = price + ;\n  total++;\n  return total\n}` | 3 reports on the first analysis, with "more may appear" explained. Round 1: recommended `;` at 2:16, applied, re-analyzed; a `;` error on line 3 is *newly visible*. Round 2: question "Is the + extra…?", fill-in `price` checked ("This error is fixed; later errors remain"). Round 3: `total++;` → rewrite `total = total + 1;` (parser-checked). Round 4: `;` at 5:15. Then "Verified: every check IntelliFix performs passes", 4 corrections listed, plus what is and is not checked | E2E step "sequential correction…", `reliability.test.tsx` |
+| R2 destructive plan | `price + ;` + `total++;` | the engine's complete plan (delete `+`, delete `++`) is never recommended or offered as the main option: it sits under "complete plan … removes code" with the warnings "removes `+`" and "the increment is lost", and the button reads "Choose it anyway (I understand it removes code)" | `reliability.test.tsx`, browser run |
+| R3 undeclared name | `total = tal + 1;` | the compiler reports `'tal' is used but not declared` (CLI `analyze` and `repair`, `/api/parse`, `/api/repair`). The UI now shows *Syntax OK, name problems* instead of "valid MiniC", and step 3 says a name problem remains. Completion is blocked until it is fixed | E2E step "undeclared name…", `reliability.test.tsx` |
+| R4 risky edits | any plan deleting/replacing operators, names, values, keywords, unsupported constructs | labelled "removes code" and never shown as *Recommended*; punctuation-only fixes (missing `;`) are still recommended | `reliability.test.tsx`, existing E2E |

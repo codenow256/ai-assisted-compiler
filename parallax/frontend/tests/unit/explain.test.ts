@@ -19,7 +19,11 @@ describe("explanations for every professor-style input (real compiler output)", 
       expect(e.headline.length).toBeGreaterThan(10);
       expect(e.nextSteps.length).toBeGreaterThan(0);
       expect(t).not.toMatch(/undefined|NaN|\[object Object\]|null\b/);
-      if (doc.parse.ok) {
+      if (doc.parse.ok && doc.parse.name_warnings?.length && doc.tokens.length) {
+        // valid syntax but the (implemented) name check failed: never presented as success
+        expect(e.tone).toBe("warning");
+        expect(e.headline).toMatch(/syntax is valid, but the name check found/);
+      } else if (doc.parse.ok) {
         expect(e.tone).toBe("success");
         expect(t).toMatch(/does not mean the program is semantically correct|nothing to analyse|does nothing/);
       } else {

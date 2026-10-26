@@ -7,9 +7,9 @@
 //   planCards         comparison data for each structurally different repair
 //   compareDiagnostics which diagnostics disappeared / remain after an edit (re-parse)
 //   practiceFeedback  feedback on a student's own fix, from a real re-parse
-import type { AnalyzeDoc, Candidate, Diagnostic, Edit, Plan, RepairDoc } from "../types/api";
+import type { AnalyzeDoc, Candidate, Diagnostic, Edit, LexicalError, Plan, RepairDoc } from "../types/api";
 import type { ApiError } from "../services/api";
-import { describeExpected, planWords } from "./explain";
+import { describeExpected, planRisks, planWords } from "./explain";
 import { lineDiff } from "./diff";
 
 type Doc = RepairDoc | AnalyzeDoc;
@@ -17,7 +17,7 @@ const repairOf = (doc: Doc) => ("repair" in doc ? doc.repair : null);
 
 // ------------------------------------------------------------------ input categories
 export type InputCategory =
-  | "valid" | "empty" | "whitespace" | "comments-only"
+  | "valid" | "name-warnings" | "empty" | "whitespace" | "comments-only"
   | "missing-delimiter" | "missing-content" | "ambiguous" | "multiple-errors"
   | "lexical" | "unterminated-comment" | "incomplete-code" | "unsupported"
   | "resource-limit" | "no-safe-repair" | "syntax-error"
@@ -32,7 +32,8 @@ export interface CategoryMeta {
 }
 
 export const CATEGORY: Record<InputCategory, CategoryMeta> = {
-  valid: { label: "Valid MiniC", establishes: "The parser accepted every token and built a complete AST.", next: "Inspect the tree to see how the program is structured." },
+  valid: { label: "Valid MiniC", establishes: "Lexer, parser and name check pass. Types and run-time behaviour are not checked.", next: "Inspect the tree to see how the program is structured." },
+  "name-warnings": { label: "Syntax OK, name problems", establishes: "The parser accepts the program, but the name check found an undeclared, duplicate or misused name. That is not a syntax error, so it is not repaired automatically.", next: "Correct the name in the editor, then press Analyze." },
   empty: { label: "Empty input", establishes: "There is no program to analyze.", next: "Load a sample or type a MiniC program." },
   whitespace: { label: "Only whitespace", establishes: "There is no program to analyze: the text contains only spaces or line breaks.", next: "Load a sample or type a MiniC program." },
   "comments-only": { label: "Only comments", establishes: "The lexer skipped the comments; no tokens remain, so the program is empty.", next: "Write code outside the comments." },
@@ -66,13 +67,16 @@ export function classifyInput(doc: Doc, source: string): InputCategory {
     if (source.length === 0) return "empty";
     if (!source.trim()) return "whitespace";
     if (doc.tokens.length === 0) return "comments-only";
-    return "valid";
+    return parse.name_warnings?.length ? "name-warnings" : "valid";
   }
   if (parse.resource_limit) return "resource-limit";
   const rep = repairOf(doc);
   const status = rep?.decision.status;
-  const lex = doc.lexical_errors;
-  if (lex.some((e) => e.kind === "UNSUPPORTED") && (status === "UNSUPPORTED_CONSTRUCT" || !rep)) return "unsupported";
+  // Lexical categories only when the lexical error IS the first error; a `++` further down does not
+  // turn a missing `;` into an "invalid token" case.
+  const d0 = parse.diagnostics[0];
+  const lex = doc.lexical_errors.filter((e) => !d0 || e.start.offset <= d0.start.offset);
+  if (lex.some((e) => e.kind === "UNSUPPORTED") && (status === "UNSUPPORTED_CONSTRUCT" || !rep || d0?.message.startsWith("unsupported construct"))) return "unsupported";
   if (lex.some((e) => /unterminated block comment/.test(e.message))) return "unterminated-comment";
   if (lex.length) return "lexical";
   const d = parse.diagnostics[0];
@@ -201,6 +205,8 @@ export interface PlanCard {
   evidence: { name: string; contribution: number; explanation: string }[];
   placeholder: boolean;
   hidesCode: boolean;
+  /** how the edit may change what the program does (empty: only punctuation / invalid characters change) */
+  risks: string[];
   /** changed lines: [line number in the original, before text, after text] */
   lines: { line: number; before: string; after: string }[];
 }
@@ -237,6 +243,7 @@ export function planCards(doc: RepairDoc, source: string): PlanCard[] {
       evidence: (rep1?.evidence ?? []).filter((e) => e.contribution !== 0).map((e) => ({ name: e.name, contribution: e.contribution, explanation: e.explanation })),
       placeholder: plan.edits.some((e) => e.placeholder),
       hidesCode: plan.edits.some((e) => e.op !== "insert" && e.removed_kind === "ERROR" && (e.removed_text ?? "").startsWith("/*")),
+      risks: planRisks(plan),
       lines: changedLines(source, plan.source),
     };
   });
@@ -318,4 +325,109 @@ export function replaceLine(source: string, line: number, text: string): string 
 
 export function editAt(e: Edit): string {
   return `${e.at.line}:${e.at.column}`;
+}
+
+// ------------------------------------------------------------------ one error at a time
+export interface FirstErrorView {
+  /** the doc with its plans replaced by the engine's single-edit candidates for the first error */
+  doc: RepairDoc;
+  /** the engine's complete plan for every error (kept as an alternative, never applied silently) */
+  fullPlan: Plan | null;
+  reported: number;
+}
+
+/**
+ * When the code has several errors, the engine's plans fix all of them at once and can bundle
+ * risky edits (e.g. deleting `++`). For a step-by-step correction we offer the engine's real
+ * candidates for the FIRST error only (each was re-parsed by the engine), one per AST class,
+ * and decide with the same rule as the engine: recommend only if the best leads the runner-up
+ * by at least tau and removes no code. After the user applies one, everything is re-analyzed.
+ */
+export function firstErrorView(doc: RepairDoc, source: string): FirstErrorView | null {
+  const plans = doc.repair.decision.plans;
+  const multi = plans[0] ? plans[0].edits.length > 1 : doc.parse.diagnostics.length > 1;
+  const cands = [...(doc.repair.candidates ?? [])].sort((a, b) => a.rank - b.rank);
+  if (!multi || !cands.length) return null;
+  // Candidates can bundle an edit for a LATER error (e.g. deleting `++` two tokens on). Keep only the
+  // edits on the first edit's line and apply them to the user's text; the result is never claimed to
+  // parse (later errors remain) — the real re-analysis after applying decides.
+  const seen = new Set<string>();
+  const picked: { c: Candidate; plan: Plan }[] = [];
+  for (const c of cands) {
+    if (!c.edits.length) continue;
+    const edits = c.edits.filter((e) => e.at.line === c.edits[0].at.line);
+    const hole = edits.some((e) => e.placeholder);
+    if (picked.length >= 4 && (!hole || picked.some((x) => x.plan.edits.some((e) => e.placeholder)))) continue;
+    const src = applyEdits(source, edits);
+    if (src === null || seen.has(src)) continue;
+    seen.add(src);
+    const trimmed = edits.length < c.edits.length;
+    picked.push({ c, plan: { leaf: -1, root_class: c.class_id, valid: trimmed ? false : c.valid, total_cost: edits.reduce((a, e) => a + e.cost, 0), summary: edits.map((e) => e.op).join("+"), source: trimmed ? src : c.source, edits, tokens: [] } });
+  }
+  if (!picked.length) return null;
+  const fplans = picked.map((x) => x.plan);
+  const margin = picked.length > 1 ? +(picked[0].c.score - picked[1].c.score).toFixed(2) : null;
+  const tau = doc.repair.decision.tau;
+  const risky = planRisks(fplans[0]).length > 0;
+  const status = doc.repair.decision.status === "UNSUPPORTED_CONSTRUCT" ? "UNSUPPORTED_CONSTRUCT" : !risky && (margin === null || margin >= tau) ? "RECOMMENDED" : "MULTIPLE_PLAUSIBLE";
+  const classes = picked.map(({ c }) => ({ id: c.class_id, ast_hash: "", complete_ast: c.valid, size: 1, best_score: c.score, min_cost: c.cost, representative: c.id, members: [c.id] }));
+  const view: RepairDoc = {
+    ...doc,
+    repair: {
+      ...doc.repair,
+      classes,
+      decision: { ...doc.repair.decision, status, margin, plans: fplans, reasons: [margin === null ? "only one structurally distinct fix for this error" : `score margin ${margin.toFixed(2)} ${margin >= tau ? ">=" : "<"} tau = ${tau}`, ...(risky ? ["the best fix for this error removes code, so IntelliFix will not recommend it"] : [])] },
+    },
+  };
+  return { doc: view, fullPlan: plans[0] ?? null, reported: doc.parse.diagnostics.length };
+}
+
+// ------------------------------------------------------------------ unsupported constructs
+export interface Rewrite { line: number; before: string; after: string; why: string }
+
+/** A supported MiniC rewrite for `x++;`, `++x;`, `x--;` and `x op= e;` on the line of an unsupported token. */
+export function unsupportedRewrite(source: string, err: LexicalError | undefined): Rewrite | null {
+  if (!err || err.kind !== "UNSUPPORTED") return null;
+  const lines = source.split("\n");
+  const before = lines[err.start.line - 1];
+  if (before === undefined) return null;
+  const ind = before.match(/^\s*/)![0];
+  let m = before.match(/^\s*([A-Za-z_]\w*)\s*(\+\+|--)\s*;\s*$/) ?? before.match(/^\s*(\+\+|--)\s*([A-Za-z_]\w*)\s*;\s*$/);
+  if (m) {
+    const [name, op] = m[1] === "++" || m[1] === "--" ? [m[2], m[1]] : [m[1], m[2]];
+    return { line: err.start.line, before, after: `${ind}${name} = ${name} ${op[0]} 1;`, why: `MiniC has no \`${op}\`. \`${name} = ${name} ${op[0]} 1;\` does the same ${op === "++" ? "increment" : "decrement"} with supported syntax.` };
+  }
+  m = before.match(/^\s*([A-Za-z_]\w*(?:\[[^\]]*\])?)\s*([+\-*/%])=\s*(.+?)\s*;\s*$/);
+  if (m) return { line: err.start.line, before, after: `${ind}${m[1]} = ${m[1]} ${m[2]} (${m[3]});`, why: `MiniC has no compound assignment \`${m[2]}=\`; this is the equivalent plain assignment.` };
+  return null;
+}
+
+// ------------------------------------------------------------------ completion
+export type Completion = "complete" | "name-warnings" | "errors" | "empty";
+
+/** "complete" only when every check IntelliFix implements passes on this exact text. */
+export function completionOf(doc: RepairDoc | AnalyzeDoc): Completion {
+  if (!doc.parse.ok) return "errors";
+  if (!doc.tokens.length) return "empty";
+  return doc.parse.name_warnings?.length ? "name-warnings" : "complete";
+}
+
+export const CHECKS_DONE = ["lexical analysis (every character forms a valid MiniC token)", "syntax (the LALR(1) parser accepts the whole program)", "name use (declared before use, no duplicates, functions called with the right number of arguments)"];
+export const CHECKS_NOT_DONE = ["types (e.g. adding a bool to an int)", "run-time behaviour (the program is never executed)", "code generation (IntelliFix is a front end only)"];
+
+/** Apply engine edits (UTF-8 byte offsets in `source`) to the text; null if the text does not match. */
+export function applyEdits(source: string, edits: Edit[]): string | null {
+  const enc = new TextEncoder(), dec = new TextDecoder();
+  let b = enc.encode(source);
+  for (const e of [...edits].sort((x, y) => y.at.offset - x.at.offset)) {
+    const at = e.at.offset;
+    const removed = e.op === "insert" ? 0 : enc.encode(e.removed_text ?? "").length;
+    if (e.op !== "insert" && dec.decode(b.slice(at, at + removed)) !== e.removed_text) return null;
+    const before = dec.decode(b.slice(0, at)), after = dec.decode(b.slice(at + removed));
+    let text = e.op === "delete" ? "" : e.text ?? "";
+    if (text && /\w$/.test(before) && /^\w/.test(text)) text = " " + text;
+    if (text && /\w$/.test(text) && /^\w/.test(after)) text = text + " ";
+    b = enc.encode(before + text + after);
+  }
+  return dec.decode(b);
 }
