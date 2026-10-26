@@ -1,14 +1,15 @@
-import { ArrowLeft, FlaskConical, ListTree, Menu, Moon, PencilRuler, Sun, type LucideIcon } from "lucide-react";
+import { ArrowLeft, ListTree, Menu, Moon, PencilRuler, Sun, type LucideIcon } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { Badge, StatusBadge } from "../components/ui";
 import { useProject } from "./ProjectContext";
 import { applyTheme, initialTheme, type Theme } from "./theme";
 
+// Research & Method (/research) is not in the sidebar; the page and route stay, reachable by URL
+// and from the back links of the evaluation, learning and documentation pages.
 const NAV: { to: string; label: string; icon: LucideIcon; hint: string }[] = [
   { to: "/", label: "Workspace", icon: PencilRuler, hint: "write, analyze, repair" },
   { to: "/ast", label: "AST Explorer", icon: ListTree, hint: "the tree the parser builds" },
-  { to: "/research", label: "Research & Method", icon: FlaskConical, hint: "how it works, what was measured" },
 ];
 
 /** Specialist pages: where they belong and what they are. */

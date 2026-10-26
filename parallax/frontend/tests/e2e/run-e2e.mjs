@@ -47,11 +47,11 @@ const analyze = async () => {
 const stepBtn = (name) => page.locator(".stepper").getByRole("button", { name: new RegExp("^" + name) });
 const nav = (name) => page.getByRole("complementary", { name: "Primary" }).getByRole("link", { name: new RegExp("^" + name) });
 
-await step("workspace loads samples from the backend; exactly three primary destinations", async () => {
+await step("workspace loads samples from the backend; exactly two primary destinations", async () => {
   await page.goto(`${BASE}/`);
   await page.waitForFunction(() => document.querySelectorAll("#sample option").length > 5, null, T);
   const n = await page.getByRole("complementary", { name: "Primary" }).getByRole("link").count();
-  expect(n === 3, `expected 3 nav links, got ${n}`);
+  expect(n === 2, `expected 2 nav links, got ${n}`);
 });
 
 await step("missing semicolon: diagnose → recommended fix → tree → apply → verified → undo", async () => {
@@ -208,7 +208,7 @@ await step("AST Explorer: before & after of two real repairs", async () => {
 });
 
 await step("Research & Method: stored numbers, honest labels, full data behind a link", async () => {
-  await nav("Research & Method").click();
+  await page.goto(`${BASE}/research`); // not in the sidebar; reachable by URL
   await page.getByText(/Research question\./).waitFor(T);
   const t = await page.locator(".research").innerText();
   for (const s of ["71.5%", "55.2%", "6.1%", "28.5%", "50.7%", "Simulation, not a user study", "synthetic"]) expect(t.includes(s), `missing ${s}`);

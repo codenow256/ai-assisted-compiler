@@ -76,7 +76,7 @@ const BASE = "http://127.0.0.1:8000";
   await analyze(); await nav("AST Explorer"); await page.getByRole("tab", { name: /Before/ }).click(); await page.getByText(/structural change/).waitFor(T);
   await full("v2-14-ast-before-after"); await el("v2-el-ast-before-after", ".panel-body .stack");
   // 8. research
-  await nav("Research & Method"); await page.getByText(/Research question\./).waitFor(T);
+  await page.goto(BASE + "/research"); await page.getByText(/Research question\./).waitFor(T);
   await full("v2-15-research");
   await el("v2-el-research-key", ".research section:nth-of-type(3)");
   await el("v2-el-research-tradeoff", ".research section:nth-of-type(4)");

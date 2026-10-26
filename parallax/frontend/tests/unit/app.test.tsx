@@ -35,13 +35,14 @@ const analyze = async () => fireEvent.click(await screen.findByTestId("analyze")
 const step = (name: RegExp) => fireEvent.click(screen.getByRole("button", { name }));
 
 describe("navigation", () => {
-  it("has exactly three primary destinations", async () => {
+  it("has exactly two primary destinations; Research & Method stays reachable by URL", async () => {
     mockApi(real());
     renderApp("/");
     const nav = await screen.findByRole("complementary", { name: "Primary" });
     const links = within(nav).getAllByRole("link");
-    expect(links.map((l) => l.textContent?.replace(/[a-z ,]+$/, ""))).toHaveLength(3);
-    for (const [link, heading] of [["AST Explorer", "AST Explorer"], ["Research & Method", "Research & Method"], ["Workspace", "Workspace"]]) {
+    expect(links.map((l) => l.textContent?.replace(/[a-z ,]+$/, ""))).toHaveLength(2);
+    expect(within(nav).queryByRole("link", { name: /Research & Method/ })).toBeNull();
+    for (const [link, heading] of [["AST Explorer", "AST Explorer"], ["Workspace", "Workspace"]]) {
       fireEvent.click(within(nav).getByRole("link", { name: new RegExp("^" + link) }));
       expect(await screen.findByRole("heading", { level: 1, name: heading })).toBeInTheDocument();
     }
